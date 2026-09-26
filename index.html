@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>Corrida Canina 3D '97</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
@@ -83,7 +83,7 @@
 
   /* ---------- Controles de toque ---------- */
   #touch { position:fixed; inset:0; z-index:15; pointer-events:none; }
-  #touch button { position:absolute; bottom:24px; pointer-events:auto; width:78px; height:78px; border-radius:50%;
+  #touch button { position:absolute; bottom:calc(24px + env(safe-area-inset-bottom, 0px)); pointer-events:auto; width:78px; height:78px; border-radius:50%;
     border:3px solid #fff; background:rgba(255,255,255,.18); color:#fff; font-size:11px; }
   #touch button.on { background:rgba(255,225,77,.55); }
   #tLeft { left:20px; } #tRight { left:112px; }
