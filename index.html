@@ -54,7 +54,22 @@
   #board i { width:9px; height:9px; border-radius:50%; flex:none; }
   #map { position:absolute; left:calc(14px + var(--sal)); bottom:calc(14px + var(--sab)); width:180px; height:180px; }
   #gauge { position:absolute; right:calc(8px + var(--sar)); bottom:calc(6px + var(--sab)); width:220px; height:220px; }
-  #chips { position:absolute; left:50%; top:calc(22% + var(--sat)); transform:translateX(-50%); display:flex; gap:8px; }
+  #goals, #pauseGoals { padding:8px 14px; font-size:14px; width:min(360px, calc(100vw - 32px)); }
+  #goals { position:absolute; left:50%; top:calc(14px + var(--sat)); transform:translateX(-50%); transition:opacity .3s; }
+  #goals.mini > div:not(.gh) { display:none; }
+  #goals.mini { width:auto; padding:5px 12px; }
+  .gh { font-size:11px; letter-spacing:.18em; color:var(--mut); }
+  .gh b { color:var(--gold); }
+  #goals > div:not(.gh), #pauseGoals > div:not(.gh), .goalsRes > div { display:grid; grid-template-columns:16px 1fr auto; gap:6px; align-items:center; padding:2px 0; }
+  #goals i, #pauseGoals i, .goalsRes i { font-style:normal; color:var(--good); }
+  #goals .ok span, #pauseGoals .ok span, .goalsRes .ok span { color:var(--good); }
+  #goals .no, #pauseGoals .no, .goalsRes .no { opacity:.55; } .no i { color:var(--bad) !important; }
+  .rewards .goalsRes { display:block; }
+  .goalsRes { border-top:1px solid var(--line); margin-top:6px; padding-top:6px; font-size:13px; }
+  .goalsRes > div { display:grid !important; }
+  body.touch #goals { top:auto; bottom:calc(200px + var(--sab)); font-size:13px; }
+  body.touch #chips { top:calc(46% + var(--sat)); }
+  #chips { position:absolute; left:50%; top:calc(30% + var(--sat)); transform:translateX(-50%); display:flex; gap:8px; }
   .chip { padding:5px 14px; border-radius:99px; font-size:15px; letter-spacing:.14em; background:var(--glass2); border:1px solid var(--line); }
   #chipSlip { color:var(--acc2); }
   #chipWrong { background:var(--bad); }
@@ -201,6 +216,7 @@
     <div id="bestLap" class="mono"></div>
   </div>
   <ol id="board"></ol>
+  <div id="goals" class="panel"></div>
   <div id="chips"><span id="chipSlip" class="chip" hidden>VÁCUO</span><span id="chipWrong" class="chip" hidden>CONTRAMÃO</span></div>
   <div id="hTR"><div id="pos" class="disp">1<sup>º</sup></div><div id="posOf">DE 6</div></div>
   <button id="pauseBtn" aria-label="Pausar">❚❚</button>
@@ -238,7 +254,7 @@
       <button class="btn sec" id="garageBtn">OFICINA</button>
       <button class="btn pri" id="startBtn">CORRER</button>
     </div>
-    <div class="help"><b>↑</b> correr · <b>↓</b> frear · <b>← →</b> virar · <b>SHIFT</b> drift<br><b>N</b> nitro · <b>ESPAÇO</b> pular · <b>B</b> latir · <b>C</b> câmera · <b>ESC</b> pausa</div>
+    <div class="help"><b>↑</b> correr · <b>↓</b> frear · <b>← →</b> virar · <b>SHIFT</b> drift<br><b>N</b> nitro · <b>ESPAÇO</b> pular · <b>B</b> latir<br><b>C</b> câmera · <b>ESC</b> pausa</div>
   </div>
 </div>
 
@@ -253,6 +269,7 @@
 
 <div id="pause" class="screen" hidden>
   <h2 class="disp">PAUSA</h2>
+  <div id="pauseGoals" class="panel"></div>
   <div class="menuList">
     <button class="btn pri" id="resumeBtn">CONTINUAR</button>
     <button class="btn sec" id="restartBtn">REINICIAR CORRIDA</button>
@@ -570,6 +587,8 @@ const COATS = {
   grey: { base: hx(0x7c8491), light: hx(0xf1f1ee) },
   husky: { base: hx(0x474f5d), dark: hx(0x2a2f38), light: hx(0xf2f2f0) },
   pug: { base: hx(0xd5ab72), dark: hx(0x221d1a), light: hx(0xe8c996) },
+  pinscher: { base: hx(0x16110e), light: hx(0xa9571f) },
+  pitbull: { base: hx(0x98663f), light: hx(0xf3eee6), dark: hx(0x6e4527) },
 };
 function coatColor(b, q, o) {
   const cy = q.cy;
@@ -625,6 +644,27 @@ function coatColor(b, q, o) {
       if (q.part === 'body') return o.copy(C.base).lerp(C.light, smooth(cy, cy - b.chH * 0.7, q.y) * 0.4);
       return o.copy(C.base);
     }
+    case 'pinscher': { // preto com marcas cor de ferrugem
+      const C = COATS.pinscher;
+      if (q.part === 'ear') return o.copy(C.base);
+      if (q.part === 'head') {
+        const brow = Math.max(0, 1 - Math.hypot(Math.abs(q.lx) - 0.02, q.ly - 0.028, q.lz - (q.zStop - 0.01)) / 0.012);
+        return o.copy(C.base).lerp(C.light, Math.max(muz * 0.95, smooth(-0.005, -0.03, q.ly) * 0.9, brow));
+      }
+      if (q.part === 'body') return o.copy(C.base).lerp(C.light, smooth(b.len / 2 - 0.12, b.len / 2 - 0.03, q.z) * smooth(cy, cy - b.chH * 0.5, q.y));
+      if (q.part === 'neck') return o.copy(C.base).lerp(C.light, smooth(0, -0.02, q.ly) * 0.9);
+      if (q.part === 'paw' || (q.part === 'leg' && q.seg >= 1)) return o.copy(C.light);
+      return o.copy(C.base);
+    }
+    case 'pitbull': { // caramelo-avermelhado com peito e patas brancas
+      const C = COATS.pitbull;
+      if (q.part === 'ear') return o.copy(C.dark);
+      if (q.part === 'head') return o.copy(C.base).lerp(C.light, smooth(0.012, 0.004, Math.abs(q.lx)) * smooth(q.zStop - 0.06, q.zStop, q.lz) * 0.9);
+      if (q.part === 'body') return o.copy(C.base).lerp(C.light, smooth(b.len / 2 - 0.2, b.len / 2 - 0.06, q.z) * smooth(cy + b.chH * 0.2, cy - b.chH * 0.3, q.y));
+      if (q.part === 'neck') return o.copy(C.base).lerp(C.light, smooth(0, -0.03, q.ly));
+      if (q.part === 'paw' || (q.part === 'leg' && q.seg === 2)) return o.copy(C.light);
+      return o.copy(C.base);
+    }
   }
   return o.set(0xffffff);
 }
@@ -650,10 +690,18 @@ const BREEDS = [
     len: 0.75, chH: 0.15, chW: 0.12, rumpH: 0.13, rumpW: 0.11, rumpY: 0.0, waist: 0.2, arch: 0.0, backY: 0.58, bone: 0.028,
     neck: 0.18, neckA: 0.85, skull: [0.095, 0.08, 0.075], muzzle: [0.1, 0.044, 0.042, 0.022], ear: 'erect', earW: 0.045, earL: 0.09,
     tail: [0.45, 0.05, 0.8, 0.5], spd: 4, acc: 4, han: 3, jmp: 2 },
-  { id: 'bolinha', name: 'BOLINHA', raca: 'PUG', coat: 'pug', color: '#ec4899', pitch: 1.35, eye: 0x1a0e06, eyeR: 0.028,
+  { id: 'bolinha', name: 'BOLINHA', raca: 'PUG', coat: 'pug', color: '#84cc16', pitch: 1.35, eye: 0x1a0e06, eyeR: 0.028,
     len: 0.5, chH: 0.15, chW: 0.14, rumpH: 0.13, rumpW: 0.12, rumpY: 0.01, waist: 0.05, arch: 0.0, backY: 0.38, bone: 0.03,
     neck: 0.08, neckA: 0.7, skull: [0.1, 0.105, 0.095], muzzle: [0.03, 0.06, 0.045, 0.03], ear: 'floppy', earW: 0.04, earL: 0.07,
     tail: [0.2, 0.035, 1.5, 1.3], spd: 2, acc: 5, han: 4, jmp: 2 },
+  { id: 'pitiquin', name: 'PITIQUIN', raca: 'PINSCHER', coat: 'pinscher', color: '#06b6d4', pitch: 1.7, eye: 0x120a05, eyeR: 0.017,
+    len: 0.42, chH: 0.095, chW: 0.068, rumpH: 0.08, rumpW: 0.062, rumpY: 0.005, waist: 0.35, arch: 0.0, backY: 0.37, bone: 0.016,
+    neck: 0.12, neckA: 0.95, skull: [0.058, 0.045, 0.044], muzzle: [0.06, 0.021, 0.021, 0.012], ear: 'erect', earW: 0.034, earL: 0.08,
+    tail: [0.1, 0.018, 1.2, 0.1], spd: 3, acc: 5, han: 3, jmp: 2 },
+  { id: 'princesa', name: 'PRINCESA', raca: 'PITBULL', coat: 'pitbull', color: '#ff4fa3', pitch: 0.9, eye: 0x5a3514, nose: 0x6b3a2e, crown: true,
+    len: 0.72, chH: 0.17, chW: 0.14, rumpH: 0.13, rumpW: 0.115, rumpY: 0.0, waist: 0.25, arch: 0.0, backY: 0.52, bone: 0.034,
+    neck: 0.14, neckA: 0.75, skull: [0.1, 0.1, 0.085], muzzle: [0.08, 0.058, 0.05, 0.03], ear: 'rose', earW: 0.04, earL: 0.06,
+    tail: [0.4, 0.035, -0.6, 0.1], spd: 4, acc: 4, han: 2, jmp: 3 },
 ];
 
 function numberTex(num, color) {
@@ -722,8 +770,20 @@ function buildDog(b, num, color) {
     }
   }
   const noseZ = Math.max(hp.zStop + ml - mw * 0.25, sl * 0.97);
-  const nose = new THREE.Mesh(ellGeo(mw * 0.62, mw * 0.42, mw * 0.4), noseMat);
+  const nose = new THREE.Mesh(ellGeo(mw * 0.62, mw * 0.42, mw * 0.4), b.nose ? new THREE.MeshStandardMaterial({ color: b.nose, roughness: 0.35 }) : noseMat);
   nose.position.set(0, -drop + mh * 0.52, noseZ); head.add(nose);
+  if (b.crown) { // coroinha dourada
+    const gold = new THREE.MeshStandardMaterial({ color: 0xffc53d, roughness: 0.25, metalness: 1 });
+    const crown = new THREE.Group(); crown.position.set(0, sh * 0.95, -sl * 0.1); crown.rotation.x = -0.15; head.add(crown);
+    crown.add(new THREE.Mesh(new THREE.CylinderGeometry(0.032, 0.036, 0.018, 16, 1, true), gold));
+    for (let i = 0; i < 5; i++) {
+      const a = i / 5 * Math.PI * 2, sp = new THREE.Mesh(new THREE.ConeGeometry(0.009, 0.026, 6), gold);
+      sp.position.set(Math.cos(a) * 0.032, 0.02, Math.sin(a) * 0.032); crown.add(sp);
+      const gem = new THREE.Mesh(new THREE.SphereGeometry(0.005, 8, 6), new THREE.MeshStandardMaterial({ color: 0xff2d8a, roughness: 0.1, emissive: 0x550022 }));
+      gem.position.set(Math.cos(a) * 0.035, 0.002, Math.sin(a) * 0.035); crown.add(gem);
+    }
+    crown.traverse(o => { if (o.isMesh) o.castShadow = true; });
+  }
   const tongue = new THREE.Group(); tongue.position.set(0, -drop - mh * 0.75, hp.zStop + ml * 0.35); head.add(tongue);
   const tg = new THREE.Mesh(ellGeo(mw * 0.55, 0.008, 0.06), tongueMat); tg.position.set(0, -0.02, 0.02); tg.rotation.x = 0.9; tongue.add(tg);
   // orelhas
@@ -1041,7 +1101,7 @@ function buildWorld(idx) {
   updateEnv();
 
   buildGround(); buildTrackSurface(); buildFences(); buildStart(); buildStands(); buildBillboards();
-  buildLandmarks(); buildVegetation(); buildMountains(); buildClouds(); buildItems(); buildMinimap();
+  buildLandmarks(); buildVegetation(); buildMountains(); buildClouds(); buildItems(); buildBalls(); buildBirds(); buildMinimap();
   if (snowPts) { scene.remove(snowPts); snowPts.geometry.dispose(); snowPts = null; }
   if (TR.snow) buildSnowfall();
 }
@@ -1536,6 +1596,160 @@ function buildItems() {
   }
 }
 
+/* ---------------------------------------------------------------------
+   Bolas rolando (feno / bola de praia / bola de neve) cruzando a pista
+   --------------------------------------------------------------------- */
+let balls = [];
+function buildBalls() {
+  balls = [];
+  [[0.36, 1, 0], [0.555, -1, 3.2]].forEach(([f, dir, off]) => {
+    const s = L * f, holder = new THREE.Group(), roller = new THREE.Group(), inner = new THREE.Group();
+    holder.position.copy(trackPoint(s, 0)); holder.rotation.y = yawAlong(s);
+    holder.add(roller); roller.add(inner); world.add(holder);
+    let r = 1.3, msg = '';
+    if (TR.id === 'parque') {
+      r = 1.2; msg = 'ATROPELADO PELO FENO!';
+      const hay = toTex(drawCanvas(64, 64, (x) => { x.fillStyle = '#d9b44a'; x.fillRect(0, 0, 64, 64); for (let i = 0; i < 220; i++) { x.strokeStyle = Math.random() < 0.5 ? '#b8912f' : '#f0d27a'; x.beginPath(); const px = Math.random() * 64, py = Math.random() * 64; x.moveTo(px, py); x.lineTo(px + Math.random() * 10 - 5, py + Math.random() * 3); x.stroke(); } }));
+      const c = mesh(new THREE.CylinderGeometry(r, r, 2.2, 24), std(0xffffff, 0.95, 0, { map: hay }), true, true, inner);
+      c.rotation.x = Math.PI / 2;
+      for (const z of [-0.5, 0.5]) { const band = mesh(new THREE.TorusGeometry(r + 0.01, 0.05, 6, 32), std(0x7a4b1e, 0.8), false, false, inner); band.position.z = z; }
+    } else if (TR.id === 'praia') {
+      r = 1.35; msg = 'BOLADA DE PRAIA!';
+      const bt = toTex(drawCanvas(128, 64, (x) => { const cols = ['#e53935', '#ffffff', '#1e88e5', '#ffffff', '#fdd835', '#ffffff']; cols.forEach((c, i) => { x.fillStyle = c; x.fillRect(i * 128 / 6, 0, 128 / 6 + 1, 64); }); }));
+      mesh(new THREE.SphereGeometry(r, 28, 18), std(0xffffff, 0.35, 0, { map: bt }), true, true, inner);
+    } else {
+      r = 1.5; msg = 'ATROPELADO PELA BOLA DE NEVE!';
+      const g = new THREE.IcosahedronGeometry(r, 3), pp = g.attributes.position;
+      for (let i = 0; i < pp.count; i++) { _v.fromBufferAttribute(pp, i); const n = 0.92 + 0.12 * vnoise(_v.x * 2 + 4, _v.y * 2 + _v.z * 2, 0, 7); pp.setXYZ(i, _v.x * n, _v.y * n, _v.z * n); }
+      g.computeVertexNormals();
+      mesh(g, std(0xf4f8ff, 0.6), true, true, inner);
+    }
+    // placa de aviso na beira da pista
+    const sign = new THREE.Group();
+    const face = toTex(drawCanvas(64, 64, (x) => { x.fillStyle = '#ffcc00'; x.beginPath(); x.moveTo(32, 3); x.lineTo(61, 32); x.lineTo(32, 61); x.lineTo(3, 32); x.fill(); x.fillStyle = '#111'; x.beginPath(); x.arc(32, 36, 11, 0, 7); x.fill(); x.fillRect(12, 46, 40, 4); }));
+    mesh(new THREE.BoxGeometry(1.6, 1.6, 0.08), [std(0x333333), std(0x333333), std(0x333333), std(0x333333), std(0xffffff, 0.5, 0, { map: face }), std(0x333333)], true, true, sign).position.y = 2.6;
+    mesh(new THREE.CylinderGeometry(0.06, 0.06, 2, 6), std(0x777777, 0.5, 0.6), true, true, sign).position.y = 1;
+    const sp = trackPoint(s - 25, -(W / 2 + 3.4)); sign.position.set(sp.x, 0, sp.z); sign.rotation.y = yawAlong(s) + Math.PI; world.add(sign);
+    balls.push({ s, dir, off, r, roller, active: false, d: 0, hitMsg: msg, period: 7.5 });
+  });
+}
+function updateBalls(t) {
+  for (const b of balls) {
+    const p = ((t + b.off) % b.period + b.period) % b.period, cross = 3.6, span = W / 2 + 6;
+    const k = Math.min(1, p / cross);
+    b.d = b.dir * lerp(-span, span, k);
+    b.active = p < cross && Math.abs(b.d) < W / 2 + 1;
+    b.roller.visible = p < cross + 0.4;
+    b.roller.position.set(-b.d, b.r, 0);
+    b.roller.rotation.z = b.d / b.r;
+  }
+}
+
+/* ---------------------------------------------------------------------
+   Bichos voadores (pombo / gaivota / corvo) que atrapalham os cachorros
+   --------------------------------------------------------------------- */
+const BIRD_KINDS = {
+  parque: { name: 'POMBO', plural: 'POMBOS', body: 0x8c95a5, wing: 0x9ea7b6, tip: 0x3a3f48, head: 0x4f6f63, beak: 0x333333, pitch: 1 },
+  praia: { name: 'GAIVOTA', plural: 'GAIVOTAS', body: 0xf6f6f2, wing: 0xb9c1ca, tip: 0x1a1a1a, head: 0xffffff, beak: 0xf2b92e, pitch: 1.4 },
+  neve: { name: 'CORVO', plural: 'CORVOS', body: 0x15171c, wing: 0x1c1f26, tip: 0x0c0d10, head: 0x15171c, beak: 0x202020, pitch: 0.7 },
+};
+const BIRD_KIND = () => BIRD_KINDS[TR.id];
+let birds = [], birdTimer = 8;
+function buildBird(k) {
+  const g = new THREE.Group(), m = c => std(c, 0.6, 0.05);
+  const add = (geo, mat, x, y, z, p = g) => { const o = new THREE.Mesh(geo, mat); o.position.set(x, y, z); o.castShadow = true; p.add(o); return o; };
+  add(ellGeo(0.2, 0.19, 0.38), m(k.body), 0, 0, 0);
+  add(new THREE.SphereGeometry(0.14, 14, 10), m(k.head), 0, 0.14, 0.33);
+  const beak = add(new THREE.ConeGeometry(0.045, 0.14, 8), m(k.beak), 0, 0.12, 0.5); beak.rotation.x = Math.PI / 2;
+  for (const sx of [-1, 1]) { add(new THREE.SphereGeometry(0.03, 8, 6), std(0x0a0a0a, 0.1), sx * 0.09, 0.18, 0.42); }
+  add(ellGeo(0.14, 0.025, 0.24), m(k.tip), 0, 0.02, -0.44);
+  const wings = [];
+  for (const sx of [-1, 1]) {
+    const piv = new THREE.Group(); piv.position.set(sx * 0.14, 0.08, 0.04); g.add(piv);
+    add(ellGeo(0.42, 0.02, 0.2), m(k.wing), sx * 0.4, 0, 0, piv);
+    add(ellGeo(0.18, 0.018, 0.12), m(k.tip), sx * 0.78, 0, -0.05, piv);
+    wings.push({ piv, sx });
+  }
+  for (const sx of [-1, 1]) { const leg = add(new THREE.CylinderGeometry(0.012, 0.012, 0.16, 5), std(0xd07a40, 0.6), sx * 0.06, -0.2, -0.05); leg.rotation.x = 0.8; }
+  g.scale.setScalar(1.7);
+  return { g, wings };
+}
+function buildBirds() {
+  birds = []; birdTimer = 7;
+  for (let i = 0; i < 4; i++) {
+    const b = buildBird(BIRD_KIND());
+    b.g.visible = false; world.add(b.g);
+    birds.push({ ...b, state: 'off', pos: new THREE.Vector3(), vel: new THREE.Vector3(), t: 0, target: null, phase: Math.random() * 6 });
+  }
+}
+function birdFlee(bd, from) {
+  bd.state = 'flee'; bd.t = 0;
+  const dx = bd.pos.x - from.x, dz = bd.pos.z - from.z, d = Math.hypot(dx, dz) || 1;
+  bd.vel.set(dx / d * 22, 14, dz / d * 22);
+  if (bd.target) bd.target.birdT = 0;
+  Sfx.squawk(BIRD_KIND().pitch, player ? clamp(1 - Math.hypot(bd.pos.x - player.x, bd.pos.z - player.z) / 60, 0, 1) : 1);
+  for (let i = 0; i < 8; i++) dust.spawn(bd.pos.x, bd.pos.y, bd.pos.z, (Math.random() - 0.5) * 6, Math.random() * 3, (Math.random() - 0.5) * 6, 1.2, 0.25, 0.15, [0.95, 0.95, 0.95], 0.9, 3, 1.5);
+}
+const _hp = new THREE.Vector3();
+function updateBirds(dt, racing) {
+  if (racing && raceTime > 5) {
+    birdTimer -= dt;
+    const busy = birds.filter(b => b.state === 'approach' || b.state === 'harass').length;
+    if (birdTimer <= 0 && busy < 1 + save.diff) {
+      birdTimer = 6 + Math.random() * 5 - save.diff;
+      const free = birds.find(b => b.state === 'off');
+      const cands = runners.filter(r => !r.finished && r.birdT <= 0);
+      if (free && cands.length) {
+        const tgt = cands.includes(player) && Math.random() < 0.5 ? player : cands[Math.random() * cands.length | 0];
+        const a = sampleAt(tgt.dist + 55 + Math.random() * 20);
+        const side = (Math.random() - 0.5) * 30;
+        free.pos.set(a.p.x + a.r.x * side, 16 + Math.random() * 6, a.p.z + a.r.z * side);
+        free.vel.set(0, 0, 0); free.state = 'approach'; free.t = 0; free.target = tgt; free.g.visible = true;
+        if (tgt.isPlayer) pop(`CUIDADO: ${BIRD_KIND().name}!`, 'o');
+      }
+    }
+  }
+  for (const bd of birds) {
+    if (bd.state === 'off') continue;
+    bd.t += dt; bd.phase += dt * (bd.state === 'harass' ? 22 : 15);
+    const tg = bd.target;
+    if (bd.state === 'approach' || bd.state === 'harass') {
+      if (!tg || tg.finished || !racing) { birdFlee(bd, bd.pos); }
+      else {
+        tg.D.head.getWorldPosition(_hp);
+        const fx = Math.sin(tg.h), fz = Math.cos(tg.h);
+        if (bd.state === 'approach') {
+          _v.set(_hp.x + fx * 1.2 - bd.pos.x, _hp.y + 0.8 - bd.pos.y, _hp.z + fz * 1.2 - bd.pos.z);
+          const d = _v.length(), sp = Math.hypot(tg.vx, tg.vz) + 16;
+          bd.vel.lerp(_v.multiplyScalar(sp / Math.max(d, 0.01)), 1 - Math.exp(-3 * dt));
+          bd.pos.addScaledVector(bd.vel, dt);
+          if (d < 2.4) {
+            bd.state = 'harass'; bd.t = 0;
+            if (tg.isPlayer) { pop(`${BIRD_KIND().name} NA CARA! LATE!`, 'r'); Sfx.squawk(BIRD_KIND().pitch, 1); }
+          }
+          if (bd.t > 12) birdFlee(bd, bd.pos);
+        } else {
+          const a = bd.t * 5;
+          _v.set(_hp.x + fx * 1.3 + Math.cos(a) * 0.9, _hp.y + 0.55 + Math.sin(bd.t * 9) * 0.25, _hp.z + fz * 1.3 + Math.sin(a) * 0.9);
+          bd.vel.copy(_v).sub(bd.pos).divideScalar(Math.max(dt, 0.001)).clampLength(0, 80);
+          bd.pos.lerp(_v, 1 - Math.exp(-10 * dt));
+          tg.birdT = 0.25;
+          if (Math.random() < dt * 1.5) Sfx.squawk(BIRD_KIND().pitch, tg.isPlayer ? 0.6 : 0.2);
+          if (bd.t > 6) birdFlee(bd, bd.pos);
+        }
+      }
+    } else if (bd.state === 'flee') {
+      bd.vel.y += dt * 4; bd.pos.addScaledVector(bd.vel, dt);
+      if (bd.t > 4) { bd.state = 'off'; bd.g.visible = false; }
+    }
+    bd.g.position.copy(bd.pos);
+    if (bd.vel.lengthSq() > 1) bd.g.rotation.set(-clamp(bd.vel.y * 0.03, -0.5, 0.5), Math.atan2(bd.vel.x, bd.vel.z), 0);
+    const flap = Math.sin(bd.phase) * (bd.state === 'flee' ? 0.9 : 0.7);
+    for (const w of bd.wings) w.piv.rotation.z = w.sx * flap;
+  }
+}
+function clearBirds() { for (const b of birds) { b.state = 'off'; b.g.visible = false; b.target = null; } birdTimer = 7; }
+
 function buildMinimap() {
   let minX = Infinity, maxX = -Infinity, minZ = Infinity, maxZ = -Infinity;
   for (const p of P) { minX = Math.min(minX, p.x); maxX = Math.max(maxX, p.x); minZ = Math.min(minZ, p.z); maxZ = Math.max(maxZ, p.z); }
@@ -1608,6 +1822,11 @@ const Sfx = {
       this.tone(280 * p, 0.13, 'triangle', 0.18 * vol, 140 * p, s);
       this.noise(0.1, 0.25 * vol, 1300 * p, s);
     }
+  },
+  squawk(p = 1, vol = 1) {
+    if (!this.ctx || vol < 0.03) return;
+    const t = this.ctx.currentTime;
+    for (let k = 0; k < 2; k++) { this.tone(1300 * p, 0.09, 'sawtooth', 0.09 * vol, 800 * p, t + k * 0.12); this.noise(0.07, 0.12 * vol, 2500 * p, t + k * 0.12); }
   },
   beep(hi) { this.tone(hi ? 1320 : 660, hi ? 0.6 : 0.25, 'square', 0.14); },
   jump() { this.noise(0.18, 0.14, 700); this.tone(220, 0.16, 'sine', 0.12, 420); },
@@ -1686,6 +1905,7 @@ class Runner {
     this.stun = 0; this.spook = 0; this.barkCD = 2; this.slip = 0; this.surf = null; this.phase = Math.random() * 6; this.lastStep = 0;
     this.finished = false; this.finishTime = 0; this.lastLap = 1; this.prevJump = false; this.prevBark = false; this.air = false; this.rampAir = false;
     this.lane = (Math.random() - 0.5) * 8; this.laneT = 1 + Math.random() * 3; this.aiNitro = false; this.jumpPlan = new Map();
+    this.minis = 0; this.scared = 0; this.cleanJumps = 0; this.cans = 0; this.hits = 0; this.birdT = 0; this.hitCD = 0;
     this.driftScore = 0; this.coins = 0; this.lapStart = 0; this.bestLap = 0; this.pressT = null; this.wrongT = 0;
   }
   get lap() { return clamp(Math.floor(this.dist / L) + 1, 1, save.laps); }
@@ -1718,6 +1938,7 @@ function endDrift(r, crashed) {
   const pts = Math.round(r.driftT * 140);
   r.driftScore += pts;
   if (lvl) {
+    r.minis++;
     r.mini = lvl === 2 ? 1.5 : 0.8; r.nitro = Math.min(100, r.nitro + lvl * 8);
     if (r.isPlayer) { pop(lvl === 2 ? 'SUPER MINI-TURBO!' : 'MINI-TURBO!', lvl === 2 ? 'o' : 'c'); Sfx.boost(); }
   }
@@ -1725,7 +1946,7 @@ function endDrift(r, crashed) {
 }
 
 function doBark(r) {
-  r.barkCD = 7;
+  r.barkCD = 6;
   const fx = Math.sin(r.h), fz = Math.cos(r.h);
   Sfx.bark(r.b.pitch, player ? clamp(1 - Math.hypot(r.x - player.x, r.z - player.z) / 60, 0, 1) : 1);
   let hit = 0;
@@ -1734,9 +1955,18 @@ function doBark(r) {
     const dx = o.x - r.x, dz = o.z - r.z, d = Math.hypot(dx, dz);
     if (d < 12 && (dx * fx + dz * fz > -2)) { o.spook = 1.1; hit++; if (o.isPlayer) pop('ASSUSTADO!', 'r'); }
   }
+  let shooed = 0;
+  for (const bd of birds) {
+    if (bd.state !== 'approach' && bd.state !== 'harass') continue;
+    if (Math.hypot(bd.pos.x - r.x, bd.pos.z - r.z) < 15) { birdFlee(bd, r); shooed++; }
+  }
+  if (shooed) {
+    r.scared += shooed; r.nitro = Math.min(100, r.nitro + 10 * shooed);
+    if (r.isPlayer) pop(`ESPANTOU ${shooed > 1 ? shooed + ' ' + BIRD_KIND().plural : 'O ' + BIRD_KIND().name}! +NITRO`, 'v');
+  }
   const hp = r.D.head.getWorldPosition(_v);
   for (let i = 0; i < 26; i++) { const a = i / 26 * 6.28; glow.spawn(hp.x, hp.y, hp.z, Math.cos(a) * 14, 0.5, Math.sin(a) * 14, 0.45, 0.5, 1.4, [1, 0.85, 0.4], 0.8, 0, 3); }
-  if (r.isPlayer) pop(hit ? `LATIDO! ${hit} ASSUSTADO${hit > 1 ? 'S' : ''}` : 'AU AU!', 'g');
+  if (r.isPlayer && !shooed) pop(hit ? `LATIDO! ${hit} ASSUSTADO${hit > 1 ? 'S' : ''}` : 'AU AU!', 'g');
 }
 
 function stepRunner(r, inp, dt) {
@@ -1754,13 +1984,15 @@ function stepRunner(r, inp, dt) {
   else if (!air && r.surf === 'water') { grip *= 0.8; slow *= 0.72; }
   else if (!air && r.surf === 'ice') grip *= 0.22;
 
+  r.hitCD = Math.max(0, r.hitCD - dt);
+  if (r.birdT > 0) { r.birdT -= dt; inp = { ...inp, steer: clamp(inp.steer + Math.sin(time * 11 + r.num * 2) * 0.45, -1, 1) }; }
   r.nitroOn = inp.nitro && r.nitro > 0.5 && r.stun <= 0;
   if (r.nitroOn) r.nitro = Math.max(0, r.nitro - r.nitroDrain * dt);
   r.mini = Math.max(0, r.mini - dt); r.pad = Math.max(0, r.pad - dt);
   let band = 1;
   if (!r.isPlayer && player && !player.finished) band = 1 + clamp((player.dist - r.dist) / 220, -0.07, 0.07);
   const maxV = r.maxV * r.skill * band * slow * (r.nitroOn ? r.nitroPow : 1) * (r.mini > 0 ? 1.15 : 1) * (r.pad > 0 ? 1.22 : 1)
-    * (r.slip > 0.5 ? 1.06 : 1) * (r.spook > 0 ? 0.72 : 1) * (r.finished ? 0.5 : 1);
+    * (r.slip > 0.5 ? 1.06 : 1) * (r.spook > 0 ? 0.72 : 1) * (r.birdT > 0 ? 0.7 : 1) * (r.finished ? 0.5 : 1);
 
   // volante
   let vF = r.vx * Math.sin(r.h) + r.vz * Math.cos(r.h);
@@ -1841,10 +2073,10 @@ function stepRunner(r, inp, dt) {
   for (const hd of hurdles) {
     if (Math.floor((prevDist - hd.s) / L) < Math.floor((r.dist - hd.s) / L) && Math.abs(r.d) < W / 2 + 0.6) {
       if (r.y < 0.55 && r.stun <= 0) {
-        r.stun = 1.0; r.vx *= 0.25; r.vz *= 0.25; r.vy = 3; hd.fall = 1; endDrift(r, true); r.nitroOn = false;
+        r.stun = 1.0; r.vx *= 0.25; r.vz *= 0.25; r.vy = 3; hd.fall = 1; endDrift(r, true); r.nitroOn = false; r.hits++;
         if (r.isPlayer) { Sfx.trip(); pop('TROPEÇOU!', 'r'); shake(0.4); }
       } else if (r.y >= 0.55) {
-        r.nitro = Math.min(100, r.nitro + 10);
+        r.nitro = Math.min(100, r.nitro + 10); r.cleanJumps++;
         if (r.isPlayer) pop('PULO LIMPO! +NITRO', 'v');
       }
     }
@@ -1872,12 +2104,20 @@ function stepRunner(r, inp, dt) {
     const col = r.surf === 'mud' ? [0.25, 0.15, 0.07] : [0.75, 0.88, 1];
     dust.spawn(r.x, 0.3, r.z, (Math.random() - 0.5) * 6, 3 + Math.random() * 3, (Math.random() - 0.5) * 6, 0.6, 0.3, 0.6, col, 0.9, 14, 1);
   }
+  // bolas rolando pela pista
+  for (const bl of balls) {
+    if (!bl.active || r.hitCD > 0 || r.stun > 0 || r.y > bl.r * 1.25) continue;
+    if (Math.abs(wrapDelta(s - bl.s)) < bl.r + 0.7 && Math.abs(r.d - bl.d) < bl.r + 0.8) {
+      r.stun = 0.9; r.hitCD = 2; r.vx *= 0.3; r.vz *= 0.3; r.vy = 5; r.hits++; endDrift(r, true);
+      if (r.isPlayer) { Sfx.thud(); Sfx.trip(); shake(0.5); pop(bl.hitMsg, 'r'); }
+    }
+  }
   // latas de nitro
   for (const n of nitros) {
     if (n.cd > 0 || r.y > 2.4) continue;
     const ds = wrapDelta(s - n.s), dd = r.d - n.d;
     if (ds * ds + dd * dd < 3.2) {
-      n.cd = 8; n.g.visible = false; r.nitro = Math.min(100, r.nitro + 35);
+      n.cd = 8; n.g.visible = false; r.nitro = Math.min(100, r.nitro + 35); r.cans++;
       if (r.isPlayer) { Sfx.pickup(); pop('NITRO +35', 'c'); }
     }
   }
@@ -1968,7 +2208,12 @@ function aiInput(r, dt) {
   const straight = T[r.idx].dot(T[(r.idx + 80) % N]) > 0.94;
   if (straight && r.nitro > 35) r.aiNitro = true;
   if (!straight || r.nitro < 5) r.aiNitro = false;
-  let bark = false;
+  for (const bl of balls) {
+    if (!bl.active) continue;
+    const ds = wrapDelta(bl.s - s);
+    if (ds > 0 && ds < r.speed * 0.3 + bl.r + 1 && Math.abs(bl.d - r.d) < bl.r + 2.5 && Math.random() > DIFFS[save.diff].miss * dt * 30) jump = true;
+  }
+  let bark = r.birdT > 0 && r.barkCD <= 0 && Math.random() < dt * (0.8 + save.diff * 0.8);
   if (r.barkCD <= 0 && Math.random() < dt * (0.25 + save.diff * 0.2)) {
     for (const o of runners) { if (o === r) continue; const ds = wrapDelta(o.dist - r.dist); if (ds > 1 && ds < 9 && Math.abs(o.d - r.d) < 4) bark = true; }
   }
@@ -2114,7 +2359,7 @@ function toGarage() {
   ['menu', 'results'].forEach(id => show(id, false)); show('garage', true);
   renderGarage();
 }
-function clearRace() { runners.forEach(r => r.dispose()); runners = []; player = null; }
+function clearRace() { runners.forEach(r => r.dispose()); runners = []; player = null; clearBirds(); }
 
 function changeTrack(i) {
   save.track = i; persist();
@@ -2132,7 +2377,7 @@ function startRace() {
   camera.clearViewOffset();
   const pUp = getUp(BREEDS[save.dog]);
   const avg = Object.values(pUp).reduce((a, b) => a + b, 0) / 5;
-  const order = [save.dog, ...BREEDS.map((_, i) => i).filter(i => i !== save.dog)];
+  const order = [save.dog, ...BREEDS.map((_, i) => i).filter(i => i !== save.dog).sort(() => Math.random() - 0.5).slice(0, 5)];
   const slots = [5, ...[0, 1, 2, 3, 4].sort(() => Math.random() - 0.5)];
   order.forEach((bi, k) => {
     const b = BREEDS[bi];
@@ -2147,7 +2392,7 @@ function startRace() {
   hurdles.forEach(h => { h.fall = 0; h.bar.rotation.x = 0; h.bar.position.y = 0.95; });
   nitros.forEach(n => { n.cd = 0; n.g.visible = true; });
   coins.forEach(c => { c.taken = false; c.g.visible = true; });
-  dust.clear(); glow.clear();
+  dust.clear(); glow.clear(); clearBirds(); pickGoals(); $('goals').classList.remove('mini');
   raceTime = 0; countdown = 4.0; lastCount = 4; finishTimer = 0;
   state = 'countdown';
   runners.forEach(syncVisual);
@@ -2160,6 +2405,46 @@ function startRace() {
   const rec = save.best[TR.id + '_' + save.laps];
   $('bestLap').textContent = rec ? 'RECORDE ' + fmt(rec) : '';
   excitement = 0.6;
+}
+
+const GOALS = [
+  { id: 'mini', txt: 'Faça 3 mini-turbos no drift', n: 3, v: r => r.minis },
+  { id: 'scare', txt: 'Espante 2 bichos com o latido', n: 2, v: r => r.scared },
+  { id: 'jumps', txt: 'Pule 3 barreiras sem tropeçar', n: 3, v: r => r.cleanJumps },
+  { id: 'coins', txt: 'Pegue 10 ossos de ouro', n: 10, v: r => r.coins },
+  { id: 'cans', txt: 'Pegue 3 latas de nitro', n: 3, v: r => r.cans },
+  { id: 'clean', txt: 'Termine sem tropeçar nem ser atropelado', final: true, ok: (r, pos) => r.finished && r.hits === 0, bad: r => r.hits > 0 },
+  { id: 'podium', txt: 'Termine no pódio', final: true, ok: (r, pos) => r.finished && pos <= 3 },
+];
+const GOAL_REWARD = 120;
+let raceGoals = [], goalsShowT = 0;
+function pickGoals() {
+  raceGoals = GOALS.slice().sort(() => Math.random() - 0.5).slice(0, 3).map(g => ({ g, done: false }));
+  goalsShowT = 9; renderGoals();
+}
+function goalLine(x, pos) {
+  const g = x.g;
+  let mark = x.done ? '✓' : '', prog = '';
+  if (!g.final) prog = `${Math.min(g.v(player), g.n)}/${g.n}`;
+  else if (g.bad && g.bad(player)) mark = '✗';
+  return `<div class="${x.done ? 'ok' : mark === '✗' ? 'no' : ''}"><i>${mark}</i><span>${g.txt}</span><b>${x.done ? '+' + GOAL_REWARD : prog}</b></div>`;
+}
+function renderGoals() {
+  const html = raceGoals.map(x => goalLine(x)).join('');
+  const done = raceGoals.filter(x => x.done).length;
+  $('goals').innerHTML = `<div class="gh">DESAFIOS <b>${done}/${raceGoals.length}</b></div>` + html;
+  $('pauseGoals').innerHTML = `<div class="gh">DESAFIOS <b>${done}/${raceGoals.length}</b></div>` + html;
+}
+function checkGoals(dt) {
+  let changed = false;
+  for (const x of raceGoals) {
+    if (x.done || x.g.final) continue;
+    if (x.g.v(player) >= x.g.n) { x.done = true; changed = true; pop(`DESAFIO CUMPRIDO! +${GOAL_REWARD}`, 'g'); Sfx.lap(); goalsShowT = 4; }
+  }
+  goalsShowT -= dt;
+  const want = goalsShowT > 0;
+  $('goals').classList.toggle('mini', !want);
+  if (changed || Math.random() < dt * 4) renderGoals();
 }
 
 function standings() {
@@ -2188,10 +2473,14 @@ function showResults() {
   const lapsK = { 1: 0.5, 3: 1, 5: 1.5, 7: 2 }[save.laps] || 1;
   const place = Math.round([500, 350, 250, 180, 130, 100][pos - 1] * lapsK * DIFFS[save.diff].reward);
   const coinV = player.coins * 15, drift = Math.round(player.driftScore / 20);
-  const total = place + coinV + drift;
+  for (const x of raceGoals) if (x.g.final && !x.done) x.done = x.g.ok(player, pos);
+  const goalsDone = raceGoals.filter(x => x.done).length, goalV = goalsDone * GOAL_REWARD;
+  renderGoals();
+  const total = place + coinV + drift + goalV;
   save.coins += total;
   $('rewards').innerHTML = `<div><span>${pos}º lugar</span><b>+${place}</b></div><div><span>Ossos de ouro × ${player.coins}</span><b>+${coinV}</b></div>` +
-    `<div><span>Drift (${player.driftScore} pts)</span><b>+${drift}</b></div><div class="tot"><span>TOTAL</span><b class="disp">+${total}</b></div>`;
+    `<div><span>Drift (${player.driftScore} pts)</span><b>+${drift}</b></div><div><span>Desafios ${goalsDone}/${raceGoals.length}</span><b>+${goalV}</b></div>` +
+    `<div class="goalsRes">${raceGoals.map(x => goalLine(x)).join('')}</div><div class="tot"><span>TOTAL</span><b class="disp">+${total}</b></div>`;
   const key = TR.id + '_' + save.laps, rec = save.best[key];
   if (player.finished && (!rec || player.finishTime < rec)) { save.best[key] = player.finishTime; $('recordMsg').textContent = 'NOVO RECORDE DA PISTA!'; }
   else $('recordMsg').textContent = rec ? 'RECORDE ' + fmt(rec) : '';
@@ -2365,6 +2654,8 @@ function frame() {
     for (const c of coins) c.g.rotation.y += dt * 3;
     for (const h of hurdles) if (h.fall > 0) { h.fall = Math.max(0, h.fall - dt * 0.5); const k = smooth(0, 0.25, 1 - h.fall) * (h.fall > 0.1 ? 1 : h.fall * 10); h.bar.rotation.x = k * 1.4; h.bar.position.y = 0.95 - k * 0.8; }
     if (padTex) padTex.offset.y -= dt * 1.5;
+    updateBalls(time);
+    updateBirds(dt, state === 'race');
     if (seaTex) { seaTex.offset.x += dt * 0.01; seaTex.offset.y += dt * 0.006; }
     updateCrowd(time); excitement = lerp(excitement, 0.35, dt * 0.25);
     dust.update(dt); glow.update(dt);
@@ -2429,7 +2720,7 @@ function frame() {
       if (finishTimer > 7 || (finishTimer > 3.5 && runners.every(r => r.finished))) showResults();
     } else updateChaseCam(player, dt);
     if (state !== 'results') {
-      updateHud(dt);
+      updateHud(dt); checkGoals(dt);
       const v = Math.hypot(player.vx, player.vz);
       setFx(player.nitroOn ? 0.55 : (player.pad > 0 || player.mini > 0) ? 0.3 : clamp((v - 40) / 40, 0, 0.18), player.nitroOn ? 1 : 0);
       if (Sfx.ctx) {
@@ -2460,14 +2751,14 @@ frame();
 function simTicks(sec, inpFn) {
   const dt = 1 / 60;
   for (let t = 0; t < sec && (state === 'race' || state === 'finished'); t += dt) {
-    raceTime += dt; time += dt;
+    raceTime += dt; time += dt; updateBalls(time); updateBirds(dt, state === 'race');
     for (const r of runners) stepRunner(r, (r.isPlayer && !r.finished) ? inpFn(player, raceTime) : aiInput(r, dt), dt);
-    interactions(dt);
+    interactions(dt); if (state === 'race') checkGoals(dt);
     if (state === 'finished') { finishTimer += dt; if (finishTimer > 7 || (finishTimer > 3.5 && runners.every(r => r.finished))) showResults(); }
   }
   runners.forEach(syncVisual);
 }
-window.__game = { sim: simTicks, skipCountdown() { countdown = 0.01; }, get state() { return state; }, get player() { return player; }, get runners() { return runners; }, startRace, save, renderer, scene, camera, get L() { return L; } };
+window.__game = { sim: simTicks, debugBall() { const b = balls[0]; updateBalls(b.period - b.off + 1.4 - (b.period * 50)); const p = trackPoint(b.s - 14, -4, 3.5), q = trackPoint(b.s, 0, 1); camera.position.copy(p); camera.lookAt(q); }, skipCountdown() { countdown = 0.01; }, get state() { return state; }, get player() { return player; }, get runners() { return runners; }, startRace, save, renderer, scene, camera, get L() { return L; } };
 </script>
 </body>
 </html>

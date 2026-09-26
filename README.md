@@ -27,7 +27,10 @@ Abra o `index.html` no navegador (precisa de internet para baixar o Three.js) ou
 - **Nitro**: enche com drift, latas azuis na pista, pulos limpos, rampas e andando no **vácuo** de outro cachorro.
 - **Largada perfeita**: aperte ↑ quando a última luz vermelha acender.
 - **Obstáculos**: barreiras (pule!), lama/água/gelo, rampas de salto e faixas de turbo.
-- **Latido**: assusta quem está perto e à frente, que perde velocidade por um instante.
+- **Latido**: assusta quem está perto e à frente, que perde velocidade por um instante, e **espanta os bichos voadores**.
+- **Bichos voadores**: pombos (parque), gaivotas (praia) e corvos (neve) mergulham no focinho dos cachorros, deixando-os lentos e desgovernados. Late para espantar e ganhe nitro.
+- **Bolas rolando**: fardos de feno, bolas de praia e bolas de neve atravessam a pista (tem placa avisando). Pule por cima ou desvie.
+- **Desafios da corrida**: cada corrida sorteia 3 metas (mini-turbos, bichos espantados, pulos limpos, ossos, latas de nitro, terminar sem tropeçar, pódio). Cada uma cumprida vale +120 ossos de ouro.
 - **Ossos de ouro**: moedas da oficina. Você ganha pela posição, pelos ossos coletados e pelos pontos de drift.
 
 ## Oficina
@@ -42,4 +45,4 @@ Cada cachorro tem suas próprias melhorias (5 níveis cada): **Motor** (velocida
 
 ## Cachorros
 
-Rex (Pastor Alemão), Pingo (Dálmata), Caramelo (Vira-lata), Flecha (Galgo), Nevasca (Husky Siberiano) e Bolinha (Pug), cada um com corpo, pelagem e atributos próprios.
+Rex (Pastor Alemão), Pingo (Dálmata), Caramelo (Vira-lata), Flecha (Galgo), Nevasca (Husky Siberiano), Bolinha (Pug), Pitiquin (Pinscher) e Princesa (Pitbull, de coroinha), cada um com corpo, pelagem e atributos próprios. Cada corrida tem 6 cachorros: você e 5 rivais sorteados.
