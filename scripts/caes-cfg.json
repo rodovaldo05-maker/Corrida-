@@ -1,0 +1,109 @@
+[
+ {
+  "id": "mabeco",
+  "file": "0b218951-African_wild_dog_by_Poly_by_Google_-_fOTaXMg2WXE.glb",
+  "len": 2.0
+ },
+ {
+  "id": "dingo",
+  "file": "286ef424-Dingo_by_Poly_by_Google_-_06erPZAKJ5Z.glb",
+  "len": 1.9
+ },
+ {
+  "id": "shiba",
+  "file": "2a82e9d5-Black_Shiba_Inu_by_elkiotbear_-_aT17TtLWOL.glb",
+  "len": 1.7
+ },
+ {
+  "id": "dobermann",
+  "file": "3116ad7a-Dog_by_Poly_by_Google_-_bIG-wEodRRS.glb",
+  "len": 2.0,
+  "rot": [
+   0,
+   -90,
+   0
+  ]
+ },
+ {
+  "id": "paz",
+  "file": "470b0a8e-cachorro_da_paz.glb",
+  "len": 2.0,
+  "rot": [
+   0,
+   0,
+   0
+  ],
+  "fitH": 1.9
+ },
+ {
+  "id": "vira",
+  "file": "4e787d87-Dog_by_Poly_by_Google_-_eDmSVe4TKwF.glb",
+  "len": 1.8
+ },
+ {
+  "id": "greyhound",
+  "file": "794a7367-Greyhound_by_Pat_Siefring_-_eO3-2e_AkxH.glb",
+  "len": 2.1
+ },
+ {
+  "id": "duque",
+  "file": "7c7960b5-Dog_by_madtrollstudio_-_9bqPCxOyrk.glb",
+  "len": 1.9
+ },
+ {
+  "id": "poodle",
+  "file": "7d90537f-Poodle_by_Poly_by_Google_-_eQmBaLcGbbE.glb",
+  "len": 1.7
+ },
+ {
+  "id": "faiton",
+  "file": "8c1a77e9-faiton.glb",
+  "len": 1.9,
+  "rot": [
+   0,
+   90,
+   0
+  ]
+ },
+ {
+  "id": "major",
+  "file": "8f34881f-Dog_by_madtrollstudio_-_H2SkxSJCfI.glb",
+  "len": 2.0
+ },
+ {
+  "id": "voador",
+  "file": "92e7fdf3-pincher_voador.glb",
+  "len": 2.2,
+  "rot": [
+   0,
+   180,
+   0
+  ],
+  "fitH": 1.6
+ },
+ {
+  "id": "pug2",
+  "file": "9e5e07d9-Pug_by_Quaternius_-_1gXKv15ik8.glb",
+  "len": 1.3
+ },
+ {
+  "id": "bernes",
+  "file": "a8c8383d-Dog_by_Poly_by_Google_-_3fn1S0FAyCI.glb",
+  "len": 2.1
+ },
+ {
+  "id": "canela",
+  "file": "abc35779-Dog_by_Poly_by_Google_-_83Ha6EKTaOv.glb",
+  "len": 1.8,
+  "rot": [
+   0,
+   -90,
+   0
+  ]
+ },
+ {
+  "id": "beagle",
+  "file": "b91eeb41-Beagle_by_Poly_by_Google_-_0BnDT3T1wTE.glb",
+  "len": 1.7
+ }
+]

@@ -208,6 +208,7 @@
     background:rgba(6,8,14,.72); padding:calc(16px + var(--sat)) 16px calc(16px + var(--sab)); }
   #pause h2, #results h2, #cupEnd h2 { margin:0; font-size:clamp(34px,6vw,58px); font-style:italic; color:#fff; text-shadow:0 4px 0 rgba(0,0,0,.4), 0 0 26px rgba(255,122,26,.55); }
   .menuList { display:grid; gap:8px; width:min(340px,100%); }
+  .credits { font-size:11px; color:var(--mut); max-width:420px; text-align:center; line-height:1.4; margin:0; }
   .menuList.three { grid-template-columns:1fr 1fr 1fr; width:min(560px,100%); }
   .resWrap { display:flex; gap:14px; flex-wrap:wrap; justify-content:center; max-width:100%; }
   .tbl { overflow-x:auto; max-width:100%; }
@@ -360,6 +361,7 @@
     <button class="btn sec" id="musicBtn">MÚSICA: TODAS</button>
     <button class="btn sec" id="quitBtn">SAIR PARA O MENU</button>
   </div>
+  <p class="credits">Modelos 3D: Poly by Google, madtrollstudio, elkiotbear, Pat Siefring e Quaternius (via Poly Pizza, CC-BY/CC0) · cenários CraftPix · Faiton, Paz e Pincher Voador enviados pelo jogador</p>
 </div>
 
 <div id="results" class="screen" hidden>
@@ -380,6 +382,7 @@
 <div id="loading" class="screen disp">CARREGANDO</div>
 
 <script src="modelos.js"></script>
+<script src="caes.js"></script>
 <script type="importmap">
 { "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js" } }
 </script>
@@ -841,6 +844,23 @@ const BREEDS = [
     len: 0.82, chH: 0.21, chW: 0.15, rumpH: 0.17, rumpW: 0.135, rumpY: 0.01, waist: 0.05, arch: 0.03, backY: 0.5, bone: 0.032,
     neck: 0.1, neckA: 0.3, skull: [0.11, 0.085, 0.09], muzzle: [0.2, 0.045, 0.045, 0.03], ear: 'erect', earW: 0.042, earL: 0.07,
     tail: [0.2, 0.012, -1.2, 0.1], spd: 4, acc: 4, han: 2, jmp: 3 },
+  // modelos 3D enviados (.glb)
+  { id: 'faiton', name: 'FAITON', raca: 'LOBO NEGRO', kind: 'glb', model: 'faiton', color: '#dc2626', pitch: 0.7, mass: 1.3, spd: 5, acc: 3, han: 3, jmp: 2 },
+  { id: 'paz', name: 'PAZ', raca: 'CACHORRO DA PAZ', kind: 'glb', model: 'paz', fly: true, color: '#38bdf8', pitch: 1.2, mass: 0.9, spd: 3, acc: 3, han: 4, jmp: 2 },
+  { id: 'voador', name: 'PINCHER VOADOR', raca: 'PINSCHER AVIADOR', kind: 'glb', model: 'voador', fly: true, prop: true, color: '#f472b6', pitch: 1.6, mass: 1.0, spd: 4, acc: 3, han: 3, jmp: 1 },
+  { id: 'pintado', name: 'PINTADO', raca: 'MABECO', kind: 'glb', model: 'mabeco', color: '#a16207', pitch: 1.1, spd: 4, acc: 4, han: 3, jmp: 2 },
+  { id: 'ruivo', name: 'RUIVO', raca: 'DINGO', kind: 'glb', model: 'dingo', color: '#ea580c', pitch: 1.0, spd: 4, acc: 3, han: 3, jmp: 3 },
+  { id: 'ninja', name: 'NINJA', raca: 'SHIBA INU', kind: 'glb', model: 'shiba', color: '#334155', pitch: 1.3, spd: 3, acc: 4, han: 4, jmp: 2 },
+  { id: 'sombra', name: 'SOMBRA', raca: 'DOBERMANN', kind: 'glb', model: 'dobermann', color: '#6d28d9', pitch: 0.85, mass: 1.2, spd: 4, acc: 4, han: 2, jmp: 3 },
+  { id: 'pacoca', name: 'PAÇOCA', raca: 'VIRA-LATA', kind: 'glb', model: 'vira', color: '#92400e', pitch: 1.05, spd: 3, acc: 3, han: 4, jmp: 3 },
+  { id: 'raio', name: 'RAIO', raca: 'GREYHOUND', kind: 'glb', model: 'greyhound', color: '#facc15', pitch: 0.95, spd: 5, acc: 2, han: 2, jmp: 4 },
+  { id: 'duque', name: 'DUQUE', raca: 'PINSCHER ALEMÃO', kind: 'glb', model: 'duque', color: '#b91c1c', pitch: 1.1, spd: 4, acc: 3, han: 3, jmp: 3 },
+  { id: 'frufru', name: 'FRUFRU', raca: 'POODLE', kind: 'glb', model: 'poodle', color: '#e879f9', pitch: 1.4, spd: 3, acc: 3, han: 4, jmp: 3 },
+  { id: 'major', name: 'MAJOR', raca: 'PASTOR ALEMÃO', kind: 'glb', model: 'major', color: '#1d4ed8', pitch: 0.85, mass: 1.2, spd: 4, acc: 3, han: 3, jmp: 3 },
+  { id: 'tofu', name: 'TOFU', raca: 'PUG', kind: 'glb', model: 'pug2', color: '#65a30d', pitch: 1.35, mass: 0.9, spd: 2, acc: 5, han: 4, jmp: 2 },
+  { id: 'bidu', name: 'BIDU', raca: 'BOIADEIRO BERNÊS', kind: 'glb', model: 'bernes', color: '#0f766e', pitch: 0.8, mass: 1.5, spd: 3, acc: 3, han: 3, jmp: 3 },
+  { id: 'canela', name: 'CANELA', raca: 'AKITA', kind: 'glb', model: 'canela', color: '#c2410c', pitch: 0.95, spd: 3, acc: 4, han: 3, jmp: 3 },
+  { id: 'biscoito', name: 'BISCOITO', raca: 'BEAGLE', kind: 'glb', model: 'beagle', color: '#0891b2', pitch: 1.15, spd: 3, acc: 4, han: 4, jmp: 2 },
   { id: 'emilly', name: 'EMILLY', raca: 'SARUÊ', coat: 'opossum', noTongue: true, color: '#be123c', pitch: 2.2, voice: 'hiss', mass: 0.8, eye: 0x080606, eyeR: 0.016, nose: 0xe7a0aa,
     len: 0.6, chH: 0.13, chW: 0.11, rumpH: 0.145, rumpW: 0.125, rumpY: 0.025, waist: 0.05, arch: 0.035, backY: 0.35, bone: 0.02,
     neck: 0.08, neckA: 0.35, headDown: 0.15, skull: [0.08, 0.06, 0.055], muzzle: [0.13, 0.026, 0.024, 0.018], ear: 'round', earW: 0.035, earL: 0.055,
@@ -886,7 +906,7 @@ const scaleTex = (() => {
   });
   return toTex(c, 3, 3);
 })();
-const SHARED = new Set([furTex, scaleTex, lidMat, noseMat, tongueMat, metalMat, redMetal, flameMat, starMat, exclTex, blobTex, dotTex, launchMat, stripeMat, warheadMat]);
+const SHARED = new Set([blobTex, furTex, scaleTex, lidMat, noseMat, tongueMat, metalMat, redMetal, flameMat, starMat, exclTex, blobTex, dotTex, launchMat, stripeMat, warheadMat]);
 
 // tanques de nitro + lança-mísseis nas costas de qualquer bicho
 function addGear(parent, topY, tz, sc = 1) {
@@ -1209,7 +1229,7 @@ function applyLook(D, look) {
   D.vestMat.metalness = look.vest === 'dourado' ? 0.7 : 0.15;
   const hi = D.hi;
   if (look.hat !== 'none') { const g = makeHat(look.hat, hi.s); g.position.set(...hi.hat); D.head.add(g); D.lookG.push(g); }
-  if (look.glasses !== 'none') { const g = makeGlasses(look.glasses, hi); D.head.add(g); D.lookG.push(g); }
+  if (look.glasses !== 'none' && !hi.noGlasses) { const g = makeGlasses(look.glasses, hi); D.head.add(g); D.lookG.push(g); }
   if (look.cape !== 'none') {
     const piv = new THREE.Group(); piv.position.set(...hi.cape); piv.add(makeCape(look.cape, hi.capeW, hi.capeL)); piv.rotation.x = 1.3;
     D.body.add(piv); D.lookG.push(piv); D.cape = piv;
@@ -1227,7 +1247,145 @@ function trailFx(r, dt) {
   else if (tr === 'arcoiris') { _tc.setHSL((time * 0.6 + Math.random() * 0.1) % 1, 0.9, 0.6); glow.spawn(bx, by, bz, 0, 0.3, 0, 0.8, 0.5, 0.35, [_tc.r, _tc.g, _tc.b], 0.9, 0, 1); }
 }
 
-function buildCreature(b, num, color) { return b.kind === 'lizard' ? buildLizard(b, num, color) : buildDog(b, num, color); }
+function buildCreature(b, num, color) {
+  if (b.kind === 'glb' && GLB[b.model]) return buildGlb(b, num, color);
+  return b.kind === 'lizard' ? buildLizard(b, num, color) : buildDog(b, num, color);
+}
+
+/* ---------------------------------------------------------------------
+   Modelos .glb enviados (arquivo caes.js): as patas galopam por deformação
+   no shader, porque os modelos não têm esqueleto
+   --------------------------------------------------------------------- */
+const GLB = {};
+(function loadGlb() {
+  const M = window.CAES; if (!M) return;
+  try {
+    const raw = atob(M.data), bytes = new Uint8Array(raw.length);
+    for (let i = 0; i < raw.length; i++) bytes[i] = raw.charCodeAt(i);
+    const bin = bytes.buffer, c = new THREE.Color();
+    for (const m of M.meta) {
+      const q = new Int16Array(bin, m.p, m.v * 3), cb = new Uint8Array(bin, m.c, m.v * 3);
+      const idx = m.big ? new Uint32Array(bin, m.x, m.i) : new Uint16Array(bin, m.x, m.i);
+      const pos = new Float32Array(m.v * 3), col = new Float32Array(m.v * 3), raw8 = new Float32Array(m.v * 3);
+      for (let i = 0; i < m.v; i++) {
+        for (let a = 0; a < 3; a++) pos[i * 3 + a] = m.min[a] + (q[i * 3 + a] + 32767) / 65534 * m.size[a];
+        c.setRGB(cb[i * 3] / 255, cb[i * 3 + 1] / 255, cb[i * 3 + 2] / 255, THREE.SRGBColorSpace);
+        col[i * 3] = c.r; col[i * 3 + 1] = c.g; col[i * 3 + 2] = c.b;
+        raw8[i * 3] = cb[i * 3]; raw8[i * 3 + 1] = cb[i * 3 + 1]; raw8[i * 3 + 2] = cb[i * 3 + 2];
+      }
+      // medidas usadas para animar e vestir o bicho
+      const [W, H, Ln] = m.size, zc = m.min[2] + Ln / 2;
+      let belly = H, back = 0, headTop = 0, zmax = -1e9, zmin = 1e9;
+      for (let i = 0; i < m.v; i++) { const z = pos[i * 3 + 2]; if (z > zmax) zmax = z; if (z < zmin) zmin = z; }
+      for (let i = 0; i < m.v; i++) {
+        const x = pos[i * 3], y = pos[i * 3 + 1], z = pos[i * 3 + 2];
+        if (Math.abs(z - zc) < Ln * 0.12 && y > back) back = y;
+        if (Math.abs(z - zc) < Ln * 0.05 && Math.abs(x) < W * 0.3 && y < belly && y > H * 0.12) belly = y;
+        if (z > zmax - Ln * 0.22 && y > headTop) headTop = y;
+      }
+      const legTop = belly + H * 0.04;
+      const grp = new Float32Array(m.v), wgt = new Float32Array(m.v), pz = [0, 0, 0, 0], pn = [0, 0, 0, 0];
+      for (let i = 0; i < m.v; i++) {
+        const x = pos[i * 3], y = pos[i * 3 + 1], z = pos[i * 3 + 2];
+        const g = (z > zc ? 0 : 2) + (x > 0 ? 1 : 0);
+        grp[i] = g; wgt[i] = y < legTop ? smooth(legTop, legTop * 0.78, y) : 0;
+        if (y < legTop && y > legTop * 0.75) { pz[g] += z; pn[g]++; }
+      }
+      for (let g = 0; g < 4; g++) pz[g] = pn[g] ? pz[g] / pn[g] : zc + (g < 2 ? Ln * 0.3 : -Ln * 0.3);
+      const geo = new THREE.BufferGeometry();
+      geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+      geo.setAttribute('color', new THREE.BufferAttribute(col, 3));
+      geo.setAttribute('legG', new THREE.BufferAttribute(grp, 1));
+      geo.setAttribute('legW', new THREE.BufferAttribute(wgt, 1));
+      geo.setIndex(new THREE.BufferAttribute(m.big ? new Uint32Array(idx) : new Uint16Array(idx), 1));
+      geo.computeVertexNormals(); geo.computeBoundingSphere();
+      geo.userData.keep = true;
+      GLB[m.n] = { geo, W, H, L: Ln, zc, zmin, zmax, belly, back, headTop, legTop, pivots: pz, raw8, idx };
+    }
+  } catch (e) { console.warn('modelos .glb não carregados', e); }
+})();
+function glbMaterial() {
+  const u = { uAng: { value: new THREE.Vector4() }, uPiv: { value: new THREE.Vector4() }, uTop: { value: 0 } };
+  const mt = new THREE.MeshStandardMaterial({ vertexColors: true, flatShading: true, roughness: 0.82 });
+  mt.onBeforeCompile = sh => {
+    Object.assign(sh.uniforms, u);
+    sh.vertexShader = 'attribute float legG; attribute float legW; uniform vec4 uAng; uniform vec4 uPiv; uniform float uTop;\n' +
+      sh.vertexShader.replace('#include <begin_vertex>', `#include <begin_vertex>
+        if (legW > 0.0) {
+          float a = (legG < 0.5 ? uAng.x : legG < 1.5 ? uAng.y : legG < 2.5 ? uAng.z : uAng.w) * legW;
+          float pz = legG < 0.5 ? uPiv.x : legG < 1.5 ? uPiv.y : legG < 2.5 ? uPiv.z : uPiv.w;
+          float dy = transformed.y - uTop, dz = transformed.z - pz, c = cos(a), s = sin(a);
+          transformed.y = uTop + dy * c - dz * s; transformed.z = pz + dy * s + dz * c;
+        }`);
+  };
+  mt.userData.u = u;
+  return mt;
+}
+function buildGlb(b, num, color) {
+  const G = GLB[b.model];
+  const root = new THREE.Group(), model = new THREE.Group(), body = new THREE.Group();
+  root.add(model); model.add(body);
+  const mat = glbMaterial();
+  mat.userData.u.uTop.value = G.legTop; mat.userData.u.uPiv.value.set(...G.pivots);
+  let prop = null;
+  if (b.prop) { // separa a hélice do avião para ela girar
+    const P = G.geo.attributes.position, idx = G.idx, keep = [], pr = [], hub = new THREE.Vector3(); let hn = 0;
+    const isProp = (i) => { const r = G.raw8[i * 3], g = G.raw8[i * 3 + 1], bb = G.raw8[i * 3 + 2]; return P.getZ(i) > G.zmax - G.L * 0.22 && Math.abs(r - g) < 18 && Math.abs(g - bb) < 18 && r > 110; };
+    for (let t = 0; t < idx.length; t += 3) {
+      const a = idx[t], b2 = idx[t + 1], c2 = idx[t + 2];
+      if (isProp(a) && isProp(b2) && isProp(c2)) { pr.push(a, b2, c2); for (const i of [a, b2, c2]) { hub.x += P.getX(i); hub.y += P.getY(i); hub.z += P.getZ(i); hn++; } }
+      else keep.push(a, b2, c2);
+    }
+    if (pr.length) {
+      hub.divideScalar(hn);
+      const g1 = G.geo.clone(); g1.setIndex(keep); g1.userData.keep = false;
+      const g2 = G.geo.clone(); g2.setIndex(pr); g2.translate(-hub.x, -hub.y, -hub.z); g2.userData.keep = false;
+      const m1 = new THREE.Mesh(g1, mat); m1.castShadow = true; body.add(m1);
+      prop = new THREE.Group(); prop.position.copy(hub); body.add(prop);
+      const m2 = new THREE.Mesh(g2, mat); prop.add(m2);
+    }
+  }
+  if (!prop) { const me = new THREE.Mesh(G.geo, mat); me.castShadow = true; body.add(me); }
+  // cabeça "invisível" para estrelinhas, susto, chapéu e câmera
+  const head = new THREE.Group(); head.position.set(0, G.headTop - G.H * 0.08, G.zmax - G.L * 0.1); body.add(head);
+  const k = G.L / 1.9;
+  const backY = b.fly ? G.back : G.back, gz = b.fly ? G.zc - G.L * 0.22 : G.zc - G.L * 0.05;
+  // selinha colorida com número + nitro + lança-mísseis
+  const padMat = new THREE.MeshStandardMaterial({ color, roughness: 0.45, metalness: 0.15 });
+  const saddleY = b.fly ? G.H * 0.62 : G.belly + (G.back - G.belly) * 0.92;
+  const pad = new THREE.Mesh(new THREE.SphereGeometry(1, 20, 8, 0, Math.PI * 2, 0, Math.PI / 2), padMat);
+  pad.scale.set(G.W * (b.fly ? 0.3 : 0.55), 0.06 * k, G.L * 0.16); pad.position.set(0, saddleY, gz); pad.castShadow = true; body.add(pad);
+  const nm = new THREE.MeshStandardMaterial({ map: numberTex(num, color), transparent: true, roughness: 0.5, side: THREE.DoubleSide });
+  for (const sx of [-1, 1]) { const pl = new THREE.Mesh(new THREE.PlaneGeometry(0.2 * k, 0.2 * k), nm); pl.position.set(sx * (G.W * (b.fly ? 0.3 : 0.55) + 0.01), saddleY - 0.02, gz); pl.rotation.y = sx * Math.PI / 2; body.add(pl); }
+  const { flames, launcher } = addGear(body, saddleY + 0.02, gz, 2.3 * k * 0.9);
+  const stars = new THREE.Group(); stars.position.set(0, 0.35 * k, 0); head.add(stars);
+  for (let i = 0; i < 4; i++) { const st = new THREE.Mesh(new THREE.OctahedronGeometry(0.06), starMat); st.position.set(Math.cos(i * 1.57) * 0.22, 0, Math.sin(i * 1.57) * 0.22); stars.add(st); }
+  stars.visible = false;
+  const excl = new THREE.Sprite(new THREE.SpriteMaterial({ map: exclTex, depthTest: false }));
+  excl.scale.set(0.3, 0.3, 1); excl.position.set(0, 0.55 * k, 0); excl.visible = false; head.add(excl);
+  const blob = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), new THREE.MeshBasicMaterial({ map: blobTex, transparent: true, depthWrite: false }));
+  blob.rotation.x = -Math.PI / 2; blob.position.y = 0.04; blob.scale.set(G.W * 2.2, G.L * 1.3, 1); root.add(blob);
+  const hi = { hat: [0, 0.1 * k, -0.02], s: 0.17 * k, eye: [0.08, 0, 0.1], er: 0.03, cape: [0, G.back - 0.02, G.zc + G.L * 0.25], capeW: G.W * 0.4, capeL: G.L * 0.85, noGlasses: true };
+  return { root, model, body, torso: body, neckPiv: head, headPiv: head, head, legs: [], tails: [], ears: [], tongue: new THREE.Group(), flames, stars, excl, blob, b, launcher, anim: animGlb, vestMat: padMat, hi, crown: null, mat, prop, G };
+}
+function animGlb(D, st, t) {
+  const b = D.b, u = D.mat.userData.u.uAng.value, amp = clamp(st.v / 12, 0, 1), air = st.y > 0.05;
+  if (b.fly) {
+    u.set(0, 0, 0, 0);
+    D.body.position.y = 0.55 + Math.sin(t * 2.2) * 0.12;
+    D.body.rotation.x = -amp * 0.08 + Math.sin(t * 1.7) * 0.03;
+    if (D.prop) D.prop.rotation.z += 0.4 + amp * 0.9;
+  } else {
+    const ph = st.phase, A = 0.62 * amp;
+    if (air) u.set(-0.75, -0.75, 0.8, 0.8);
+    else u.set(Math.sin(ph) * A, Math.sin(ph + 0.55) * A, Math.sin(ph + Math.PI + 0.2) * A, Math.sin(ph + Math.PI + 0.75) * A);
+    D.body.position.y = air ? 0 : Math.abs(Math.cos(ph)) * 0.06 * amp + (st.idle ? Math.sin(t * 3.5) * 0.008 : 0);
+    D.body.rotation.x = air ? clamp(-st.vy * 0.03, -0.3, 0.3) : Math.sin(ph * 2) * 0.035 * amp;
+    D.body.rotation.y = st.idle ? Math.sin(t * 0.7) * 0.08 : 0;
+  }
+  D.model.rotation.z = clamp(-st.yawRate * (b.fly ? 0.3 : 0.16), -0.4, 0.4) + (st.stun > 0 ? Math.sin(t * 18) * 0.15 : 0);
+  animCommon(D, st, t);
+}
 
 function buildLizard(b, num, color) {
   const root = new THREE.Group(), model = new THREE.Group(), body = new THREE.Group();
@@ -2757,10 +2915,10 @@ function stepRunner(r, inp, dt) {
   // barreiras
   for (const hd of hurdles) {
     if (Math.floor((prevDist - hd.s) / L) < Math.floor((r.dist - hd.s) / L) && Math.abs(r.d) < W / 2 + 0.6) {
-      if (r.y < 0.55 && r.stun <= 0) {
+      if (r.y < 0.55 && r.stun <= 0 && !r.b.fly) {
         r.stun = 1.0; r.vx *= 0.25; r.vz *= 0.25; r.vy = 3; hd.fall = 1; endDrift(r, true); r.nitroOn = false; r.hits++;
         if (r.isPlayer) { Sfx.trip(); pop('TROPEÇOU!', 'r'); shake(0.4); vib(70); }
-      } else if (r.y >= 0.55) {
+      } else if (r.y >= 0.55 || r.b.fly) {
         r.nitro = Math.min(100, r.nitro + 10); r.cleanJumps++;
         if (r.isPlayer) pop('PULO LIMPO! +NITRO', 'v');
       }
@@ -2780,7 +2938,7 @@ function stepRunner(r, inp, dt) {
   }
   // poças
   const wasSurf = r.surf; r.surf = null;
-  if (!r.air) for (const p of puddles) {
+  if (!r.air && !r.b.fly) for (const p of puddles) {
     const ds = wrapDelta(s - p.s) / 1.4, dd = (r.d - p.d) / 0.8;
     if (ds * ds + dd * dd < p.r * p.r) r.surf = p.type;
   }
@@ -2791,7 +2949,7 @@ function stepRunner(r, inp, dt) {
   }
   // bolas rolando pela pista
   for (const bl of balls) {
-    if (!bl.active || r.hitCD > 0 || r.stun > 0 || r.y > bl.r * 1.25) continue;
+    if (!bl.active || r.hitCD > 0 || r.stun > 0 || r.y > bl.r * 1.25 || r.b.fly) continue;
     if (Math.abs(wrapDelta(s - bl.s)) < bl.r + 0.7 && Math.abs(r.d - bl.d) < bl.r + 0.8) {
       r.stun = 0.9; r.hitCD = 2; r.vx *= 0.3; r.vz *= 0.3; r.vy = 5; r.hits++; endDrift(r, true);
       if (r.isPlayer) { Sfx.thud(); Sfx.trip(); shake(0.5); pop(bl.hitMsg, 'r'); vib([80, 40, 80]); }

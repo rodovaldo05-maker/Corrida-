@@ -23,4 +23,5 @@ const page = html.slice(0, start).replace(/<script type="importmap">[\s\S]*?<\/s
 writeFileSync('dist/www/index.html', page);
 cpSync('musica', 'dist/www/musica', { recursive: true });
 cpSync('modelos.js', 'dist/www/modelos.js');
+cpSync('caes.js', 'dist/www/caes.js');
 console.log('dist/www pronto');

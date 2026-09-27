@@ -46,6 +46,31 @@ As pistas usam modelos low poly gratuitos da [CraftPix](https://craftpix.net) (l
 
 Se o `modelos.js` não carregar, o jogo usa os modelos feitos por código. O script `scripts/converter-modelos.mjs` refaz a conversão a partir dos arquivos FBX.
 
+## Corredores com modelos 3D prontos
+
+16 corredores usam modelos `.glb` (convertidos para `caes.js`). Como esses modelos não têm esqueleto, as patas galopam por deformação no próprio jogo.
+
+| Corredor | Raça | Modelo e autor |
+|---|---|---|
+| Faiton | Lobo negro | enviado pelo jogador |
+| Paz | Cachorro da paz (voa numa nuvem) | enviado pelo jogador |
+| Pincher Voador | Pinscher aviador (voa de avião) | enviado pelo jogador |
+| Pintado | Mabeco | African wild dog, Poly by Google |
+| Ruivo | Dingo | Dingo, Poly by Google |
+| Ninja | Shiba Inu | Black Shiba Inu, elkiotbear |
+| Sombra | Dobermann | Dog, Poly by Google |
+| Paçoca | Vira-lata | Dog, Poly by Google |
+| Raio | Greyhound | Greyhound, Pat Siefring |
+| Duque | Pinscher alemão | Dog, madtrollstudio |
+| Frufru | Poodle | Poodle, Poly by Google |
+| Major | Pastor alemão | Dog, madtrollstudio |
+| Tofu | Pug | Pug, Quaternius |
+| Bidu | Boiadeiro bernês | Dog, Poly by Google |
+| Canela | Akita | Dog, Poly by Google |
+| Biscoito | Beagle | Beagle, Poly by Google |
+
+Os modelos de terceiros vêm do [Poly Pizza](https://poly.pizza) (Poly by Google e os outros autores: CC-BY 3.0; Quaternius: CC0). Os voadores (Paz e Pincher Voador) passam por cima de barreiras, poças e bolas.
+
 ## Campeonato, loja e missões
 
 - **Campeonato (Copa)**: no menu, troque o *Modo* para COPA. São 3 corridas seguidas (Parque, Praia e Pico) contra os mesmos 5 rivais, com pontos por posição (10, 7, 5, 3, 2, 1). No fim tem troféu de ouro, prata ou bronze e prêmio em ossos de ouro.
