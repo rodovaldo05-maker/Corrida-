@@ -48,7 +48,7 @@ Se o `modelos.js` não carregar, o jogo usa os modelos feitos por código. O scr
 
 ## Corredores com modelos 3D prontos
 
-15 corredores usam modelos `.glb` (convertidos para `caes.js`). Como esses modelos não têm esqueleto, as patas galopam por deformação no próprio jogo.
+16 corredores usam modelos `.glb` (convertidos para `caes.js`). Como esses modelos não têm esqueleto, as patas galopam por deformação no próprio jogo. A Kemilly é a exceção: o modelo do coelho tem esqueleto e animações próprias (correr, pular, atirar), guardadas em `coelho.js`.
 
 | Corredor | Raça | Modelo e autor |
 |---|---|---|
@@ -67,12 +67,14 @@ Se o `modelos.js` não carregar, o jogo usa os modelos feitos por código. O scr
 | Bidu | Boiadeiro bernês | Dog, Poly by Google |
 | Canela | Akita | Dog, Poly by Google |
 | Biscoito | Beagle | Beagle, Poly by Google |
+| Linda | Javali | enviado pelo jogador |
+| Kemilly | Coelho bocó (atira cenouras) | enviado pelo jogador |
 
-Os modelos de terceiros vêm do [Poly Pizza](https://poly.pizza) (Poly by Google e os outros autores: CC-BY 3.0; Quaternius: CC0). O Paz voa numa nuvem e passa por cima de barreiras, poças e bolas.
+Os modelos de terceiros vêm do [Poly Pizza](https://poly.pizza) (Poly by Google e os outros autores: CC-BY 3.0; Quaternius: CC0). O Paz voa numa nuvem (sem mochila a jato) e passa por cima de barreiras, poças e bolas.
 
 ## Campeonato, loja e missões
 
-- **Campeonato (Copa)**: no menu, troque o *Modo* para COPA. São 3 corridas seguidas (Parque, Praia e Pico) contra os mesmos 5 rivais, com pontos por posição (10, 7, 5, 3, 2, 1). No fim tem troféu de ouro, prata ou bronze e prêmio em ossos de ouro.
+- **Campeonato (Copa)**: no menu, troque o *Modo* para COPA. São 4 corridas seguidas (Parque, Praia, Pico e Serra) contra os mesmos 5 rivais, com pontos por posição (10, 7, 5, 3, 2, 1). No fim tem troféu de ouro, prata ou bronze e prêmio em ossos de ouro.
 - **Loja de visual**: chapéus (boné, festa, cartola, caubói, capacete, coroa), óculos, capas, cores de colete e rastros (bolhas, corações, estrelas, fogo, arco-íris). Cada bicho guarda o próprio visual.
 - **Missões**: 3 missões diárias que mudam à meia-noite (+250 cada e +300 de bônus) e 15 conquistas com prêmios.
 - **Narrador**: avisa quem assumiu a liderança, quem ultrapassou quem e quem acertou míssil em quem.
@@ -87,10 +89,21 @@ Cada cachorro tem suas próprias melhorias (5 níveis cada): **Motor** (velocida
 - **Parque Central**: terra batida, dia de sol.
 - **Praia do Latido**: areia, pôr do sol e mar.
 - **Pico Nevado**: neve, pinheiros e gelo escorregadio.
+- **Serra do Drift**: estreita, lisa, cheia de grampos e com subidas e descidas fortes. Nas descidas o cachorro embala, nas subidas perde força, e sem drift ele quase não faz as curvas. O *Modo* DRIFT leva direto para ela.
+
+## Modo online
+
+No menu, toque em **ONLINE**. Na primeira vez, crie a conta (apelido, senha e cor). A conta fica salva no aparelho e dá para ter várias. Depois:
+
+1. Um jogador toca em **CRIAR SALA** e recebe um código de 5 letras.
+2. Os amigos digitam o código e tocam em **ENTRAR** (até 6 jogadores).
+3. O anfitrião escolhe pista e voltas e toca em **COMEÇAR CORRIDA**.
+
+Cada um corre com o cachorro escolhido no menu, e o placar mostra o apelido e a cor de cada jogador. Latidos, mísseis e cenouras chegam nos amigos. A conexão é direta entre os aparelhos (WebRTC via [PeerJS](https://peerjs.com)), sem servidor próprio, e precisa de internet.
 
 ## Cachorros
 
-Rex (Pastor Alemão), Pingo (Dálmata), Caramelo (Vira-lata), Flecha (Galgo), Nevasca (Husky Siberiano), Bolinha (Pug), Pitiquin (Pinscher) e Princesa (Pitbull, de coroinha), mais quatro corredores que não são cachorros: Emilly (Saruê, de cara branca e orelhas de ponta branca), Linda (Javali, com presas e crina, pesada nas trombadas), Taissa (Lagartixa-leopardo, ótima nas curvas) e Tiffany (Teiú preto e branco, de língua bifurcada). Cada um tem corpo, pelagem e atributos próprios. Cada corrida tem 6 corredores: você e 5 rivais sorteados.
+Rex (Pastor Alemão), Pingo (Dálmata), Caramelo (Vira-lata), Flecha (Galgo), Nevasca (Husky Siberiano), Bolinha (Pug), Pitiquin (Pinscher) e Princesa (Pitbull, de coroinha), mais cinco corredores que não são cachorros: Emilly (Saruê, de cara branca e orelhas de ponta branca), Linda (Javali, pesada nas trombadas), Kemilly (Coelho bocó, que atira cenouras), Taissa (Lagartixa-leopardo, ótima nas curvas) e Tiffany (Teiú preto e branco, de língua bifurcada). Cada um tem corpo, pelagem e atributos próprios. Cada corrida tem 6 corredores: você e 5 rivais sorteados.
 
 ## Habilidades passivas
 
@@ -125,6 +138,7 @@ Cada corredor tem uma habilidade especial que funciona sozinha, mostrada no menu
 | Emilly | **FINGIR DE MORTA** | Depois de ficar tonta, levanta com um mini-turbo |
 | Taissa | **GRUDENTA** | Não escorrega em poças nem no gelo e faz curvas mais fechadas |
 | Tiffany | **RABO-CHICOTE** | O chiado dela derruba quem estiver perto |
+| Kemilly | **CENOURADA** | Atira cenouras em vez de mísseis: mais rápidas, e quem leva perde nitro |
 
 ## No celular
 

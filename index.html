@@ -104,7 +104,7 @@
   #tR { left:calc(110px + var(--sal)); bottom:calc(18px + var(--sab)); width:86px; height:86px; font-size:26px !important; }
   #tS { left:calc(66px + var(--sal)); bottom:calc(118px + var(--sab)); width:60px; height:60px; font-size:11px !important; }
   #tM { right:calc(26px + var(--sar)); bottom:calc(200px + var(--sab)); width:66px; height:66px; border-color:#ff4d5e !important; font-size:11px !important; }
-  #tM span { display:block; font-family:'Russo One',sans-serif; font-size:15px; }
+  #tM #tMn { display:block; font-family:'Russo One',sans-serif; font-size:15px; }
   #tN { right:calc(14px + var(--sar)); bottom:calc(18px + var(--sab)); width:90px; height:90px; border-color:var(--acc) !important; }
   #tD { right:calc(114px + var(--sar)); bottom:calc(18px + var(--sab)); width:90px; height:90px; border-color:var(--acc2) !important; }
   #tJ { right:calc(26px + var(--sar)); bottom:calc(122px + var(--sab)); width:66px; height:66px; }
@@ -130,7 +130,7 @@
 
   /* ---------- telas ---------- */
   .screen { position:fixed; inset:0; z-index:30; }
-  #menu, #garage, #shop, #missions { display:grid; grid-template-columns:1fr minmax(300px,390px); grid-template-rows:auto minmax(0,1fr) auto; gap:14px;
+  #menu, #garage, #shop, #missions, #online { display:grid; grid-template-columns:1fr minmax(300px,390px); grid-template-rows:auto minmax(0,1fr) auto; gap:14px;
     padding:calc(18px + var(--sat)) calc(18px + var(--sar)) calc(18px + var(--sab)) calc(18px + var(--sal));
     background:linear-gradient(90deg, rgba(6,8,14,.55), transparent 38%, transparent 52%, rgba(6,8,14,.7)); }
   .brand { grid-column:1; grid-row:1; }
@@ -161,8 +161,31 @@
   .opt { border:1px solid var(--line); background:var(--glass); border-radius:10px; padding:8px 6px; text-align:center; font-size:15px; min-width:0; }
   .opt .lbl { font-size:10px; display:block; }
   .opt b { display:block; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-  .ctas { display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; }
-  .ctas .btn.sec { font-size:15px; padding:11px 6px; letter-spacing:.06em; }
+  .ctas { display:grid; grid-template-columns:repeat(4, 1fr); gap:8px; }
+  .ctas .btn.sec { font-size:14px; padding:11px 4px; letter-spacing:.04em; min-width:0; }
+  #onlineBtn { color:#7dd3fc; }
+  .onBox { display:grid; gap:10px; padding:14px; }
+  .onH { font-size:18px; letter-spacing:.1em; }
+  .onH b { color:var(--gold); letter-spacing:.2em; }
+  .onBox label { display:grid; gap:4px; font-size:12px; letter-spacing:.12em; color:var(--mut); font-weight:700; }
+  .onBox input { font:inherit; font-size:17px; letter-spacing:.06em; color:#fff; background:rgba(0,0,0,.35); border:1px solid var(--line); border-radius:10px; padding:10px 12px; min-width:0; }
+  .onBox input:focus { outline:2px solid var(--acc); }
+  .onColors { display:flex; gap:8px; flex-wrap:wrap; }
+  .onColors button { width:34px; height:34px; border-radius:50%; border:3px solid transparent; }
+  .onColors button.on { border-color:#fff; }
+  .onJoin { display:grid; grid-template-columns:1fr auto; gap:8px; }
+  .onJoin input { text-transform:uppercase; text-align:center; letter-spacing:.3em; }
+  .onUser { display:flex; align-items:center; gap:10px; font-size:17px; }
+  .onUser i { width:16px; height:16px; border-radius:50%; flex:none; }
+  .lnk { margin-left:auto; background:none; border:none; color:#7dd3fc; font-size:13px; text-decoration:underline; }
+  .onMsg { min-height:18px; font-size:13px; color:#fca5a5; letter-spacing:.04em; }
+  .onMsg.ok { color:#86efac; }
+  .onSub, .onNote { font-size:12px; color:var(--mut); letter-spacing:.06em; line-height:1.4; }
+  #roomList { list-style:none; margin:0; padding:0; display:grid; gap:6px; }
+  #roomList li { display:flex; align-items:center; gap:10px; padding:8px 10px; border-radius:10px; background:rgba(255,255,255,.06); font-size:15px; }
+  #roomList li i { width:14px; height:14px; border-radius:50%; flex:none; }
+  #roomList li small { margin-left:auto; color:var(--mut); font-size:12px; }
+  .roomOpts { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
   #startBtn { grid-column:1 / -1; }
   .opts.four { grid-template-columns:repeat(4, 1fr); }
   .tabs { display:flex; gap:6px; flex-wrap:wrap; }
@@ -226,16 +249,16 @@
   #loading { z-index:60; background:#0a0d14; font-size:18px; letter-spacing:.3em; }
 
   @media (max-width:820px), (orientation:portrait) {
-    #menu, #garage, #shop, #missions { grid-template-columns:1fr; grid-template-rows:auto minmax(0,1fr) auto; background:linear-gradient(180deg, rgba(6,8,14,.55), transparent 26%, transparent 45%, rgba(6,8,14,.85)); }
+    #menu, #garage, #shop, #missions, #online { grid-template-columns:1fr; grid-template-rows:auto minmax(0,1fr) auto; background:linear-gradient(180deg, rgba(6,8,14,.55), transparent 26%, transparent 45%, rgba(6,8,14,.85)); }
     .coins { grid-column:1; grid-row:1; }
     .side { grid-column:1; grid-row:2 / span 2; }
-    #shop .side, #missions .side { max-height:58vh; }
+    #shop .side, #missions .side, #online .side { max-height:58vh; }
     .opts.four .opt { padding:7px 3px; } .opts.four .opt b { font-size:14px; }
     .help { display:none; }
     #board { display:none; }
   }
   @media (max-height:520px) and (orientation:landscape) {
-    #menu, #garage, #shop, #missions { grid-template-columns:1fr minmax(280px,340px); }
+    #menu, #garage, #shop, #missions, #online { grid-template-columns:1fr minmax(280px,340px); }
     .brand h1 { font-size:34px; }
     .card { padding:8px 12px; } .stats { gap:4px; margin-top:6px; } #dogName { font-size:22px; }
     .btn { padding:10px; } .help { display:none; }
@@ -281,7 +304,7 @@
 <div id="touch" hidden>
   <button id="tL" aria-label="Esquerda">◀</button><button id="tR" aria-label="Direita">▶</button><button id="tS">FREIO</button>
   <button id="tB">LATIDO</button><button id="tJ">PULO</button>
-  <button id="tD">DRIFT</button><button id="tN">NITRO</button><button id="tM">MÍSSIL <span id="tMn">1</span></button>
+  <button id="tD">DRIFT</button><button id="tN">NITRO</button><button id="tM"><span id="tML">MÍSSIL</span> <span id="tMn">1</span></button>
 </div>
 
 <div id="menu" class="screen" hidden>
@@ -307,6 +330,7 @@
       <button class="btn sec" id="garageBtn">OFICINA</button>
       <button class="btn sec" id="shopBtn">LOJA</button>
       <button class="btn sec" id="missBtn">MISSÕES</button>
+      <button class="btn sec" id="onlineBtn">ONLINE</button>
       <button class="btn pri" id="startBtn">CORRER</button>
     </div>
     <div class="help"><b>↑</b> correr · <b>↓</b> frear · <b>← →</b> virar · <b>SHIFT</b> drift<br><b>N</b> nitro · <b>ESPAÇO</b> pular · <b>B</b> latir · <b>F</b> míssil<br><b>C</b> câmera · <b>ESC</b> pausa</div>
@@ -339,6 +363,48 @@
     <div class="tabs" id="missTabs"><button data-t="daily" class="on">DIÁRIAS</button><button data-t="ach">CONQUISTAS</button></div>
     <div id="missList" class="shopList"></div>
     <button class="btn pri" id="missBack">VOLTAR</button>
+  </div>
+</div>
+
+<div id="online" class="screen" hidden>
+  <div class="brand"><h1 class="disp">Online</h1><div class="tag">CORRA COM OS AMIGOS</div></div>
+  <div class="side">
+    <form class="panel onBox" id="onReg" hidden autocomplete="off">
+      <div class="onH disp">CRIAR CONTA</div>
+      <label>APELIDO<input id="regName" maxlength="12" placeholder="Seu nome no jogo" autocomplete="nickname"></label>
+      <label>SENHA<input id="regPass" type="password" maxlength="20" placeholder="Mínimo 4 caracteres" autocomplete="new-password"></label>
+      <label>COR NO PLACAR<div class="onColors" id="regColors"></div></label>
+      <div class="onMsg" id="regMsg"></div>
+      <button class="btn pri" id="regOk" type="submit">CADASTRAR</button>
+      <div class="onNote">A conta fica salva neste aparelho. O apelido e a cor aparecem para os amigos na sala.</div>
+    </form>
+    <form class="panel onBox" id="onLogin" hidden autocomplete="off">
+      <div class="onH disp">ENTRAR</div>
+      <div class="onUser"><i id="loginColor"></i><b id="loginName"></b></div>
+      <label>SENHA<input id="loginPass" type="password" maxlength="20" autocomplete="current-password"></label>
+      <div class="onMsg" id="loginMsg"></div>
+      <button class="btn pri" id="loginOk" type="submit">ENTRAR</button>
+      <button class="lnk" id="loginNew" type="button">criar outra conta</button>
+    </form>
+    <div class="panel onBox" id="onHome" hidden>
+      <div class="onUser"><i id="onColor"></i><b id="onName"></b><button class="lnk" id="onOut">sair da conta</button></div>
+      <button class="btn pri" id="onCreate">CRIAR SALA</button>
+      <div class="onJoin"><input id="onCode" maxlength="5" placeholder="CÓDIGO" autocomplete="off" aria-label="Código da sala"><button class="btn sec" id="onJoinBtn">ENTRAR</button></div>
+      <div class="onMsg" id="onMsg"></div>
+      <div class="onNote">Crie uma sala e mande o código para os amigos (até 6 jogadores). Cada um corre com o cachorro escolhido no menu. Precisa de internet.</div>
+    </div>
+    <div class="panel onBox" id="onRoom" hidden>
+      <div class="onH disp">SALA <b class="mono" id="roomCode">-----</b></div>
+      <div class="roomOpts" id="roomOpts">
+        <button class="opt" id="roomTrack"><span class="lbl">Pista</span><b id="roomTrackName">PARQUE</b></button>
+        <button class="opt" id="roomLaps"><span class="lbl">Voltas</span><b id="roomLapsName">3</b></button>
+      </div>
+      <ul id="roomList"></ul>
+      <div class="onMsg" id="roomMsg"></div>
+      <button class="btn pri" id="roomStart">COMEÇAR CORRIDA</button>
+      <button class="btn sec" id="roomLeave">SAIR DA SALA</button>
+    </div>
+    <button class="btn sec" id="onBack">VOLTAR</button>
   </div>
 </div>
 
@@ -386,11 +452,14 @@
 
 <script src="modelos.js"></script>
 <script src="caes.js"></script>
+<script src="coelho.js"></script>
 <script type="importmap">
-{ "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js" } }
+{ "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js", "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/" } }
 </script>
 <script type="module">
 import * as THREE from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { clone as cloneSkinned } from 'three/addons/utils/SkeletonUtils.js';
 
 /* =====================================================================
    CORRIDA CANINA TURBO
@@ -557,6 +626,7 @@ const dotTex = new THREE.CanvasTexture(drawCanvas(64, 64, (x) => {
 /* ---------------------------------------------------------------------
    Partículas (poeira, faíscas de drift, chamas do nitro, respingos)
    --------------------------------------------------------------------- */
+const PART_ELEV = { value: 0 }, ELEV_GLSL_P = `float elevAt(vec2 p){ return uElev * (sin(p.x * 0.0105 + 0.6) * cos(p.y * 0.0088 - 0.4) + 0.45 * sin((p.x - p.y) * 0.017 + 1.3)); }`;
 class Particles {
   constructor(max, additive) {
     this.max = max; this.n = 0;
@@ -571,9 +641,10 @@ class Particles {
     g.setAttribute('psize', at(this.size, 1)); g.setAttribute('palpha', at(this.alpha, 1));
     this.geo = g;
     this.mat = new THREE.ShaderMaterial({
-      uniforms: { uScale: { value: 500 }, map: { value: dotTex } },
-      vertexShader: `attribute vec3 pcolor; attribute float psize; attribute float palpha; uniform float uScale; varying vec3 vC; varying float vA;
-        void main(){ vC = pcolor; vA = palpha; vec4 mv = modelViewMatrix * vec4(position,1.0); gl_PointSize = psize * uScale / max(0.1, -mv.z); gl_Position = projectionMatrix * mv; }`,
+      uniforms: { uScale: { value: 500 }, map: { value: dotTex }, uElev: PART_ELEV },
+      vertexShader: `attribute vec3 pcolor; attribute float psize; attribute float palpha; uniform float uScale; uniform float uElev; varying vec3 vC; varying float vA;
+        ${ELEV_GLSL_P}
+        void main(){ vC = pcolor; vA = palpha; vec3 q = position; q.y += elevAt(q.xz); vec4 mv = modelViewMatrix * vec4(q,1.0); gl_PointSize = psize * uScale / max(0.1, -mv.z); gl_Position = projectionMatrix * mv; }`,
       fragmentShader: `uniform sampler2D map; varying vec3 vC; varying float vA;
         void main(){ float a = texture2D(map, gl_PointCoord).a * vA; if (a < 0.01) discard; gl_FragColor = vec4(vC, a); }`,
       transparent: true, depthWrite: false, blending: additive ? THREE.AdditiveBlending : THREE.NormalBlending,
@@ -842,14 +913,14 @@ const BREEDS = [
     len: 0.72, chH: 0.17, chW: 0.14, rumpH: 0.13, rumpW: 0.115, rumpY: 0.0, waist: 0.25, arch: 0.0, backY: 0.52, bone: 0.034,
     neck: 0.14, neckA: 0.75, skull: [0.1, 0.1, 0.085], muzzle: [0.08, 0.058, 0.05, 0.03], ear: 'rose', earW: 0.04, earL: 0.06,
     tail: [0.4, 0.035, -0.6, 0.1], spd: 4, acc: 4, han: 2, jmp: 3 },
-  { id: 'linda', name: 'LINDA', raca: 'JAVALI', coat: 'boar', color: '#0f766e', pitch: 0.8, voice: 'grunt', mass: 1.8, eye: 0x1a0e06, eyeR: 0.014,
+  { id: 'linda', name: 'LINDA', raca: 'JAVALI', kind: 'glb', model: 'linda', coat: 'boar', color: '#0f766e', pitch: 0.8, voice: 'grunt', mass: 1.8, eye: 0x1a0e06, eyeR: 0.014,
     snoutDisc: true, tusks: true, mane: true, headDown: 0.3,
     len: 0.82, chH: 0.21, chW: 0.15, rumpH: 0.17, rumpW: 0.135, rumpY: 0.01, waist: 0.05, arch: 0.03, backY: 0.5, bone: 0.032,
     neck: 0.1, neckA: 0.3, skull: [0.11, 0.085, 0.09], muzzle: [0.2, 0.045, 0.045, 0.03], ear: 'erect', earW: 0.042, earL: 0.07,
     tail: [0.2, 0.012, -1.2, 0.1], spd: 4, acc: 4, han: 2, jmp: 3 },
   // modelos 3D enviados (.glb)
   { id: 'faiton', name: 'FAITON', raca: 'LOBO NEGRO', kind: 'glb', model: 'faiton', gearY: 0.64, gearDz: -0.13, scale: 1.4, color: '#dc2626', pitch: 0.7, mass: 1.3, spd: 5, acc: 3, han: 3, jmp: 2 },
-  { id: 'paz', name: 'PAZ', raca: 'CACHORRO DA PAZ', kind: 'glb', model: 'paz', fly: true, color: '#38bdf8', pitch: 1.2, mass: 0.9, spd: 3, acc: 3, han: 4, jmp: 2 },
+  { id: 'paz', name: 'PAZ', raca: 'CACHORRO DA PAZ', kind: 'glb', model: 'paz', fly: true, noGear: true, color: '#38bdf8', pitch: 1.2, mass: 0.9, spd: 3, acc: 3, han: 4, jmp: 2 },
   { id: 'pintado', name: 'PINTADO', raca: 'MABECO', kind: 'glb', model: 'mabeco', color: '#a16207', pitch: 1.1, spd: 4, acc: 4, han: 3, jmp: 2 },
   { id: 'ruivo', name: 'RUIVO', raca: 'DINGO', kind: 'glb', model: 'dingo', color: '#ea580c', pitch: 1.0, spd: 4, acc: 3, han: 3, jmp: 3 },
   { id: 'ninja', name: 'NINJA', raca: 'SHIBA INU', kind: 'glb', model: 'shiba', color: '#334155', pitch: 1.3, spd: 3, acc: 4, han: 4, jmp: 2 },
@@ -858,7 +929,7 @@ const BREEDS = [
   { id: 'raio', name: 'RAIO', raca: 'GREYHOUND', kind: 'glb', model: 'greyhound', color: '#facc15', pitch: 0.95, spd: 5, acc: 2, han: 2, jmp: 4 },
   { id: 'duque', name: 'DUQUE', raca: 'PINSCHER ALEMÃO', kind: 'glb', model: 'duque', color: '#b91c1c', pitch: 1.1, spd: 4, acc: 3, han: 3, jmp: 3 },
   { id: 'frufru', name: 'FRUFRU', raca: 'POODLE', kind: 'glb', model: 'poodle', color: '#e879f9', pitch: 1.4, spd: 3, acc: 3, han: 4, jmp: 3 },
-  { id: 'major', name: 'MAJOR', raca: 'PASTOR ALEMÃO', kind: 'glb', model: 'major', color: '#1d4ed8', pitch: 0.85, mass: 1.2, spd: 4, acc: 3, han: 3, jmp: 3 },
+  { id: 'major', name: 'MAJOR', raca: 'PASTOR ALEMÃO', kind: 'glb', model: 'major', gearY: 0.75, color: '#1d4ed8', pitch: 0.85, mass: 1.2, spd: 4, acc: 3, han: 3, jmp: 3 },
   { id: 'tofu', name: 'TOFU', raca: 'PUG', kind: 'glb', model: 'pug2', gearY: 0.87, color: '#65a30d', pitch: 1.35, mass: 0.9, spd: 2, acc: 5, han: 4, jmp: 2 },
   { id: 'bidu', name: 'BIDU', raca: 'BOIADEIRO BERNÊS', kind: 'glb', model: 'bernes', color: '#0f766e', pitch: 0.8, mass: 1.5, spd: 3, acc: 3, han: 3, jmp: 3 },
   { id: 'canela', name: 'CANELA', raca: 'AKITA', kind: 'glb', model: 'canela', color: '#c2410c', pitch: 0.95, spd: 3, acc: 4, han: 3, jmp: 3 },
@@ -873,6 +944,7 @@ const BREEDS = [
   { id: 'tiffany', name: 'TIFFANY', raca: 'TEIÚ', kind: 'lizard', coat: 'tegu', color: '#f97316', pitch: 1.0, voice: 'hiss', mass: 1.2, forked: true,
     eye: 0x0a0a0a, eyeR: 0.011, len: 0.68, chW: 0.13, chH: 0.075, backY: 0.13, headL: [0.2, 0.068, 0.048], bone: 0.02, legU: 0.13, gearS: 0.8,
     tailL: 0.9, tailR: 0.068, spd: 4, acc: 3, han: 4, jmp: 2 },
+  { id: 'kemilly', name: 'KEMILLY', raca: 'COELHO BOCÓ', kind: 'rig', color: '#a855f7', pitch: 1.6, voice: 'squeak', mass: 0.85, spd: 3, acc: 5, han: 4, jmp: 5 },
 ];
 
 function numberTex(num, color) {
@@ -908,7 +980,8 @@ const scaleTex = (() => {
   });
   return toTex(c, 3, 3);
 })();
-const SHARED = new Set([blobTex, furTex, scaleTex, lidMat, noseMat, tongueMat, metalMat, redMetal, flameMat, starMat, exclTex, blobTex, dotTex, launchMat, stripeMat, warheadMat]);
+const carrotMat = new THREE.MeshStandardMaterial({ color: 0xf97316, roughness: 0.6 }), leafMat = new THREE.MeshStandardMaterial({ color: 0x4d9a2a, roughness: 0.7 });
+const SHARED = new Set([carrotMat, leafMat, blobTex, furTex, scaleTex, lidMat, noseMat, tongueMat, metalMat, redMetal, flameMat, starMat, exclTex, blobTex, dotTex, launchMat, stripeMat, warheadMat]);
 
 // tanques de nitro + lança-mísseis nas costas de qualquer bicho
 function addGear(parent, topY, tz, sc = 1) {
@@ -1250,6 +1323,7 @@ function trailFx(r, dt) {
 }
 
 function buildCreature(b, num, color) {
+  if (b.kind === 'rig') return buildRig(b, num, color);
   if (b.kind === 'glb' && GLB[b.model]) return buildGlb(b, num, color);
   return b.kind === 'lizard' ? buildLizard(b, num, color) : buildDog(b, num, color);
 }
@@ -1371,8 +1445,9 @@ function buildGlb(b, num, color) {
   const pad = new THREE.Mesh(new THREE.SphereGeometry(1, 20, 8, 0, Math.PI * 2, 0, Math.PI / 2), padMat);
   pad.scale.set(G.W * (b.fly ? 0.3 : 0.55), 0.06 * k, G.L * 0.16); pad.position.set(0, saddleY, gz); pad.castShadow = true; body.add(pad);
   const nm = new THREE.MeshStandardMaterial({ map: numberTex(num, color), transparent: true, roughness: 0.5, side: THREE.DoubleSide });
-  for (const sx of [-1, 1]) { const pl = new THREE.Mesh(new THREE.PlaneGeometry(0.2 * k, 0.2 * k), nm); pl.position.set(sx * (G.W * (b.fly ? 0.3 : 0.55) + 0.01), saddleY - 0.02, gz); pl.rotation.y = sx * Math.PI / 2; body.add(pl); }
+  for (const sx of [-1, 1]) { const pl = new THREE.Mesh(new THREE.PlaneGeometry(0.2 * k, 0.2 * k), nm); pl.position.set(sx * (G.W * (b.fly ? 0.3 : 0.55) + 0.01), saddleY - 0.02, gz); pl.rotation.y = sx * Math.PI / 2; pl.visible = !b.noGear; body.add(pl); }
   const { flames, launcher } = addGear(body, saddleY + 0.02, gz, 2.3 * k * 0.9);
+  if (b.noGear) { flames[0].parent.visible = false; pad.visible = false; } // voa na nuvem, sem mochila a jato
   const stars = new THREE.Group(); stars.position.set(0, 0.35 * k, 0); head.add(stars);
   for (let i = 0; i < 4; i++) { const st = new THREE.Mesh(new THREE.OctahedronGeometry(0.06), starMat); st.position.set(Math.cos(i * 1.57) * 0.22, 0, Math.sin(i * 1.57) * 0.22); stars.add(st); }
   stars.visible = false;
@@ -1399,6 +1474,88 @@ function animGlb(D, st, t) {
     D.body.rotation.y = st.idle ? Math.sin(t * 0.7) * 0.08 : 0;
   }
   D.model.rotation.z = clamp(-st.yawRate * (b.fly ? 0.3 : 0.16), -0.4, 0.4) + (st.stun > 0 ? Math.sin(t * 18) * 0.15 : 0);
+  animCommon(D, st, t);
+}
+
+/* ---------------------------------------------------------------------
+   Kemilly (coelho.js): modelo com esqueleto, usa as animações do próprio .glb
+   --------------------------------------------------------------------- */
+const RIG = { g: null, s: 1, y0: 0, wait: [] };
+(function loadRig() {
+  if (!window.COELHO) return;
+  try {
+    const raw = atob(window.COELHO), u8 = new Uint8Array(raw.length);
+    for (let i = 0; i < raw.length; i++) u8[i] = raw.charCodeAt(i);
+    new GLTFLoader().parse(u8.buffer, '', g => {
+      g.scene.traverse(o => {
+        if (!o.isMesh) return;
+        o.geometry.userData.keep = true; o.castShadow = true; o.frustumCulled = false;
+        [].concat(o.material).forEach(m => { m.roughness = 0.7; m.metalness = 0; SHARED.add(m); });
+      });
+      g.scene.updateMatrixWorld(true);
+      const box = new THREE.Box3().setFromObject(g.scene, true);
+      RIG.s = 1.55 / (box.max.y - box.min.y); RIG.y0 = -box.min.y * RIG.s; RIG.g = g;
+      RIG.wait.splice(0).forEach(f => f());
+    }, e => console.warn('coelho não carregado', e));
+  } catch (e) { console.warn('coelho não carregado', e); }
+})();
+function carrotMesh(s = 1) {
+  const g = new THREE.Group();
+  const c = new THREE.Mesh(new THREE.ConeGeometry(0.06 * s, 0.34 * s, 8), carrotMat); c.rotation.x = Math.PI / 2; c.castShadow = true; g.add(c);
+  for (let i = 0; i < 3; i++) { const l = new THREE.Mesh(new THREE.ConeGeometry(0.02 * s, 0.14 * s, 5), leafMat); l.rotation.x = -Math.PI / 2 + (i - 1) * 0.5; l.position.z = -0.2 * s; l.translateY(0.05 * s); g.add(l); }
+  return g;
+}
+function buildRig(b, num, color) {
+  const root = new THREE.Group(), model = new THREE.Group(), body = new THREE.Group();
+  root.add(model); model.add(body); model.scale.setScalar(b.scale || 1);
+  const H = 1.55, k = 0.75;
+  const holder = new THREE.Group(); body.add(holder);
+  const head = new THREE.Group(); head.position.set(0, H * 0.72, 0.15); body.add(head);
+  // mochila a jato em pé nas costas, com as cenouras (munição) espetadas
+  const padMat = new THREE.MeshStandardMaterial({ color, roughness: 0.45, metalness: 0.15 });
+  const pack = new THREE.Mesh(new THREE.BoxGeometry(0.34, 0.36, 0.12), padMat); pack.position.set(0, H * 0.5, -0.24); pack.castShadow = true; body.add(pack);
+  const nm = new THREE.MeshStandardMaterial({ map: numberTex(num, color), transparent: true, roughness: 0.5, side: THREE.DoubleSide });
+  const pl = new THREE.Mesh(new THREE.PlaneGeometry(0.2, 0.2), nm); pl.position.set(0, H * 0.5, -0.305); pl.rotation.y = Math.PI; body.add(pl);
+  const { flames, launcher } = addGear(body, H * 0.44, -0.33, 1.6);
+  const gear = flames[0].parent; gear.rotation.x = -Math.PI / 2 + 0.25; gear.position.set(0, H * 0.42, -0.34);
+  launcher.g.visible = false;
+  launcher.noses = [-0.09, 0, 0.09].map((x, i) => { const c = carrotMesh(1.5); c.position.set(x, H * 0.7 + (i === 1 ? 0.04 : 0), -0.27); c.rotation.x = -Math.PI / 2 + 0.35; body.add(c); return c; });
+  launcher.muzzle = new THREE.Object3D(); launcher.muzzle.position.set(0.3, H * 0.4, 0.45); body.add(launcher.muzzle);
+  const stars = new THREE.Group(); stars.position.set(0, 0.5, 0); head.add(stars);
+  for (let i = 0; i < 4; i++) { const st = new THREE.Mesh(new THREE.OctahedronGeometry(0.06), starMat); st.position.set(Math.cos(i * 1.57) * 0.22, 0, Math.sin(i * 1.57) * 0.22); stars.add(st); }
+  stars.visible = false;
+  const excl = new THREE.Sprite(new THREE.SpriteMaterial({ map: exclTex, depthTest: false }));
+  excl.scale.set(0.3, 0.3, 1); excl.position.set(0, 0.75, 0); excl.visible = false; head.add(excl);
+  const blob = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), new THREE.MeshBasicMaterial({ map: blobTex, transparent: true, depthWrite: false }));
+  blob.rotation.x = -Math.PI / 2; blob.position.y = 0.04; blob.scale.set(1.1, 1.1, 1); root.add(blob);
+  const hi = { hat: [0, 0.32, -0.02], s: 0.17 * k, eye: [0.08, 0, 0.1], er: 0.03, cape: [0, H * 0.62, -0.2], capeW: 0.3, capeL: 0.9, noGlasses: true };
+  const D = { root, model, body, torso: body, neckPiv: head, headPiv: head, head, legs: [], tails: [], ears: [], tongue: new THREE.Group(), flames, stars, excl, blob, b, launcher, anim: animRig, vestMat: padMat, hi, crown: null, mixer: null, acts: {}, cur: '', shootT: 0, lastT: null };
+  D.shoot = () => { D.shootT = 0.45; };
+  const attach = () => {
+    const o = cloneSkinned(RIG.g.scene); o.scale.setScalar(RIG.s); o.position.y = RIG.y0; holder.add(o);
+    D.mixer = new THREE.AnimationMixer(o);
+    for (const n of ['Run', 'Idle', 'Jump_Idle', 'Weapon', 'HitReact']) { const c = RIG.g.animations.find(a => a.name.endsWith('|' + n)); if (c) D.acts[n] = D.mixer.clipAction(c); }
+  };
+  if (RIG.g) attach(); else RIG.wait.push(attach);
+  return D;
+}
+function animRig(D, st, t) {
+  const dt = D.lastT === null ? 1 / 60 : clamp(t - D.lastT, 0, 0.1); D.lastT = t;
+  const air = st.y > 0.05, amp = clamp(st.v / 12, 0, 1);
+  D.shootT -= dt;
+  if (D.mixer) {
+    const want = st.stun > 0 ? 'HitReact' : D.shootT > 0 ? 'Weapon' : air ? 'Jump_Idle' : st.v > 1.5 ? 'Run' : 'Idle';
+    if (want !== D.cur && D.acts[want]) {
+      const a = D.acts[want], old = D.acts[D.cur];
+      a.reset().setEffectiveWeight(1).play();
+      if (old) a.crossFadeFrom(old, 0.15, false);
+      D.cur = want;
+    }
+    if (D.acts.Run) D.acts.Run.timeScale = clamp(st.v / 11, 0.7, 2.2);
+    D.mixer.update(dt);
+  }
+  D.body.rotation.x = air ? clamp(-st.vy * 0.02, -0.25, 0.25) : amp * 0.12;
+  D.model.rotation.z = clamp(-st.yawRate * 0.18, -0.35, 0.35) + (st.stun > 0 ? Math.sin(t * 18) * 0.15 : 0);
   animCommon(D, st, t);
 }
 
@@ -1597,7 +1754,20 @@ const TRACKS = [
     ctrl: [[0, -150], [100, -160], [170, -110], [150, -40], [200, 20], [180, 110], [100, 150], [40, 100], [-20, 140], [-110, 150], [-170, 90], [-130, 30], [-190, -40], [-120, -120]],
     sky: { zen: 0x5f86b8, hor: 0xdde7f2, gnd: 0xcfd8e2, sun: 0xfff6ea, dir: [-0.4, 0.42, 0.5], haze: 0.8 }, fog: [0xdde7f2, 110, 620],
     light: { sun: 2.4, col: 0xf2f6ff, hemi: 0.5 }, rail: 0xd32f2f, curb: ['#d32f2f', '#ffffff'], stand: [0x8d6e63, 0xb71c1c], mtn: [0x5a6472, 0x6d7584] },
+  // pista de drift: estreita, cheia de grampos, lisa e com ladeiras fortes
+  { id: 'serra', name: 'SERRA DO DRIFT', W: 15, grip: 0.5, hills: 60, elev: 22, drift: true, surface: 'dirt', ground: [128, 118, 84], trees: 'pine', puddle: 'water',
+    ctrl: [[0, -150], [80, -160], [140, -120], [110, -70], [40, -60], [20, -10], [90, 0], [170, -20], [210, 40], [170, 100], [100, 80], [60, 120], [110, 170], [40, 200],
+      [-40, 170], [-20, 110], [-90, 90], [-160, 130], [-200, 60], [-150, 10], [-190, -50], [-130, -110], [-70, -90]],
+    sky: { zen: 0x3b2a6e, hor: 0xf3a0a0, gnd: 0x6b5a4c, sun: 0xffc27a, dir: [-0.5, 0.2, 0.84], haze: 1.1 }, fog: [0xd99a9a, 140, 760],
+    light: { sun: 2.7, col: 0xffcf9a, hemi: 0.35 }, rail: 0xf5c518, curb: ['#f5c518', '#1f1f1f'], stand: [0x6d5c4f, 0x7c3aed], mtn: [0x5b4a44, 0x6e5a52] },
 ];
+// relevo das pistas com ladeira (só a lógica fica plana; o desenho sobe e desce com esta função)
+function elevAt(x, z) {
+  const a = TR.elev; if (!a) return 0;
+  return a * (Math.sin(x * 0.0105 + 0.6) * Math.cos(z * 0.0088 - 0.4) + 0.45 * Math.sin((x - z) * 0.017 + 1.3));
+}
+const ELEV_GLSL = `float elevAt(vec2 p){ return uElev * (sin(p.x * 0.0105 + 0.6) * cos(p.y * 0.0088 - 0.4) + 0.45 * sin((p.x - p.y) * 0.017 + 1.3)); }`;
+function slopeAlong(x, z, fx, fz) { return (elevAt(x + fx, z + fz) - elevAt(x - fx, z - fz)) / 2; }
 
 let TR = TRACKS[0], W = 18, L = 1;
 const N = 1400;
@@ -1738,7 +1908,7 @@ function groundTexture() {
 function buildWorld(idx) {
   if (world) { scene.remove(world); disposeTree(world); }
   dust.clear(); glow.clear();
-  TR = TRACKS[idx]; W = TR.W; seed = 1000 + idx * 77;
+  TR = TRACKS[idx]; W = TR.W; seed = 1000 + idx * 77; PART_ELEV.value = TR.elev || 0;
   setupTrack(TR);
   world = new THREE.Group(); scene.add(world);
   LANDS = []; lamps = []; crowd = []; clouds = [];
@@ -1754,6 +1924,50 @@ function buildWorld(idx) {
   buildLandmarks(); buildProps(); buildVegetation(); buildMountains(); buildClouds(); buildItems(); buildBalls(); buildBirds(); buildMissiles(); buildMinimap();
   if (snowPts) { scene.remove(snowPts); snowPts.geometry.dispose(); snowPts = null; }
   if (TR.snow) buildSnowfall();
+  liftWorld();
+}
+// objetos que se mexem sobem com o relevo só na hora de desenhar (a lógica do jogo continua plana)
+let DYN = [];
+function liftWorld() {
+  DYN = [...ammos.map(a => a.g), ...nitros.map(n => n.g), ...birds.map(b => b.g), ...missilePool, ...carrotPool];
+  if (!TR.elev) return;
+  for (const p of crowd) p.y += elevAt(p.x, p.z);
+  const skip = new Set(DYN), seen = new Set(), inv = new THREE.Matrix4(), m4 = new THREE.Matrix4(), v = new THREE.Vector3(), box = new THREE.Box3(), sz = new THREE.Vector3();
+  world.updateMatrixWorld(true);
+  const bake = (m) => {
+    let g = m.geometry; if (!g || !g.attributes.position) return;
+    if (seen.has(g)) { g = g.clone(); m.geometry = g; } seen.add(g);
+    const pos = g.attributes.position; inv.copy(m.matrixWorld).invert();
+    for (let i = 0; i < pos.count; i++) { v.fromBufferAttribute(pos, i).applyMatrix4(m.matrixWorld); v.y += elevAt(v.x, v.z); v.applyMatrix4(inv); pos.setXYZ(i, v.x, v.y, v.z); }
+    pos.needsUpdate = true; if (g.attributes.normal) g.computeVertexNormals(); g.computeBoundingBox(); g.computeBoundingSphere();
+  };
+  const visit = (o) => {
+    if (skip.has(o) || o.userData.noLift) return;
+    if (o.isInstancedMesh) {
+      for (let i = 0; i < o.count; i++) { o.getMatrixAt(i, m4); v.setFromMatrixPosition(m4).applyMatrix4(o.matrixWorld); m4.elements[13] += elevAt(v.x, v.z); o.setMatrixAt(i, m4); }
+      o.instanceMatrix.needsUpdate = true; o.boundingSphere = null; o.boundingBox = null; return;
+    }
+    box.setFromObject(o); box.getSize(sz);
+    if (Math.max(sz.x, sz.z) < 30 || !isFinite(sz.x)) { o.getWorldPosition(v); o.position.y += elevAt(v.x, v.z); return; }
+    if (o.isMesh || o.isLine || o.isPoints) bake(o);
+    for (const c of [...o.children]) visit(c);
+  };
+  for (const c of [...world.children]) visit(c);
+}
+const _lc = new THREE.Vector3(), _lq = new THREE.Quaternion(), _lt = new THREE.Vector3(), _lf = new THREE.Vector3();
+function renderLifted(focus) {
+  if (!TR.elev) { renderer.render(scene, camera); return; }
+  const objs = [...DYN, ...runners.map(r => r.D.root)]; if (preview) objs.push(preview.root);
+  for (const o of objs) { const e = elevAt(o.position.x, o.position.z); o.userData.ly = e; o.position.y += e; }
+  _lc.copy(camera.position); _lq.copy(camera.quaternion);
+  const ef = elevAt(focus.x, focus.z), ec = elevAt(_lc.x, _lc.z);
+  _lf.set(0, 0, -1).applyQuaternion(_lq);
+  _lt.copy(_lc).addScaledVector(_lf, Math.max(5, _lc.distanceTo(focus))); _lt.y += ef;
+  camera.position.y = Math.max(_lc.y + ef, ec + 1.3); camera.lookAt(_lt);
+  sun.target.position.y += ef; sun.position.y += ef;
+  renderer.render(scene, camera);
+  for (const o of objs) o.position.y -= o.userData.ly;
+  camera.position.copy(_lc); camera.quaternion.copy(_lq);
 }
 
 function buildGround() {
@@ -1775,7 +1989,7 @@ function buildGround() {
   const tex = toTex(groundTexture());
   mesh(g, new THREE.MeshStandardMaterial({ map: tex, vertexColors: true, roughness: TR.id === 'neve' ? 0.7 : 1 }), false, true);
   const far = mesh(new THREE.PlaneGeometry(9000, 9000), new THREE.MeshStandardMaterial({ color: new THREE.Color(`rgb(${TR.ground.join(',')})`).multiplyScalar(0.8), roughness: 1 }), false, false);
-  far.rotation.x = -Math.PI / 2; far.position.y = TR.sea !== undefined ? -8 : -0.4;
+  far.rotation.x = -Math.PI / 2; far.position.y = TR.sea !== undefined ? -8 : TR.elev ? -TR.elev * 1.5 - 6 : -0.4; far.userData.noLift = true;
   seaTex = null;
   if (TR.sea !== undefined) {
     const nc = pixelCanvas(128, (i, j) => {
@@ -2095,7 +2309,7 @@ function buildProps() {
     LANDS.push([cx, cz, rad]);
   };
   // postes de luz ao longo da pista, alternando os lados
-  const lamp = { parque: 'parque:lamp_1', praia: 'parque:lamp_2', neve: 'parque:lamp_4' }[TR.id];
+  const lamp = { parque: 'parque:lamp_1', praia: 'parque:lamp_2', neve: 'parque:lamp_4', serra: 'parque:lamp_4' }[TR.id];
   let side = 1;
   for (let s = 40; s < L - 30; s += 62) {
     if (Math.abs(wrapDelta(s)) < 60) continue;
@@ -2469,6 +2683,7 @@ const BIRD_KINDS = {
   parque: { name: 'POMBO', plural: 'POMBOS', body: 0x8c95a5, wing: 0x9ea7b6, tip: 0x3a3f48, head: 0x4f6f63, beak: 0x333333, pitch: 1 },
   praia: { name: 'GAIVOTA', plural: 'GAIVOTAS', body: 0xf6f6f2, wing: 0xb9c1ca, tip: 0x1a1a1a, head: 0xffffff, beak: 0xf2b92e, pitch: 1.4 },
   neve: { name: 'CORVO', plural: 'CORVOS', body: 0x15171c, wing: 0x1c1f26, tip: 0x0c0d10, head: 0x15171c, beak: 0x202020, pitch: 0.7 },
+  serra: { name: 'GAVIÃO', plural: 'GAVIÕES', body: 0x6b4a2e, wing: 0x7a5636, tip: 0x2b1d12, head: 0xe8e0d0, beak: 0xf2b92e, pitch: 0.85 },
 };
 const BIRD_KIND = () => BIRD_KINDS[TR.id];
 let birds = [], birdTimer = 8;
@@ -2669,6 +2884,8 @@ const Sfx = {
       for (let k = 0; k < 2; k++) { this.noise(0.32, 0.32 * vol, 3800 * p, t + k * 0.36, null, 'highpass'); this.noise(0.3, 0.12 * vol, 1600 * p, t + k * 0.36); }
     } else if (b.voice === 'grunt') { // oinc do javali
       for (let k = 0; k < 3; k++) { const s0 = t + k * 0.17; this.tone(190 * p, 0.12, 'square', 0.12 * vol, 110 * p, s0); this.tone(95 * p, 0.12, 'sawtooth', 0.12 * vol, 70 * p, s0); this.noise(0.1, 0.2 * vol, 500, s0, null, 'lowpass'); }
+    } else if (b.voice === 'squeak') { // guincho de coelho
+      for (let k = 0; k < 2; k++) { const s0 = t + k * 0.16; this.tone(1500 * p, 0.1, 'triangle', 0.16 * vol, 2300 * p, s0); this.tone(3000 * p, 0.07, 'sine', 0.06 * vol, 2400 * p, s0); }
     } else this.bark(p, vol);
   },
   boom(vol = 1) { if (!this.ctx || vol < 0.02) return; this.noise(0.8, 0.6 * vol, 120, 0, null, 'lowpass'); this.noise(0.4, 0.4 * vol, 900); this.tone(90, 0.6, 'sine', 0.4 * vol, 30); },
@@ -2774,6 +2991,7 @@ const PASSIVES = {
   emilly: ['FINGIR DE MORTA', 'Depois de ficar tonta, levanta com um mini-turbo'],
   taissa: ['GRUDENTA', 'Não escorrega em poças nem no gelo e faz curvas mais fechadas'],
   tiffany: ['RABO-CHICOTE', 'O chiado dela derruba quem estiver perto'],
+  kemilly: ['CENOURADA', 'Atira cenouras em vez de mísseis: mais rápidas, e quem leva perde nitro'],
 };
 const has = (r, id) => r.b.id === id;
 function statsFor(b, up) {
@@ -2840,8 +3058,8 @@ function endDrift(r, crashed) {
   if (r.isPlayer && pts > 60) pop(`DRIFT +${pts}`, 'g');
 }
 
-const voiceWord = b => b.voice === 'hiss' ? 'CHIADO!' : b.voice === 'grunt' ? 'RONCO!' : 'LATIDO!';
-const voiceSound = b => b.voice === 'hiss' ? 'SSSSSS!' : b.voice === 'grunt' ? 'OINC OINC!' : 'AU AU!';
+const voiceWord = b => b.voice === 'squeak' ? 'GUINCHO!' : b.voice === 'hiss' ? 'CHIADO!' : b.voice === 'grunt' ? 'RONCO!' : 'LATIDO!';
+const voiceSound = b => b.voice === 'squeak' ? 'IIIIIH!' : b.voice === 'hiss' ? 'SSSSSS!' : b.voice === 'grunt' ? 'OINC OINC!' : 'AU AU!';
 function doBark(r) {
   r.barkCD = has(r, 'rex') ? 4 : 6;
   if (has(r, 'pitiquin')) { r.mini = Math.max(r.mini, 1); if (r.isPlayer) pop('MINI-TURBO DO PITIQUIN!', 'c'); }
@@ -2880,7 +3098,7 @@ function stepRunner(r, inp, dt) {
   const jumpPressed = inp.jump && !r.prevJump; r.prevJump = inp.jump;
   const barkPressed = inp.bark && !r.prevBark; r.prevBark = inp.bark;
   r.barkCD -= dt;
-  if (barkPressed && r.barkCD <= 0) doBark(r);
+  if (barkPressed && r.barkCD <= 0) { doBark(r); if (r.isPlayer) netEvent('bark'); }
   const firePressed = inp.fire && !r.prevFire; r.prevFire = inp.fire;
   r.fireCD -= dt; r.flip = Math.max(0, r.flip - dt);
   if (firePressed) fireMissile(r);
@@ -2918,6 +3136,7 @@ function stepRunner(r, inp, dt) {
     yawT = -r.driftDir * r.turn * sf * (0.8 + 0.5 * inp.steer * r.driftDir);
     r.nitro = Math.min(100, r.nitro + (has(r, 'frufru') ? 16 : 8) * dt);
   } else yawT = -inp.steer * r.turn * sf * (vF < -1 ? -1 : 1);
+  if (TR.drift) yawT *= r.drifting ? 1.15 : (r.isPlayer ? 0.62 : 0.8); // pista de drift: sem derrapar o cachorro não faz a curva
   if (air) yawT *= 0.35;
   r.yawRate = lerp(r.yawRate, yawT, 1 - Math.exp(-(r.drifting ? 6 : 12) * dt));
   r.h += r.yawRate * dt;
@@ -2938,6 +3157,7 @@ function stepRunner(r, inp, dt) {
     if (!inp.throttle) vF -= Math.sign(vF) * Math.min(Math.abs(vF), 7 * dt);
     if (inp.brake) vF = vF > 0 ? Math.max(0, vF - 38 * dt) : Math.max(-9, vF - 12 * dt);
     if (inp.drift && !r.drifting && vF > 4) vF -= 10 * dt;
+    if (TR.elev && r.flyY < 1.5) vF -= 22 * slopeAlong(r.x, r.z, fx, fz) * dt; // ladeira: descida embala, subida segura
     if (vF > maxV) vF = Math.max(maxV, vF - (vF - maxV) * 2.2 * dt - 2 * dt);
     if (r.drifting) {
       // no drift a velocidade lateral vira velocidade para frente (quase sem perder embalo)
@@ -3135,6 +3355,7 @@ function aiInput(r, dt) {
   const steer = clamp(-diff * 2.6, -1, 1);
   const curv = 1 - T[r.idx].dot(T[(r.idx + 40) % N]);
   const throttle = curv > 0.2 && r.speed > r.maxV * 0.9 ? 0.4 : 1;
+  const aiDrift = TR.drift && curv > 0.12 && r.speed > 17 && Math.abs(diff) > 0.12;
   let jump = false;
   for (let i = 0; i < hurdles.length; i++) {
     const ds = wrapDelta(hurdles[i].s - s), key = i + ':' + Math.floor((r.dist - hurdles[i].s) / L);
@@ -3156,7 +3377,7 @@ function aiInput(r, dt) {
   }
   let fire = false;
   if (r.ammo > 0 && r.fireCD <= 0 && raceTime > 4 && Math.random() < dt * (0.5 + save.diff * 0.45) && missileTarget(r)) fire = true;
-  return { throttle, brake: false, steer, drift: false, nitro: r.aiNitro, jump, bark, fire };
+  return { throttle, brake: false, steer, drift: aiDrift, nitro: r.aiNitro, jump, bark, fire };
 }
 
 function passives(dt) {
@@ -3228,11 +3449,14 @@ function buildMissileMesh() {
   g.visible = false;
   return g;
 }
+let carrotPool = [];
 function buildMissiles() {
-  missilePool = []; missiles = [];
+  missilePool = []; missiles = []; carrotPool = [];
   for (let i = 0; i < 10; i++) { const m = buildMissileMesh(); world.add(m); missilePool.push(m); }
+  for (let i = 0; i < 6; i++) { const m = carrotMesh(3); m.visible = false; world.add(m); carrotPool.push(m); }
 }
-function clearMissiles() { for (const m of missiles) { m.mesh.visible = false; missilePool.push(m.mesh); } missiles = []; for (const r of runners) r.lockT = 0; }
+const poolOf = m => m.carrot ? carrotPool : missilePool;
+function clearMissiles() { for (const m of missiles) { m.mesh.visible = false; poolOf(m).push(m.mesh); } missiles = []; for (const r of runners) r.lockT = 0; }
 function missileTarget(r) {
   const fx = Math.sin(r.h), fz = Math.cos(r.h);
   let best = null, bd = 95;
@@ -3243,18 +3467,21 @@ function missileTarget(r) {
   }
   return best;
 }
-function fireMissile(r) {
-  if (r.ammo <= 0 || r.fireCD > 0 || r.stun > 0 || !missilePool.length) { if (r.isPlayer && r.ammo <= 0) pop('SEM MÍSSEIS! PEGUE AS CAIXAS', 'r'); return; }
+function fireMissile(r, forceTg) {
+  const carrot = has(r, 'kemilly'), pool = carrot ? carrotPool : missilePool;
+  if (r.ammo <= 0 || r.fireCD > 0 || r.stun > 0 || !pool.length) { if (r.isPlayer && r.ammo <= 0) pop(carrot ? 'SEM CENOURAS! PEGUE AS CAIXAS' : 'SEM MÍSSEIS! PEGUE AS CAIXAS', 'r'); return; }
   r.ammo--; r.fireCD = 0.7;
-  const mesh = missilePool.pop(), p = r.D.launcher.muzzle.getWorldPosition(new THREE.Vector3());
-  const tg = missileTarget(r), fx = Math.sin(r.h), fz = Math.cos(r.h), sp = Math.max(0, r.speed) + 38;
+  if (r.D.shoot) r.D.shoot();
+  const mesh = pool.pop(), p = r.D.launcher.muzzle.getWorldPosition(new THREE.Vector3());
+  const tg = forceTg !== undefined ? forceTg : missileTarget(r), fx = Math.sin(r.h), fz = Math.cos(r.h), sp = Math.max(0, r.speed) + (carrot ? 48 : 38);
+  if (r.isPlayer) netEvent('fire', { tg: tg && tg.pid });
   mesh.visible = true; mesh.position.copy(p);
-  missiles.push({ mesh, pos: p, vel: new THREE.Vector3(fx * sp, 3, fz * sp), owner: r, target: tg, t: 0 });
+  missiles.push({ mesh, pos: p, vel: new THREE.Vector3(fx * sp, 3, fz * sp), owner: r, target: tg, t: 0, carrot });
   const vol = player ? clamp(1 - Math.hypot(r.x - player.x, r.z - player.z) / 70, 0, 1) : 1;
   Sfx.launch(vol);
   for (let i = 0; i < 12; i++) dust.spawn(p.x, p.y, p.z, (Math.random() - 0.5) * 4 - fx * 6, Math.random() * 2, (Math.random() - 0.5) * 4 - fz * 6, 0.8, 0.5, 1.6, [0.8, 0.8, 0.8], 0.6, -1, 2);
-  if (r.isPlayer) pop(tg ? `MÍSSIL NO ${tg.b.name}!` : 'MÍSSIL!', 'o');
-  if (tg && tg.isPlayer) { pop(`${r.b.name} ATIROU EM VOCÊ!`, 'r'); Sfx.lockon(); }
+  if (r.isPlayer) pop(carrot ? (tg ? `CENOURA NO ${tg.b.name}!` : 'CENOURA!') : (tg ? `MÍSSIL NO ${tg.b.name}!` : 'MÍSSIL!'), 'o');
+  if (tg && tg.isPlayer) { pop(`${r.b.name} ${carrot ? 'JOGOU UMA CENOURA' : 'ATIROU'} EM VOCÊ!`, 'r'); Sfx.lockon(); }
 }
 const _mt = new THREE.Vector3();
 function updateMissiles(dt) {
@@ -3268,12 +3495,13 @@ function updateMissiles(dt) {
       m.vel.lerp(_mt, 1 - Math.exp(-(m.t < 0.25 ? 1 : 3.4) * dt));
       if (tg.isPlayer) tg.lockT = 0.3;
     } else { m.vel.y += (1.2 - m.pos.y) * dt * 4; }
-    m.vel.setLength(Math.min(sp + 25 * dt, 80));
+    m.vel.setLength(Math.min(sp + 25 * dt, m.carrot ? 92 : 80));
     m.pos.addScaledVector(m.vel, dt);
     if (m.pos.y < 0.5) { m.pos.y = 0.5; m.vel.y = Math.abs(m.vel.y) * 0.3; }
     m.mesh.position.copy(m.pos); m.mesh.lookAt(_mt.copy(m.pos).add(m.vel));
-    glow.spawn(m.pos.x, m.pos.y, m.pos.z, -m.vel.x * 0.05, 0.3, -m.vel.z * 0.05, 0.25, 0.7, 0.2, Math.random() < 0.5 ? [1, 0.6, 0.2] : [1, 0.9, 0.5], 1, 0, 2);
-    if (Math.random() < 0.7) dust.spawn(m.pos.x, m.pos.y, m.pos.z, (Math.random() - 0.5), Math.random(), (Math.random() - 0.5), 1.2, 0.5, 2.2, [0.75, 0.75, 0.78], 0.45, -0.6, 1.5);
+    if (m.carrot) { m.mesh.rotateZ(m.t * 14); if (Math.random() < 0.6) glow.spawn(m.pos.x, m.pos.y, m.pos.z, 0, 0.3, 0, 0.3, 0.5, 0.15, Math.random() < 0.5 ? [1, 0.5, 0.1] : [0.4, 0.8, 0.2], 1, 0, 2); }
+    else glow.spawn(m.pos.x, m.pos.y, m.pos.z, -m.vel.x * 0.05, 0.3, -m.vel.z * 0.05, 0.25, 0.7, 0.2, Math.random() < 0.5 ? [1, 0.6, 0.2] : [1, 0.9, 0.5], 1, 0, 2);
+    if (!m.carrot && Math.random() < 0.7) dust.spawn(m.pos.x, m.pos.y, m.pos.z, (Math.random() - 0.5), Math.random(), (Math.random() - 0.5), 1.2, 0.5, 2.2, [0.75, 0.75, 0.78], 0.45, -0.6, 1.5);
     let hit = null;
     for (const o of runners) {
       if (o === m.owner && m.t < 1.5) continue;
@@ -3288,19 +3516,35 @@ function updateMissiles(dt) {
   }
 }
 function explodeMissile(m, hit) {
-  m.mesh.visible = false; missilePool.push(m.mesh);
+  m.mesh.visible = false; poolOf(m).push(m.mesh);
   const p = m.pos;
+  if (m.carrot) return splatCarrot(m, hit);
   for (let i = 0; i < 40; i++) { const a = Math.random() * 6.28, u = Math.random() * 10; glow.spawn(p.x, p.y, p.z, Math.cos(a) * u, Math.random() * 9, Math.sin(a) * u, 0.5 + Math.random() * 0.4, 1.4, 0.3, Math.random() < 0.5 ? [1, 0.55, 0.15] : [1, 0.85, 0.3], 1, 6, 2.5); }
   for (let i = 0; i < 18; i++) dust.spawn(p.x, p.y, p.z, (Math.random() - 0.5) * 7, Math.random() * 5, (Math.random() - 0.5) * 7, 1.6, 1.2, 3.6, [0.3, 0.28, 0.27], 0.7, -1.5, 1.8);
   const dPl = player ? Math.hypot(p.x - player.x, p.z - player.z) : 0;
   Sfx.boom(clamp(1 - dPl / 90, 0, 1)); if (dPl < 25) shake(0.6 * (1 - dPl / 25));
   if (!hit) return;
+  if (hit.remote) { if (m.owner.isPlayer) { m.owner.missHits++; pop(`ACERTOU ${hit.b.name}!`, 'v'); } return; }
   hit.stun = 1.4; hit.flip = 1.0; hit.vx *= 0.2; hit.vz *= 0.2; hit.vy = 8; hit.nitroOn = false; hit.hits++;
   endDrift(hit, true);
   if (m.owner !== hit) m.owner.missHits++;
   if (hit.isPlayer) { pop('ATINGIDO POR UM MÍSSIL!', 'r'); shake(0.8); vib([100, 50, 160]); if (m.owner !== hit) narrate(`${m.owner.b.name} ACERTOU VOCÊ COM UM MÍSSIL!`, true); }
   else if (!m.owner.isPlayer && m.owner !== hit) narrate(`${m.owner.b.name} ACERTOU ${hit.b.name} COM UM MÍSSIL!`);
   if (m.owner.isPlayer && hit !== m.owner) { pop(`ACERTOU ${hit.b.name}!`, 'v'); narrate(`VOCÊ ACERTOU ${hit.b.name}!`, true); m.owner.nitro = Math.min(100, m.owner.nitro + 10); }
+}
+function splatCarrot(m, hit) {
+  const p = m.pos;
+  for (let i = 0; i < 30; i++) { const a = Math.random() * 6.28, u = Math.random() * 7; glow.spawn(p.x, p.y, p.z, Math.cos(a) * u, Math.random() * 7, Math.sin(a) * u, 0.4 + Math.random() * 0.3, 1.1, 0.2, Math.random() < 0.7 ? [1, 0.5, 0.1] : [0.4, 0.8, 0.2], 1, 9, 2); }
+  const dPl = player ? Math.hypot(p.x - player.x, p.z - player.z) : 0;
+  if (Sfx.ctx) Sfx.noise(0.18, 0.4 * clamp(1 - dPl / 70, 0, 1), 900);
+  if (!hit) return;
+  if (hit.remote) { if (m.owner.isPlayer) { m.owner.missHits++; pop(`CENOURADA NO ${hit.b.name}!`, 'v'); } return; }
+  hit.stun = 1.1; hit.flip = 0.8; hit.vx *= 0.3; hit.vz *= 0.3; hit.vy = 6; hit.nitroOn = false; hit.nitro = Math.max(0, hit.nitro - 25); hit.hits++;
+  endDrift(hit, true);
+  if (m.owner !== hit) m.owner.missHits++;
+  if (hit.isPlayer) { pop('CENOURADA! PERDEU NITRO', 'r'); shake(0.5); vib([80, 40, 120]); if (m.owner !== hit) narrate(`${m.owner.b.name} ACERTOU VOCÊ COM UMA CENOURA!`, true); }
+  else if (!m.owner.isPlayer && m.owner !== hit) narrate(`${m.owner.b.name} ACERTOU ${hit.b.name} COM UMA CENOURA!`);
+  if (m.owner.isPlayer && hit !== m.owner) { pop(`CENOURADA NO ${hit.b.name}!`, 'v'); narrate(`VOCÊ ACERTOU ${hit.b.name} COM UMA CENOURA!`, true); m.owner.nitro = Math.min(100, m.owner.nitro + 10); }
 }
 
 function syncVisual(r) {
@@ -3418,9 +3662,10 @@ function refreshMenu() {
   $('trackName').textContent = TRACKS[save.track].name.split(' ')[0];
   $('diffName').textContent = DIFFS[save.diff].n;
   $('lapsName').textContent = save.laps;
-  $('modeName').textContent = save.mode ? 'COPA' : 'CORRIDA';
-  if (save.mode) $('trackName').textContent = 'TODAS';
-  $('startBtn').textContent = save.mode ? 'COMEÇAR COPA' : 'CORRER';
+  $('modeName').textContent = ['CORRIDA', 'COPA', 'DRIFT'][save.mode] || 'CORRIDA';
+  if (save.mode === 1) $('trackName').textContent = 'TODAS';
+  if (save.mode === 2) $('trackName').textContent = 'SERRA';
+  $('startBtn').textContent = save.mode === 1 ? 'COMEÇAR COPA' : save.mode === 2 ? 'DESAFIO DRIFT' : 'CORRER';
   setCoins();
 }
 function renderGarage() {
@@ -3443,9 +3688,10 @@ $('upList').addEventListener('click', e => {
 });
 
 function toMenu() {
+  if (Net.racing) Net.racing = false;
   clearRace(); Voice.stop(); $('pops').style.top = '';
   state = 'menu';
-  ['hud', 'results', 'pause', 'touch', 'lights', 'garage', 'shop', 'missions', 'cupEnd'].forEach(id => show(id, false));
+  ['hud', 'results', 'pause', 'touch', 'lights', 'garage', 'shop', 'missions', 'cupEnd', 'online'].forEach(id => show(id, false));
   show('menu', true); $('big').innerHTML = ''; $('pops').innerHTML = '';
   setFx(0, 0);
   if (Sfx.ctx) ['wind', 'skid', 'nitro'].forEach(n => Sfx.setLoop(n, 0));
@@ -3524,7 +3770,9 @@ function changeTrack(i) {
   }));
 }
 
-function startRace() {
+function startRace(online) {
+  if (!Array.isArray(online)) online = null;
+  if (!online) Net.racing = false;
   Sfx.init();
   clearRace();
   if (preview) { scene.remove(preview.root); disposeTree(preview.root); preview = null; }
@@ -3532,25 +3780,28 @@ function startRace() {
   camera.clearViewOffset();
   const pUp = getUp(BREEDS[save.dog]);
   const avg = Object.values(pUp).reduce((a, b) => a + b, 0) / 5;
-  const order = cup ? [save.dog, ...cup.rivals] : [save.dog, ...BREEDS.map((_, i) => i).filter(i => i !== save.dog).sort(() => Math.random() - 0.5).slice(0, 5)];
-  const slots = [5, ...[0, 1, 2, 3, 4].sort(() => Math.random() - 0.5)];
+  const order = online ? online.map(p => p.dog) : cup ? [save.dog, ...cup.rivals] : [save.dog, ...BREEDS.map((_, i) => i).filter(i => i !== save.dog).sort(() => Math.random() - 0.5).slice(0, 5)];
+  const slots = online ? online.map((_, i) => i) : [5, ...[0, 1, 2, 3, 4].sort(() => Math.random() - 0.5)];
+  const meK = online ? online.findIndex(p => p.pid === Net.peer.id) : 0;
   order.forEach((bi, k) => {
-    const b = BREEDS[bi];
+    // online: o cachorro leva o apelido e a cor do jogador
+    const b = online ? { ...BREEDS[bi], name: online[k].name, color: online[k].color } : BREEDS[bi];
     let up = pUp;
-    if (k) { const lv = () => clamp(Math.round(avg + DIFFS[save.diff].upOff + (Math.random() * 2 - 1)), 0, 5); up = { motor: lv(), acel: lv(), grip: lv(), nitro: lv(), pulo: lv() }; }
-    const r = new Runner(b, k + 1, k === 0, up);
+    if (k !== meK) { const lv = () => clamp(Math.round(avg + DIFFS[save.diff].upOff + (Math.random() * 2 - 1)), 0, 5); up = { motor: lv(), acel: lv(), grip: lv(), nitro: lv(), pulo: lv() }; }
+    const r = new Runner(b, k + 1, k === meK, up);
     const sl = slots[k], row = Math.floor(sl / 2), col = sl % 2;
     r.place(-5 - row * 6.5 - col * 2.5, col ? 3.6 : -3.6);
     if (cup && k && cup.looks[b.id]) { r.look = cup.looks[b.id]; applyLook(r.D, r.look); }
+    if (online && k !== meK) { r.remote = true; r.pid = online[k].pid; r.skill = 1; }
     r.lane = r.d; runners.push(r);
-    if (!k) player = r;
+    if (k === meK) player = r;
   });
   hurdles.forEach(h => { h.fall = 0; h.bar.rotation.x = 0; h.bar.position.y = 0.95; });
   nitros.forEach(n => { n.cd = 0; n.g.visible = true; });
   ammos.forEach(a => { a.cd = 0; a.g.visible = true; });
   coins.forEach(c => { c.taken = false; c.g.visible = true; });
   lastLeader = null; lastPos = 5; firstFinisher = false; narrCD = 0; narrT = 0; $('narr').classList.remove('on');
-  $('cupTag').textContent = cup ? `COPA · CORRIDA ${cup.idx + 1}/${cup.tracks.length}` : '';
+  $('cupTag').textContent = online ? `ONLINE · SALA ${Net.code}` : cup ? `COPA · CORRIDA ${cup.idx + 1}/${cup.tracks.length}` : '';
   clearMissiles(); dust.clear(); glow.clear(); clearBirds(); pickGoals(); $('goals').classList.remove('mini');
   raceTime = 0; countdown = 4.0; lastCount = 4; finishTimer = 0;
   state = 'countdown';
@@ -3559,6 +3810,7 @@ function startRace() {
   ['menu', 'results', 'pause', 'garage'].forEach(id => show(id, false));
   show('hud', true); show('lights', true); if (isTouch) show('touch', true);
   $('lapT').textContent = save.laps; $('posOf').textContent = 'DE ' + runners.length;
+  $('tML').textContent = has(player, 'kemilly') ? 'CENOURA' : 'MÍSSIL';
   $('lights').querySelectorAll('span').forEach(s => s.className = '');
   setLamps(0, false);
   const rec = save.best[TR.id + '_' + save.laps];
@@ -3691,9 +3943,186 @@ let cup = null;
 function startCup() {
   Sfx.init();
   const rivals = BREEDS.map((_, i) => i).filter(i => i !== save.dog).sort(() => Math.random() - 0.5).slice(0, 5);
-  cup = { idx: 0, tracks: [0, 1, 2], rivals, pts: {}, looks: {} };
+  cup = { idx: 0, tracks: TRACKS.map((_, i) => i), rivals, pts: {}, looks: {} };
   rivals.forEach(i => cup.looks[BREEDS[i].id] = randomLook());
   loadTrack(0, startRace);
+}
+/* ---------------------------------------------------------------------
+   Online: conta no aparelho + salas com código (PeerJS / WebRTC, sem servidor próprio)
+   O anfitrião repassa as mensagens; cada aparelho simula o próprio cachorro
+   e desenha os dos amigos com a posição que chega pela rede.
+   --------------------------------------------------------------------- */
+const NET_PREFIX = 'corrida-canina-turbo-v2-', NET_COLORS = ['#f97316', '#38bdf8', '#a855f7', '#22c55e', '#facc15', '#ef4444', '#ec4899', '#e5e7eb'];
+const Net = { peer: null, host: false, code: '', conns: new Map(), hostConn: null, players: [], racing: false, inRoom: false, sendT: 0, color: NET_COLORS[Math.random() * NET_COLORS.length | 0] };
+const passHash = (t) => { let h = 2166136261; for (const ch of 'cct:' + t) { h ^= ch.charCodeAt(0); h = Math.imul(h, 16777619); } return (h >>> 0).toString(36); };
+const me = () => save.accounts && save.logged != null ? save.accounts[save.logged] : null;
+function loadPeer() {
+  return new Promise((ok, no) => {
+    if (window.Peer) return ok();
+    const sc = document.createElement('script'); sc.src = 'https://cdn.jsdelivr.net/npm/peerjs@1.5.5/dist/peerjs.min.js';
+    sc.onload = () => window.Peer ? ok() : no(new Error('x')); sc.onerror = () => no(new Error('x')); document.head.appendChild(sc);
+  });
+}
+function onMsg(id, t, good) { const el = $(id); el.textContent = t || ''; el.classList.toggle('ok', !!good); }
+function toOnline() {
+  state = 'online'; show('menu', false); show('online', true); renderOnline();
+}
+function renderOnline() {
+  const acc = me(), has = save.accounts && save.accounts.length;
+  const view = Net.inRoom ? 'onRoom' : acc ? 'onHome' : has && !Net.newAcc ? 'onLogin' : 'onReg';
+  ['onReg', 'onLogin', 'onHome', 'onRoom'].forEach(id => show(id, id === view));
+  if (view === 'onReg') {
+    $('regColors').innerHTML = NET_COLORS.map(c => `<button type="button" data-c="${c}" style="background:${c}" class="${c === Net.color ? 'on' : ''}" aria-label="cor"></button>`).join('');
+  } else if (view === 'onLogin') {
+    const a = save.accounts[save.lastAcc || 0] || save.accounts[0];
+    $('loginName').textContent = a.name; $('loginColor').style.background = a.color;
+  } else if (view === 'onHome') {
+    $('onName').textContent = acc.name; $('onColor').style.background = acc.color;
+  } else renderRoom();
+  if (view !== Net.lastView) { Net.lastView = view; $('online').querySelector('.side').scrollTop = 0; }
+}
+function renderRoom() {
+  $('roomCode').textContent = Net.code;
+  $('roomList').innerHTML = Net.players.map(p => `<li><i style="background:${p.color}"></i><b>${p.name}</b><small>${BREEDS[p.dog] ? BREEDS[p.dog].name : ''}${p.host ? ' · ANFITRIÃO' : ''}</small></li>`).join('');
+  $('roomTrackName').textContent = TRACKS[save.track].name.split(' ')[0]; $('roomLapsName').textContent = save.laps;
+  $('roomOpts').style.pointerEvents = Net.host ? '' : 'none'; $('roomOpts').style.opacity = Net.host ? 1 : 0.6;
+  show('roomStart', Net.host);
+  if (Net.host) onMsg('roomMsg', Net.players.length < 2 ? 'Mande o código para os amigos entrarem' : `${Net.players.length} jogadores na sala`, Net.players.length > 1);
+  else onMsg('roomMsg', 'Esperando o anfitrião começar...', true);
+}
+function register(e) {
+  e.preventDefault();
+  const name = $('regName').value.trim().toUpperCase().replace(/[^A-Z0-9ÁÂÃÀÉÊÍÓÔÕÚÇ _-]/g, ''), pass = $('regPass').value;
+  if (name.length < 3) return onMsg('regMsg', 'O apelido precisa de pelo menos 3 letras');
+  if (pass.length < 4) return onMsg('regMsg', 'A senha precisa de pelo menos 4 caracteres');
+  save.accounts = save.accounts || [];
+  if (save.accounts.some(a => a.name === name)) return onMsg('regMsg', 'Esse apelido já está cadastrado neste aparelho');
+  save.accounts.push({ name, color: Net.color, pass: passHash(pass), since: Date.now() });
+  save.logged = save.lastAcc = save.accounts.length - 1; Net.newAcc = false; persist();
+  $('regPass').value = ''; renderOnline(); onMsg('onMsg', `Conta criada! Bem-vindo, ${name}`, true); Sfx.coin && Sfx.coin();
+}
+function login(e) {
+  e.preventDefault();
+  const i = save.lastAcc || 0, a = save.accounts[i];
+  if (passHash($('loginPass').value) !== a.pass) return onMsg('loginMsg', 'Senha errada');
+  save.logged = i; persist(); $('loginPass').value = ''; renderOnline();
+}
+function netSend(m, except) {
+  if (Net.host) { for (const [id, c] of Net.conns) if (id !== except && c.open) c.send(m); }
+  else if (Net.hostConn && Net.hostConn.open) Net.hostConn.send(m);
+}
+const myNetInfo = () => ({ pid: Net.peer.id, name: me().name, color: me().color, dog: save.dog, host: Net.host });
+function netLobby() { const m = { t: 'lobby', players: Net.players, track: save.track, laps: save.laps }; netSend(m); renderRoom(); }
+function netFail(t) { onMsg(Net.inRoom ? 'roomMsg' : 'onMsg', t); }
+async function netCreate() {
+  onMsg('onMsg', 'Criando sala...', true);
+  try { await loadPeer(); } catch (e) { return onMsg('onMsg', 'Sem internet: não deu para abrir o modo online'); }
+  netClose(); Net.host = true; Net.code = Array.from({ length: 5 }, () => 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'[Math.random() * 32 | 0]).join('');
+  const peer = Net.peer = new Peer(NET_PREFIX + Net.code, window.CCT_PEER || {});
+  peer.on('open', () => { Net.inRoom = true; Net.players = [myNetInfo()]; renderOnline(); });
+  peer.on('connection', c => {
+    c.on('data', d => netFromGuest(c, d));
+    c.on('close', () => netGone(c.peer));
+  });
+  peer.on('error', e => { if (e.type === 'unavailable-id') netCreate(); else netFail('Erro na conexão: ' + e.type); });
+}
+async function netJoin() {
+  const code = $('onCode').value.trim().toUpperCase();
+  if (code.length !== 5) return onMsg('onMsg', 'Digite o código de 5 letras da sala');
+  onMsg('onMsg', 'Procurando a sala...', true);
+  try { await loadPeer(); } catch (e) { return onMsg('onMsg', 'Sem internet: não deu para abrir o modo online'); }
+  netClose(); Net.host = false; Net.code = code;
+  const peer = Net.peer = new Peer(undefined, window.CCT_PEER || {});
+  peer.on('open', () => {
+    const c = Net.hostConn = peer.connect(NET_PREFIX + code, { reliable: true });
+    c.on('open', () => c.send({ t: 'hello', ...myNetInfo() }));
+    c.on('data', netFromHost);
+    c.on('close', () => { if (Net.inRoom) { Net.inRoom = false; if (state === 'online') { renderOnline(); onMsg('onMsg', 'O anfitrião fechou a sala'); } else pop('O ANFITRIÃO SAIU DA SALA', 'r'); } });
+  });
+  peer.on('error', e => onMsg('onMsg', e.type === 'peer-unavailable' ? 'Sala não encontrada. Confira o código' : 'Erro na conexão: ' + e.type));
+}
+function netClose() {
+  if (Net.peer) { try { Net.peer.destroy(); } catch (e) { } }
+  Net.peer = null; Net.conns.clear(); Net.hostConn = null; Net.players = []; Net.inRoom = false; Net.racing = false;
+}
+function netGone(pid) {
+  Net.conns.delete(pid); Net.players = Net.players.filter(p => p.pid !== pid);
+  netSend({ t: 'gone', pid }); netApply({ t: 'gone', pid }); if (state === 'online') netLobby();
+}
+function netFromGuest(c, d) {
+  if (d.t === 'hello') {
+    if (Net.racing || Net.players.length >= 6) { c.send({ t: 'full', why: Net.racing ? 'A corrida já começou' : 'A sala está cheia' }); setTimeout(() => c.close(), 300); return; }
+    Net.conns.set(c.peer, c);
+    Net.players = Net.players.filter(p => p.pid !== c.peer).concat({ pid: c.peer, name: String(d.name).slice(0, 12), color: d.color, dog: clamp(d.dog | 0, 0, BREEDS.length - 1), host: false });
+    netLobby(); Sfx.beep(false); return;
+  }
+  if (d.t === 'dog') { const p = Net.players.find(p => p.pid === c.peer); if (p) { p.dog = clamp(d.dog | 0, 0, BREEDS.length - 1); netLobby(); } return; }
+  netSend(d, c.peer); netApply(d);
+}
+function netFromHost(d) {
+  if (d.t === 'full') { onMsg('onMsg', d.why); return; }
+  if (d.t === 'lobby') {
+    Net.players = d.players; save.track = d.track; save.laps = d.laps;
+    if (!Net.inRoom) { Net.inRoom = true; Sfx.beep(true); }
+    if (state === 'online') renderOnline();
+    return;
+  }
+  netApply(d);
+}
+function netStartRace() {
+  if (Net.players.length < 2) return onMsg('roomMsg', 'Precisa de pelo menos 2 jogadores');
+  Net.players[0].dog = save.dog;
+  const m = { t: 'start', track: save.track, laps: save.laps, players: Net.players };
+  netSend(m); netApply(m);
+}
+function netApply(d) {
+  if (d.t === 'start') {
+    Net.players = d.players; save.laps = d.laps; cup = null; Net.racing = true;
+    show('online', false);
+    const go = () => startRace(d.players);
+    if (TR !== TRACKS[d.track]) loadTrack(d.track, go); else go();
+    return;
+  }
+  const r = runners.find(x => x.pid === d.pid && x.remote);
+  if (d.t === 'gone') { if (r) { r.D.root.visible = false; r.finished = true; r.finishTime = 1e9; r.gone = true; if (Net.racing) pop(`${r.b.name} SAIU DA CORRIDA`, 'r'); } return; }
+  if (!r) return;
+  if (d.t === 'st') { r.net = d.s; r.netT = performance.now(); }
+  else if (d.t === 'ev') {
+    if (d.e === 'bark') { doBark(r); if (Sfx.ctx) Sfx.voice(r.b, clamp(1 - Math.hypot(r.x - player.x, r.z - player.z) / 70, 0, 1)); }
+    else if (d.e === 'fire') { r.ammo = Math.max(r.ammo, 1); r.fireCD = 0; const st = r.stun; r.stun = 0; fireMissile(r, runners.find(x => x.pid === d.tg) || null); r.stun = st; }
+    else if (d.e === 'jump') { r.vy = r.jumpV; }
+  }
+}
+function netEvent(e, extra) { if (Net.racing) netSend({ t: 'ev', pid: Net.peer.id, e, ...extra }); }
+// 15 vezes por segundo cada aparelho manda a posição do próprio cachorro
+function netTick(dt) {
+  if (!Net.racing || !player) return;
+  Net.sendT -= dt; if (Net.sendT > 0) return; Net.sendT = 1 / 15;
+  const r = player;
+  netSend({ t: 'st', pid: Net.peer.id, s: [+r.x.toFixed(2), +r.z.toFixed(2), +r.h.toFixed(3), +r.y.toFixed(2), +r.vx.toFixed(2), +r.vz.toFixed(2), +r.dist.toFixed(2), +r.d.toFixed(2),
+    (r.nitroOn ? 1 : 0) | (r.drifting ? 2 : 0) | (r.finished ? 4 : 0) | (r.driftDir > 0 ? 8 : 0), +r.stun.toFixed(2), +r.flyY.toFixed(2), r.ammo, +r.yawRate.toFixed(2), +r.finishTime.toFixed(3), +r.flip.toFixed(2)] });
+}
+// cachorro de um amigo: segue a última posição recebida, com previsão curta
+function netStep(r, dt) {
+  const s = r.net; if (!s || r.gone) return;
+  const age = Math.min(0.25, (performance.now() - r.netT) / 1000);
+  const tx = s[0] + s[4] * age, tz = s[1] + s[5] * age, k = 1 - Math.exp(-14 * dt);
+  if (Math.hypot(tx - r.x, tz - r.z) > 25) { r.x = tx; r.z = tz; } else { r.x += (tx - r.x) * k; r.z += (tz - r.z) * k; }
+  r.h += wrapAng(s[2] - r.h) * k; r.y = s[3]; r.vx = s[4]; r.vz = s[5];
+  r.dist = s[6] + Math.hypot(s[4], s[5]) * age * 0.9; r.s = wrapS(r.dist); r.idx = Math.round(r.s / L * N) % N; r.d = s[7];
+  r.nitroOn = !!(s[8] & 1); r.drifting = !!(s[8] & 2); r.driftDir = s[8] & 8 ? 1 : -1;
+  if ((s[8] & 4) && !r.finished) { r.finished = true; r.finishTime = s[13]; narrate(`${r.b.name} CRUZOU A CHEGADA!`); }
+  r.stun = s[9]; r.flyY = s[10]; r.ammo = s[11]; r.yawRate = s[12]; r.flip = s[14] || 0;
+  r.speed = Math.hypot(r.vx, r.vz); r.air = r.y > 0.02;
+  r.phase += dt * (r.speed > 0.3 ? 4 + r.speed * 0.33 : 0);
+}
+
+// modo drift: sempre na Serra do Drift, onde derrapar é quase obrigatório
+function startDrift() {
+  Sfx.init(); cup = null;
+  const i = TRACKS.findIndex(t => t.drift);
+  if (TR !== TRACKS[i]) loadTrack(i, startRace); else startRace();
+  setTimeout(() => pop('SEGURE O DRIFT NAS CURVAS!', 'o'), 2500);
 }
 function loadTrack(i, then) {
   show('loading', true);
@@ -3775,7 +4204,7 @@ function showResults() {
     $('cupMid').innerHTML = `<tr><td colspan="4" class="lbl">COPA · CORRIDA ${cup.idx + 1} DE ${cup.tracks.length}</td></tr>` + cupTableRows();
   }
   show('cupPanel', !!cup);
-  $('resAgain').textContent = cup ? (cup.idx < cup.tracks.length - 1 ? 'PRÓXIMA PISTA' : 'VER TROFÉU') : 'DE NOVO';
+  $('resAgain').textContent = Net.racing ? 'VOLTAR À SALA' : cup ? (cup.idx < cup.tracks.length - 1 ? 'PRÓXIMA PISTA' : 'VER TROFÉU') : 'DE NOVO';
   $('resMenu').textContent = cup ? 'SAIR DA COPA' : 'MENU';
   show('resGarage', !cup);
   $('rewards').innerHTML = `<div><span>${pos}º lugar</span><b>+${place}</b></div><div><span>Ossos de ouro × ${player.coins}</span><b>+${coinV}</b></div>` +
@@ -3790,7 +4219,7 @@ function showResults() {
 }
 function setPaused(p) {
   if (p && (state === 'race' || state === 'countdown' || state === 'finished')) {
-    pausedFrom = state; state = 'paused'; show('pause', true); refreshPauseBtns(); bgm.volume = 0.25;
+    pausedFrom = state; state = 'paused'; show('pause', true); show('restartBtn', !Net.racing); refreshPauseBtns(); bgm.volume = 0.25;
     if (Sfx.ctx) ['wind', 'skid', 'nitro'].forEach(n => Sfx.setLoop(n, 0));
   } else if (!p && state === 'paused') { state = pausedFrom; show('pause', false); bgm.volume = 0.6; }
 }
@@ -3899,6 +4328,7 @@ function setFx(lines, vig) { fxEl.style.opacity = lines; vigEl.style.opacity = v
 const keys = {};
 const touch = { left: false, right: false, brake: false, drift: false, nitro: false, jump: false, bark: false, fire: false };
 addEventListener('keydown', e => {
+  if (e.target && e.target.tagName === 'INPUT') return;
   if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Space', 'Enter'].includes(e.code)) e.preventDefault();
   keys[e.code] = true;
   if (e.repeat) return;
@@ -3909,7 +4339,7 @@ addEventListener('keydown', e => {
     if (e.code === 'Enter' || e.code === 'Space') startRace();
     if (e.code === 'KeyG') toGarage();
     if (e.code === 'KeyT') changeTrack((save.track + 1) % TRACKS.length);
-  } else if (state === 'garage' || state === 'shop' || state === 'missions') {
+  } else if (state === 'garage' || state === 'shop' || state === 'missions' || state === 'online') {
     if (e.code === 'Escape' || e.code === 'Enter') toMenu();
   } else if (state === 'results') {
     if (!$('cupEnd').hidden) { if (['Enter', 'Space', 'Escape'].includes(e.code)) finishCup(); }
@@ -3949,15 +4379,29 @@ click('diffBtn', () => { save.diff = (save.diff + 1) % DIFFS.length; persist(); 
 click('lapsBtn', () => { save.laps = save.laps >= 7 ? 1 : save.laps + 2; persist(); refreshMenu(); Sfx.beep(false); });
 click('garageBtn', toGarage);
 click('garageBack', toMenu);
-click('startBtn', () => save.mode ? startCup() : startRace());
-click('modeBtn', () => { save.mode = 1 - save.mode; persist(); refreshMenu(); Sfx.beep(false); });
+click('startBtn', () => save.mode === 1 ? startCup() : save.mode === 2 ? startDrift() : startRace());
+click('modeBtn', () => { save.mode = ((save.mode | 0) + 1) % 3; persist(); refreshMenu(); Sfx.beep(false); });
 click('shopBtn', toShop);
 click('shopBack', () => { claimAchievements(); toMenu(); });
 click('missBtn', toMissions);
 click('missBack', toMenu);
+click('onlineBtn', toOnline);
+click('onBack', () => { netClose(); toMenu(); });
+$('onReg').addEventListener('submit', register);
+$('onLogin').addEventListener('submit', login);
+$('regColors').addEventListener('click', e => { const c = e.target.dataset && e.target.dataset.c; if (c) { Net.color = c; renderOnline(); } });
+click('loginNew', () => { Net.newAcc = true; renderOnline(); });
+click('onOut', () => { save.logged = null; persist(); netClose(); renderOnline(); });
+click('onCreate', netCreate);
+click('onJoinBtn', netJoin);
+$('onCode').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); netJoin(); } });
+click('roomStart', netStartRace);
+click('roomLeave', () => { netClose(); renderOnline(); });
+click('roomTrack', () => { if (!Net.host) return; save.track = (save.track + 1) % TRACKS.length; persist(); netLobby(); });
+click('roomLaps', () => { if (!Net.host) return; save.laps = save.laps >= 7 ? 1 : save.laps + 2; persist(); netLobby(); });
 click('pauseBtn', () => setPaused(true));
 click('resumeBtn', () => setPaused(false));
-click('restartBtn', () => { show('pause', false); startRace(); });
+click('restartBtn', () => { if (Net.racing) return; show('pause', false); startRace(); });
 click('quitBtn', () => { cup = null; toMenu(); });
 click('voiceBtn', () => { save.voice = !save.voice; persist(); refreshPauseBtns(); if (save.voice) speak('Locutor ligado!', true); else Voice.stop(); });
 click('vibBtn', () => { save.vib = !save.vib; persist(); refreshPauseBtns(); vib(40); });
@@ -3967,6 +4411,7 @@ click('qualBtn', () => { save.qual = (save.qual + 1) % QUALS.length; persist(); 
 click('musicBtn', () => { cycleMusic(); refreshPauseBtns(); });
 click('resAgain', resAgain);
 function resAgain() {
+  if (Net.racing || Net.inRoom) { Net.racing = false; clearRace(); ['results', 'hud', 'touch'].forEach(id => show(id, false)); placePreview(); if (Net.host) netLobby(); return toOnline(); }
   if (!cup) return startRace();
   if (cup.idx < cup.tracks.length - 1) { cup.idx++; loadTrack(cup.tracks[cup.idx], startRace); }
   else showCupEnd();
@@ -4021,7 +4466,7 @@ function frame() {
     }
   }
 
-  if (state === 'menu' || state === 'garage' || state === 'shop' || state === 'missions') {
+  if (state === 'menu' || state === 'garage' || state === 'shop' || state === 'missions' || state === 'online') {
     menuAng += dt * 0.35;
     if (preview && turntable) {
       turntable.rotation.y += dt * 0.4;
@@ -4059,8 +4504,8 @@ function frame() {
     updateChaseCam(player, dt); updateHud(dt);
   } else if (state === 'race' || state === 'finished') {
     raceTime += dt;
-    for (const r of runners) stepRunner(r, (r.isPlayer && !r.finished) ? playerInput() : aiInput(r, dt), dt);
-    interactions(dt);
+    for (const r of runners) { if (r.remote) netStep(r, dt); else stepRunner(r, (r.isPlayer && !r.finished) ? playerInput() : aiInput(r, dt), dt); }
+    interactions(dt); netTick(dt);
     for (const r of runners) { syncVisual(r); effects(r, dt); }
     if (state === 'finished') {
       finishTimer += dt;
@@ -4080,7 +4525,8 @@ function frame() {
       }
     }
   } else if (state === 'results') {
-    for (const r of runners) { stepRunner(r, aiInput(r, dt), dt); syncVisual(r); }
+    for (const r of runners) { if (r.remote) netStep(r, dt); else stepRunner(r, aiInput(r, dt), dt); syncVisual(r); }
+    netTick(dt);
     const p = player.D.root.position; menuAng += dt * 0.3;
     _cv.set(p.x + Math.cos(menuAng) * 12, 6, p.z + Math.sin(menuAng) * 12);
     camera.position.lerp(_cv, 1 - Math.exp(-2 * dt)); camera.lookAt(p.x, 1, p.z);
@@ -4089,7 +4535,7 @@ function frame() {
   sky.position.copy(camera.position);
   const focus = player ? player.D.root.position : (preview ? preview.root.position : P[0]);
   sun.target.position.copy(focus); sun.position.copy(focus).addScaledVector(sunDir, 150);
-  renderer.render(scene, camera);
+  renderLifted(focus);
 }
 
 applyQuality();
@@ -4103,7 +4549,7 @@ function simTicks(sec, inpFn) {
   const dt = 1 / 60;
   for (let t = 0; t < sec && (state === 'race' || state === 'finished'); t += dt) {
     raceTime += dt; time += dt; updateBalls(time); updateBirds(dt, state === 'race'); updateMissiles(dt);
-    for (const r of runners) stepRunner(r, (r.isPlayer && !r.finished) ? inpFn(player, raceTime) : aiInput(r, dt), dt);
+    for (const r of runners) { if (r.remote) netStep(r, dt); else stepRunner(r, (r.isPlayer && !r.finished) ? inpFn(player, raceTime) : aiInput(r, dt), dt); }
     interactions(dt); if (state === 'race') checkGoals(dt);
     if (state === 'finished') { finishTimer += dt; if (finishTimer > 7 || (finishTimer > 3.5 && runners.every(r => r.finished))) showResults(); }
   }
