@@ -366,6 +366,7 @@
 
 <div id="loading" class="screen disp">CARREGANDO</div>
 
+<script src="modelos.js"></script>
 <script type="importmap">
 { "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js" } }
 </script>
@@ -1470,7 +1471,7 @@ function setInst(m, i, x, y, z, rx, ry, rz, sx, sy, sz) {
 }
 function disposeTree(o) {
   o.traverse(c => {
-    if (c.geometry) c.geometry.dispose();
+    if (c.geometry && !c.geometry.userData.keep) c.geometry.dispose();
     if (c.material) [].concat(c.material).forEach(m => {
       if (SHARED.has(m)) return;
       for (const k of ['map', 'bumpMap', 'normalMap', 'emissiveMap']) if (m[k] && !SHARED.has(m[k])) m[k].dispose();
@@ -1564,7 +1565,7 @@ function buildWorld(idx) {
   updateEnv();
 
   buildGround(); buildTrackSurface(); buildFences(); buildStart(); buildStands(); buildBillboards();
-  buildLandmarks(); buildVegetation(); buildMountains(); buildClouds(); buildItems(); buildBalls(); buildBirds(); buildMissiles(); buildMinimap();
+  buildLandmarks(); buildProps(); buildVegetation(); buildMountains(); buildClouds(); buildItems(); buildBalls(); buildBirds(); buildMissiles(); buildMinimap();
   if (snowPts) { scene.remove(snowPts); snowPts.geometry.dispose(); snowPts = null; }
   if (TR.snow) buildSnowfall();
 }
@@ -1846,6 +1847,127 @@ function buildLandmarks() {
   }
 }
 
+/* ---------------------------------------------------------------------
+   Modelos 3D low poly da CraftPix (arquivo modelos.js)
+   Se o arquivo não carregar, o jogo usa os modelos feitos por código.
+   --------------------------------------------------------------------- */
+let MODELS = null;
+const propMat = new THREE.MeshStandardMaterial({ vertexColors: true, flatShading: true, roughness: 0.88 });
+SHARED.add(propMat);
+function loadModels() {
+  const M = window.MODELOS;
+  if (!M) return;
+  try {
+    const raw = atob(M.data), bytes = new Uint8Array(raw.length);
+    for (let i = 0; i < raw.length; i++) bytes[i] = raw.charCodeAt(i);
+    const bin = bytes.buffer, c = new THREE.Color();
+    MODELS = {};
+    for (const m of M.meta) {
+      const q = new Int16Array(bin, m.p, m.v * 3), cb = new Uint8Array(bin, m.c, m.v * 3);
+      const idx = m.big ? new Uint32Array(bin, m.x, m.i) : new Uint16Array(bin, m.x, m.i);
+      const pos = new Float32Array(m.v * 3), col = new Float32Array(m.v * 3);
+      for (let i = 0; i < m.v; i++) {
+        for (let a = 0; a < 3; a++) pos[i * 3 + a] = m.min[a] + (q[i * 3 + a] + 32767) / 65534 * m.size[a];
+        c.setRGB(cb[i * 3] / 255, cb[i * 3 + 1] / 255, cb[i * 3 + 2] / 255, THREE.SRGBColorSpace);
+        col[i * 3] = c.r; col[i * 3 + 1] = c.g; col[i * 3 + 2] = c.b;
+      }
+      const g = new THREE.BufferGeometry();
+      g.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+      g.setAttribute('color', new THREE.BufferAttribute(col, 3));
+      g.setIndex(new THREE.BufferAttribute(m.big ? new Uint32Array(idx) : new Uint16Array(idx), 1));
+      g.computeVertexNormals(); g.computeBoundingSphere();
+      g.userData.keep = true;
+      MODELS[m.n] = { geo: g, size: m.size };
+    }
+  } catch (e) { console.warn('modelos não carregados', e); MODELS = null; }
+}
+const modelNames = (prefix, filter) => MODELS ? Object.keys(MODELS).filter(n => n.startsWith(prefix) && (!filter || filter(n))) : [];
+const pickOf = arr => arr[(srand() * arr.length) | 0];
+// items: [nome, x, y, z, giroY, escala]
+function placeModels(items, cast = true) {
+  const by = {};
+  for (const it of items) (by[it[0]] = by[it[0]] || []).push(it);
+  for (const name in by) {
+    const M = MODELS[name]; if (!M) continue;
+    const list = by[name], im = inst(M.geo, propMat, list.length, cast);
+    list.forEach((it, i) => setInst(im, i, it[1], it[2], it[3], 0, it[4], 0, it[5]));
+    im.instanceMatrix.needsUpdate = true;
+  }
+}
+const MK = 2.1; // metros do modelo -> unidades do jogo
+
+// cenários montados com os modelos (fazendinha, acampamento pirata, cabana, postes, bancos...)
+function buildProps() {
+  if (!MODELS) return;
+  const items = [], OUT = outSide();
+  const onTrack = (s, d, name, sc = MK, ry = 0) => { const p = trackPoint(s, d); items.push([name, p.x, heightAt(p.x, p.z), p.z, yawAlong(s) + ry, sc]); };
+  const cluster = (cx, cz, list, rad) => {
+    for (const [name, dx, dz, ry, sc] of list) {
+      const x = cx + dx, z = cz + dz;
+      items.push([name, x, heightAt(x, z), z, ry, (sc || 1) * MK]);
+    }
+    LANDS.push([cx, cz, rad]);
+  };
+  // postes de luz ao longo da pista, alternando os lados
+  const lamp = { parque: 'parque:lamp_1', praia: 'parque:lamp_2', neve: 'parque:lamp_4' }[TR.id];
+  let side = 1;
+  for (let s = 40; s < L - 30; s += 62) {
+    if (Math.abs(wrapDelta(s)) < 60) continue;
+    onTrack(s, side * (W / 2 + 4.2), lamp, MK, side > 0 ? Math.PI / 2 : -Math.PI / 2);
+    side = -side;
+  }
+  // bancos e placas na beira da pista
+  for (let i = 0; i < 14; i++) {
+    const s = srand() * L; if (Math.abs(wrapDelta(s)) < 70) continue;
+    const sg = srand() < 0.5 ? -1 : 1;
+    if (i % 3 === 0) onTrack(s, sg * (W / 2 + 4.6), pickOf(['vila:signpost_01', 'vila:signpost_02', 'vila:signpost_03']), MK * 1.3, srand() * 0.6 - 0.3);
+    else onTrack(s, sg * (W / 2 + 6.5), TR.id === 'neve' ? 'vila:bench' : 'parque:bench', MK, TR.id === 'neve' ? Math.PI / 2 : 0);
+  }
+  const spots = infieldSpots(5);
+  if (TR.id === 'parque') {
+    // fardos de feno e barris perto das barreiras
+    for (const f of [0.13, 0.52, 0.83]) for (const sg of [-1, 1]) {
+      onTrack(L * f + srange(-6, 6), sg * (W / 2 + 4.8), pickOf(['vila:haystack_01', 'vila:haystack_02', 'vila:haystack_03']), MK * 1.6, srand() * 6);
+    }
+    const sp = spots[4] || spots[3];
+    if (sp) cluster(sp[0], sp[1], [
+      ['vila:well', 0, 0, 0.4], ['vila:canopy', 7, -4, 1.2, 1.3], ['vila:trough', -5, 4, 0.3], ['vila:bucket', 1.6, 2.2, 0], ['vila:basin', -2.5, -2.5, 0],
+      ['vila:haystack_01', -8, -3, 0, 1.5], ['vila:haystack_02', -9.5, -0.5, 1, 1.5], ['vila:haystack_03', -7, 1.5, 2, 1.5], ['vila:firewood', 6, 4, 0.5],
+      ['vila:clothesline', 3, 8, 0.2], ['vila:washboard', 4.5, 7, 0.3], ['vila:barrel', 8.5, 1.5, 0], ['vila:barrel_broken', 9.5, 3.5, 1], ['vila:box', 7.5, 5, 0.4],
+      ['vila:stump', -4, -7, 0], ['vila:axe', -4, -7, 0.3], ['vila:signpost_01', 0, -9, 0, 1.3], ['vila:pot_01', 2.2, -1.8, 0], ['vila:pot_03', -1.5, 2.6, 0],
+      ['parque:fense_1', 12, 0, 0], ['parque:fense_1', 12, 7.2, 0], ['parque:fense_1', 12, -7.2, 0], ['parque:fense_2', -12, 0, 0], ['parque:fense_2', -12, 6.4, 0], ['parque:fense_2', -12, -6.4, 0],
+    ], 20);
+  } else if (TR.id === 'praia') {
+    // acampamento pirata
+    const sp = spots[3] || spots[2];
+    if (sp) cluster(sp[0], sp[1], [
+      ['vila:chest', 0, 0, 0.6, 1.4], ['vila:barrel', 2.5, 1, 0], ['vila:barrel', 3.4, -0.6, 1], ['vila:barrel_broken', -2.5, 2, 0.5], ['vila:box', -2, -2, 0.3], ['vila:box', -2.8, -1.2, 1],
+      ['parque:bag_1', 1.5, -2.6, 0], ['parque:bag_2', 3, -2.5, 1], ['vila:canopy', -6, 4, 0.5, 1.4], ['vila:pot_02', 1, 2.5, 0], ['vila:signpost_02', 0, 5.5, 0, 1.4], ['vila:bench', 6, 3, 1.2],
+    ], 14);
+    // pedras na beira do mar e na areia
+    for (let i = 0; i < 26; i++) {
+      const x = srange(-320, 320), z = TR.sea - srange(2, 22);
+      items.push([pickOf(modelNames('pedra:stone_big')), x, heightAt(x, z) - 0.5, z, srand() * 6, MK * srange(0.5, 1.1)]);
+    }
+  } else {
+    // cantinho da cabana: lenha, tocos, machado, barris
+    const sp = spots[3] || spots[2];
+    if (sp) cluster(sp[0], sp[1], [
+      ['vila:firewood', 0, 0, 0, 1.4], ['vila:firewood', 1.8, 0.4, 0.3, 1.4], ['vila:stump', -2.5, 1.5, 0, 1.3], ['vila:axe', -2.5, 1.5, 0.8, 1.3], ['vila:stump', -1, 3.5, 1],
+      ['vila:barrel', 3.5, -2, 0], ['vila:box', 4.5, -0.5, 0.5], ['vila:well', -6, -3, 0.8], ['vila:signpost_03', 0, -5, 0, 1.4], ['vila:bucket', -4.5, -1, 0],
+      ['vila:shovel', 5.5, 2, 0.3], ['vila:rake', 6, 2.6, 0.5],
+    ], 14);
+    // colinas nevadas depois da cerca
+    for (let i = 0; i < 12; i++) {
+      const a = i / 12 * Math.PI * 2 + srange(-0.2, 0.2), d = srange(330, 460);
+      const x = Math.cos(a) * d, z = Math.sin(a) * d;
+      if (distToTrack(x, z) < 90) continue;
+      items.push([pickOf(modelNames('montanha:hill_winter')), x, heightAt(x, z) - 1, z, srand() * 6, srange(3.5, 5.5)]);
+    }
+  }
+  placeModels(items);
+}
+
 function buildVegetation() {
   const lowQ = save.qual === 0;
   const scatter = (count, minD, maxR) => {
@@ -1861,7 +1983,16 @@ function buildVegetation() {
   };
   const treeN = lowQ ? 130 : save.qual === 1 ? 220 : 320;
   const c = new THREE.Color();
-  if (TR.trees === 'broad') {
+  if (MODELS && TR.trees !== 'palm') {
+    // árvores da CraftPix: folhosas no parque, pinheiros nevados na neve
+    const names = TR.trees === 'broad' ? modelNames('arvore:') : modelNames('pinheiro:', n => !/_0(09|10|11|19)$/.test(n));
+    const pts = scatter(TR.trees === 'broad' ? treeN : treeN * 1.2 | 0, W / 2 + 9, 520);
+    placeModels(pts.map(([x, z]) => [pickOf(names), x, heightAt(x, z) - 0.2, z, srand() * 6.28, MK * srange(0.85, 1.35)]));
+    if (TR.trees === 'pine') { // troncos caídos e arbustos nevados
+      const small = modelNames('pinheiro:', n => /_0(09|10|11|19)$/.test(n));
+      placeModels(scatter(lowQ ? 20 : 45, W / 2 + 5, 300).map(([x, z]) => [pickOf(small), x, heightAt(x, z), z, srand() * 6.28, MK * srange(0.9, 1.4)]));
+    }
+  } else if (TR.trees === 'broad') {
     const pts = scatter(treeN, W / 2 + 9, 520);
     const trunk = inst(new THREE.CylinderGeometry(0.3, 0.5, 1, 7).translate(0, 0.5, 0), std(0x5a3d26, 0.95), pts.length);
     const cg = new THREE.IcosahedronGeometry(1, 1);
@@ -1914,7 +2045,18 @@ function buildVegetation() {
     });
   }
   // pedras
-  const rocks = scatter(lowQ ? 40 : 90, W / 2 + 6, 420);
+  if (MODELS) {
+    const mids = modelNames('pedra:stone_mid'), lits = modelNames('pedra:stone_lit'), bigs = modelNames('pedra:stone_big');
+    placeModels(scatter(lowQ ? 40 : 90, W / 2 + 6, 420).map(([x, z, dt], i) => {
+      const nm = i % 9 === 0 && dt > W / 2 + 30 ? pickOf(bigs) : i % 2 ? pickOf(mids) : pickOf(lits);
+      return [nm, x, heightAt(x, z) - 0.1, z, srand() * 6.28, MK * (nm.includes('lit') ? srange(1.5, 3) : nm.includes('big') ? srange(0.5, 0.8) : srange(0.8, 1.5))];
+    }));
+    // pedrinhas na beira da pista
+    const pebbles = [];
+    for (let i = 0; i < (lowQ ? 40 : 90); i++) { const s = srand() * L, sg = srand() < 0.5 ? -1 : 1, p = trackPoint(s, sg * (W / 2 + 3 + srand() * 6)); pebbles.push([pickOf(lits), p.x, heightAt(p.x, p.z), p.z, srand() * 6.28, MK * srange(1, 1.8)]); }
+    placeModels(pebbles, false);
+  }
+  const rocks = MODELS ? [] : scatter(lowQ ? 40 : 90, W / 2 + 6, 420);
   const rg = new THREE.IcosahedronGeometry(1, 1);
   { const p = rg.attributes.position; for (let i = 0; i < p.count; i++) { _v.fromBufferAttribute(p, i); const n = 0.7 + 0.5 * vnoise(_v.x * 2 + 3, _v.y * 2 + _v.z * 2, 0, 4); p.setXYZ(i, _v.x * n, _v.y * n * 0.7, _v.z * n); } rg.computeVertexNormals(); }
   const rm = inst(rg, std(TR.id === 'neve' ? 0x7c8594 : 0x8d8579, 0.95, 0, { flatShading: true }), rocks.length);
@@ -1940,6 +2082,15 @@ function buildVegetation() {
 }
 
 function buildMountains() {
+  if (MODELS && TR.id === 'neve') {
+    const mts = modelNames('montanha:mountain_winter'), pls = modelNames('montanha:plateau_winter'), items = [];
+    for (let i = 0; i < 22; i++) {
+      const a = i / 22 * Math.PI * 2 + srange(-0.08, 0.08), d = srange(520, 640), x = Math.cos(a) * d, z = Math.sin(a) * d;
+      items.push([i % 4 === 3 ? pickOf(pls) : pickOf(mts), x, -6, z, Math.atan2(-x, -z) + srange(-0.4, 0.4), srange(6, 8.5)]);
+    }
+    placeModels(items, false);
+    return;
+  }
   for (let i = 0; i < 26; i++) {
     const ang = i / 26 * Math.PI * 2 + srange(-0.1, 0.1), dist = srange(700, 880);
     const x = Math.cos(ang) * dist, z = Math.sin(ang) * dist;
@@ -3616,6 +3767,7 @@ function frame() {
 }
 
 applyQuality();
+loadModels();
 buildWorld(save.track);
 toMenu();
 show('loading', false);
