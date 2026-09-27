@@ -598,6 +598,7 @@ const COATS = {
   pinscher: { base: hx(0x16110e), light: hx(0xa9571f) },
   pitbull: { base: hx(0x98663f), light: hx(0xf3eee6), dark: hx(0x6e4527) },
   boar: { base: hx(0x4d3d30), dark: hx(0x241b14), light: hx(0x7c6754), hoof: hx(0x16110d) },
+  opossum: { base: hx(0x827f7a), light: hx(0xece8df), dark: hx(0x221d1b), pink: hx(0xe9c7c2) },
   gecko: { base: hx(0xf0c34a), dark: hx(0x2a1f15), light: hx(0xf5ecd8), band: hx(0xd9c7e8) },
   tegu: { base: hx(0x131313), light: hx(0xece9df), belly: hx(0xd8d5cc) },
 };
@@ -677,6 +678,22 @@ function coatColor(b, q, o) {
       if (q.part === 'leg') return o.copy(C.base).lerp(C.dark, q.seg >= 1 ? 0.7 : 0.2);
       return o.copy(C.base);
     }
+    case 'opossum': { // saruê (gambá-de-orelha-branca): corpo grisalho, cara branca com listras pretas
+      const C = COATS.opossum, sp = vnoise(q.x * 220 + q.z * 130, q.y * 220, 0, 13);
+      if (q.part === 'ear') return o.copy(q.ly > b.earL * 0.55 ? C.light : C.dark);
+      if (q.part === 'head') {
+        const [sl, sw, sh] = b.skull;
+        const eyeBand = smooth(0.016, 0.006, Math.abs(q.ly - sh * 0.3)) * smooth(sw * 0.25, sw * 0.45, Math.abs(q.lx)) * smooth(q.zStop + 0.03, q.zStop - 0.01, q.lz);
+        const crown = smooth(0.012, 0.004, Math.abs(q.lx)) * smooth(sh * 0.3, sh * 0.7, q.ly) * smooth(q.zStop, q.zStop - 0.04, q.lz);
+        return o.copy(C.light).lerp(C.pink, muz * smooth(q.zStop + b.muzzle[0] * 0.6, q.zStop + b.muzzle[0], q.lz)).lerp(C.dark, Math.max(eyeBand, crown));
+      }
+      if (q.part === 'body') return o.copy(C.base).lerp(C.light, sp > 0.62 ? 0.55 : 0).lerp(C.light, smooth(cy - b.chH * 0.3, cy - b.chH * 0.8, q.y) * 0.6);
+      if (q.part === 'neck') return o.copy(C.light).lerp(C.base, smooth(0.0, 0.05, q.ly) * 0.6);
+      if (q.part === 'leg') return o.copy(q.seg >= 1 ? C.dark : C.base);
+      if (q.part === 'paw') return o.copy(C.pink);
+      if (q.part === 'tail') return o.copy(q.seg === 0 ? C.dark : C.pink);
+      return o.copy(C.base);
+    }
     case 'gecko': { // lagartixa-leopardo: amarela com pintas pretas, barriga clara
       const C = COATS.gecko;
       if (q.part === 'paw') return o.copy(C.light);
@@ -748,6 +765,10 @@ const BREEDS = [
     len: 0.82, chH: 0.21, chW: 0.15, rumpH: 0.17, rumpW: 0.135, rumpY: 0.01, waist: 0.05, arch: 0.03, backY: 0.5, bone: 0.032,
     neck: 0.1, neckA: 0.3, skull: [0.11, 0.085, 0.09], muzzle: [0.2, 0.045, 0.045, 0.03], ear: 'erect', earW: 0.042, earL: 0.07,
     tail: [0.2, 0.012, -1.2, 0.1], spd: 4, acc: 4, han: 2, jmp: 3 },
+  { id: 'emilly', name: 'EMILLY', raca: 'SARUÊ', coat: 'opossum', noTongue: true, color: '#be123c', pitch: 2.2, voice: 'hiss', mass: 0.8, eye: 0x080606, eyeR: 0.016, nose: 0xe7a0aa,
+    len: 0.6, chH: 0.13, chW: 0.11, rumpH: 0.145, rumpW: 0.125, rumpY: 0.025, waist: 0.05, arch: 0.035, backY: 0.35, bone: 0.02,
+    neck: 0.08, neckA: 0.35, headDown: 0.15, skull: [0.08, 0.06, 0.055], muzzle: [0.13, 0.026, 0.024, 0.018], ear: 'round', earW: 0.035, earL: 0.055,
+    tail: [0.6, 0.026, -0.45, 0.2], spd: 3, acc: 4, han: 4, jmp: 2 },
   { id: 'taissa', name: 'TAISSA', raca: 'LAGARTIXA', kind: 'lizard', coat: 'gecko', color: '#facc15', pitch: 1.8, voice: 'hiss', mass: 0.6, scale: 1.3,
     eye: 0x1c1712, eyeR: 0.024, len: 0.42, chW: 0.085, chH: 0.05, backY: 0.09, headL: [0.15, 0.058, 0.036], bone: 0.013, legU: 0.1, gearS: 0.55,
     tailL: 0.42, tailR: 0.042, spd: 2, acc: 5, han: 5, jmp: 1 },
@@ -900,7 +921,12 @@ function buildDog(b, num, color) {
   const ears = [];
   for (const sx of [-1, 1]) {
     const piv = new THREE.Group(); piv.position.set(sx * sw * 0.55, sh * 0.7, -sl * 0.28); head.add(piv);
-    if (b.ear === 'erect' || b.ear === 'fold') {
+    if (b.ear === 'round') { // orelha fina e arredondada, em pé
+      const g = loft(8, 12, (t, a) => { const w = b.earW * Math.pow(Math.sin(Math.PI * (0.06 + 0.94 * t)), 0.55); return [Math.cos(a) * w, Math.sin(a) * 0.01, t * b.earL]; });
+      g.rotateX(-Math.PI / 2);
+      add(g, piv, 'ear');
+      piv.rotation.set(-0.15, 0, -sx * 0.45);
+    } else if (b.ear === 'erect' || b.ear === 'fold') {
       const g = loft(8, 12, (t, a) => { const w = b.earW * Math.pow(1 - t, 0.85) * (t < 0.12 ? 0.75 + 2 * t : 1); return [Math.cos(a) * w, Math.sin(a) * (0.018 * (1 - t * 0.6)), t * b.earL]; });
       g.rotateX(-Math.PI / 2);
       add(g, piv, 'ear');
@@ -1164,7 +1190,7 @@ function animDog(D, st, t) {
   D.headPiv.rotation.x = b.neckA - 0.12 + (b.headDown || 0) - 0.22 * amp;
   D.head.rotation.y = clamp(-st.yawRate * 0.22, -0.45, 0.45) + (st.idle ? Math.sin(t * 0.7) * 0.35 : 0);
   for (const e of D.ears) {
-    if (e.type === 'erect' || e.type === 'fold') e.piv.rotation.x = e.rx - 0.5 * amp + (st.idle ? Math.max(0, Math.sin(t * 3 + e.sx)) * 0.1 : 0);
+    if (e.type === 'erect' || e.type === 'fold' || e.type === 'round') e.piv.rotation.x = e.rx - 0.5 * amp + (st.idle ? Math.max(0, Math.sin(t * 3 + e.sx)) * 0.1 : 0);
     else e.piv.rotation.x = e.rx + 0.9 * amp + Math.sin(st.phase * 2) * 0.18 * amp;
   }
   const wag = 1 - amp * 0.75;
@@ -1172,7 +1198,7 @@ function animDog(D, st, t) {
     p.rotation.y = Math.sin(t * 11 - i * 0.6) * (i ? 0.2 : 0.45) * wag;
     if (i === 0) p.rotation.x = lerp(b.tail[2], -0.2, amp * 0.6) + Math.sin(st.phase) * 0.1 * amp;
   });
-  D.tongue.visible = st.v > 6 || st.idle;
+  D.tongue.visible = !b.noTongue && (st.v > 6 || st.idle);
   D.tongue.rotation.x = Math.sin(st.phase * 2) * 0.25 * amp + (st.idle ? Math.sin(t * 9) * 0.1 : 0);
   D.torso.scale.y = 1 + Math.sin(t * (st.v > 1 ? 9 : 3.5)) * 0.012;
   for (const f of D.flames) { f.visible = st.nitro; if (st.nitro) f.scale.set(1, 0.7 + Math.random() * 0.6, 1); }

@@ -48,4 +48,32 @@ Cada cachorro tem suas próprias melhorias (5 níveis cada): **Motor** (velocida
 
 ## Cachorros
 
-Rex (Pastor Alemão), Pingo (Dálmata), Caramelo (Vira-lata), Flecha (Galgo), Nevasca (Husky Siberiano), Bolinha (Pug), Pitiquin (Pinscher) e Princesa (Pitbull, de coroinha), mais três corredores que não são cachorros: Linda (Javali, com presas e crina, pesada nas trombadas), Taissa (Lagartixa-leopardo, ótima nas curvas) e Tiffany (Teiú preto e branco, de língua bifurcada). Cada um tem corpo, pelagem e atributos próprios. Cada corrida tem 6 cachorros: você e 5 rivais sorteados.
+Rex (Pastor Alemão), Pingo (Dálmata), Caramelo (Vira-lata), Flecha (Galgo), Nevasca (Husky Siberiano), Bolinha (Pug), Pitiquin (Pinscher) e Princesa (Pitbull, de coroinha), mais quatro corredores que não são cachorros: Emilly (Saruê, de cara branca e orelhas de ponta branca), Linda (Javali, com presas e crina, pesada nas trombadas), Taissa (Lagartixa-leopardo, ótima nas curvas) e Tiffany (Teiú preto e branco, de língua bifurcada). Cada um tem corpo, pelagem e atributos próprios. Cada corrida tem 6 corredores: você e 5 rivais sorteados.
+
+## No celular
+
+### Android (APK)
+
+O arquivo `dist/CorridaCaninaTurbo.apk` é o jogo como aplicativo, **funcionando sem internet** (a biblioteca 3D e as músicas vão dentro).
+
+1. Baixe o APK no celular.
+2. Abra o arquivo e permita "instalar apps de fontes desconhecidas" quando o Android pedir.
+3. O ícone **Corrida Canina** aparece na tela de apps.
+
+O botão *voltar* do Android pausa a corrida; no menu, fecha o jogo. O progresso fica salvo no próprio app.
+
+### Pasta com os arquivos
+
+`dist/CorridaCaninaTurbo-pasta.zip` tem a versão offline em arquivos soltos (`index.html`, `jogo.js` e a pasta `musica/`). Extraia numa pasta e abra o `index.html` num navegador. No computador basta dar dois cliques; no celular, alguns navegadores não abrem arquivos locais, e aí o APK é o caminho mais fácil.
+
+### Refazer o APK depois de mudar o jogo
+
+```bash
+npm install
+npm run offline          # gera dist/www (sem internet)
+ANDROID_BUILD_TOOLS=/caminho/build-tools/35.0.0 \
+ANDROID_JAR=/caminho/platforms/android-35/android.jar \
+bash scripts/build-apk.sh   # gera dist/CorridaCaninaTurbo.apk
+```
+
+A chave `android/corrida-dev.keystore` (senha `corrida123`) assina o APK. Use sempre a mesma para que as atualizações instalem por cima sem perder o progresso. É uma chave de desenvolvimento, não serve para publicar na Play Store.
