@@ -1,0 +1,14 @@
+{
+  "name": "corrida-canina-turbo",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Corrida Canina Turbo: versão offline e APK para Android",
+  "scripts": {
+    "offline": "node scripts/build-offline.mjs",
+    "apk": "npm run offline && bash scripts/build-apk.sh"
+  },
+  "devDependencies": {
+    "esbuild": "0.24.0",
+    "three": "0.160.0"
+  }
+}

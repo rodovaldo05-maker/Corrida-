@@ -1,0 +1,97 @@
+# Corrida Canina Turbo
+
+Jogo de corrida de cachorros em 3D que roda 100% no navegador a partir de um único `index.html`.
+
+Todos os modelos (cachorros, lagartos, javali, pistas, arquibancadas com torcida, árvores, montanhas, casinha, farol, bonecos de neve...), as texturas, os efeitos sonoros e a música são **gerados por código**. Não há nenhum arquivo de imagem ou modelo 3D. As únicas faixas de áudio externas são as duas músicas da pasta `musica/` (Redline Agog e Apex Pursuit); se elas não carregarem, o jogo usa uma música 8-bit gerada por código. A única dependência externa é a biblioteca [Three.js](https://threejs.org), carregada via CDN (e as fontes do Google Fonts, opcionais).
+
+## Como jogar
+
+Abra o `index.html` no navegador (precisa de internet para baixar o Three.js) ou publique a pasta no GitHub Pages. Mantenha a pasta `musica/` ao lado do `index.html`.
+
+| Teclado | Toque | Ação |
+|---|---|---|
+| ↑ / W | automático | Correr |
+| ↓ / S | FREIO | Frear / ré |
+| ← → / A D | ◀ ▶ | Virar |
+| Shift + direção | DRIFT + direção | Drift (carrega mini-turbo e nitro) |
+| N / Ctrl | NITRO | Nitro |
+| Espaço | PULO | Pular barreiras |
+| B / E | LATIDO | Latir e assustar os rivais à frente |
+| F / X | MÍSSIL | Disparar míssil |
+| M | menu de pausa | Trocar música (todas, Redline Agog, Apex Pursuit, 8-bit, desligada) |
+| C | menu de pausa | Trocar câmera (atrás, alta, visão do cachorro) |
+| Esc | ❚❚ | Pausa |
+
+## Mecânicas
+
+- **Direção de carro**: o cachorro tem embalo, derrapa e pode sair da pista (a grama deixa lento). A *assistência de direção* (na pausa) ajuda a seguir a pista quando você não está virando.
+- **Drift**: segure drift e vire numa curva. Quanto mais tempo derrapando, maior o **mini-turbo** ao soltar (azul, depois rosa). Drift também enche o nitro e dá pontos.
+- **Nitro**: enche com drift, latas azuis na pista, pulos limpos, rampas e andando no **vácuo** de outro cachorro.
+- **Largada perfeita**: aperte ↑ quando a última luz vermelha acender.
+- **Obstáculos**: barreiras (pule!), lama/água/gelo, rampas de salto e faixas de turbo.
+- **Latido**: assusta quem está perto e à frente, que perde velocidade por um instante, e **espanta os bichos voadores**.
+- **Lança-mísseis**: todo corredor leva um nas costas. Pegue as caixas verdes de munição na pista (até 3 mísseis) e dispare: o míssil persegue o rival à sua frente e o deixa atordoado. Quando um míssil vem na sua direção, o aviso MÍSSIL VINDO! pisca.
+- **Bichos voadores**: pombos (parque), gaivotas (praia) e corvos (neve) mergulham no focinho dos cachorros, deixando-os lentos e desgovernados. Late para espantar e ganhe nitro.
+- **Bolas rolando**: fardos de feno, bolas de praia e bolas de neve atravessam a pista (tem placa avisando). Pule por cima ou desvie.
+- **Desafios da corrida**: cada corrida sorteia 3 metas (mini-turbos, bichos espantados, pulos limpos, ossos, latas de nitro, terminar sem tropeçar, pódio). Cada uma cumprida vale +120 ossos de ouro.
+- **Ossos de ouro**: moedas da oficina. Você ganha pela posição, pelos ossos coletados e pelos pontos de drift.
+
+## Modelos 3D dos cenários
+
+As pistas usam modelos low poly gratuitos da [CraftPix](https://craftpix.net) (licença: https://craftpix.net/file-licenses/), convertidos para o arquivo `modelos.js`:
+
+- **Parque**: árvores folhosas, pedras, postes de luz, bancos, placas e uma fazendinha com poço, fardos de feno, varal, barris e cerca.
+- **Praia**: pedras na beira do mar e um acampamento pirata com baú, barris, sacos e toldo.
+- **Pico Nevado**: pinheiros nevados, troncos caídos, colinas e montanhas nevadas e um cantinho com lenha, tocos e machado.
+
+Se o `modelos.js` não carregar, o jogo usa os modelos feitos por código. O script `scripts/converter-modelos.mjs` refaz a conversão a partir dos arquivos FBX.
+
+## Campeonato, loja e missões
+
+- **Campeonato (Copa)**: no menu, troque o *Modo* para COPA. São 3 corridas seguidas (Parque, Praia e Pico) contra os mesmos 5 rivais, com pontos por posição (10, 7, 5, 3, 2, 1). No fim tem troféu de ouro, prata ou bronze e prêmio em ossos de ouro.
+- **Loja de visual**: chapéus (boné, festa, cartola, caubói, capacete, coroa), óculos, capas, cores de colete e rastros (bolhas, corações, estrelas, fogo, arco-íris). Cada bicho guarda o próprio visual.
+- **Missões**: 3 missões diárias que mudam à meia-noite (+250 cada e +300 de bônus) e 15 conquistas com prêmios.
+- **Narrador**: avisa quem assumiu a liderança, quem ultrapassou quem e quem acertou míssil em quem.
+- **Vibração**: o celular vibra com batidas, mísseis, mini-turbos e vitórias (desligue na pausa).
+
+## Oficina
+
+Cada cachorro tem suas próprias melhorias (5 níveis cada): **Motor** (velocidade), **Músculos** (aceleração), **Garras** (curvas e drift), **Tanque de nitro** e **Molas** (pulo). O progresso fica salvo no navegador.
+
+## Pistas
+
+- **Parque Central**: terra batida, dia de sol.
+- **Praia do Latido**: areia, pôr do sol e mar.
+- **Pico Nevado**: neve, pinheiros e gelo escorregadio.
+
+## Cachorros
+
+Rex (Pastor Alemão), Pingo (Dálmata), Caramelo (Vira-lata), Flecha (Galgo), Nevasca (Husky Siberiano), Bolinha (Pug), Pitiquin (Pinscher) e Princesa (Pitbull, de coroinha), mais quatro corredores que não são cachorros: Emilly (Saruê, de cara branca e orelhas de ponta branca), Linda (Javali, com presas e crina, pesada nas trombadas), Taissa (Lagartixa-leopardo, ótima nas curvas) e Tiffany (Teiú preto e branco, de língua bifurcada). Cada um tem corpo, pelagem e atributos próprios. Cada corrida tem 6 corredores: você e 5 rivais sorteados.
+
+## No celular
+
+### Android (APK)
+
+O arquivo `dist/CorridaCaninaTurbo.apk` é o jogo como aplicativo, **funcionando sem internet** (a biblioteca 3D e as músicas vão dentro).
+
+1. Baixe o APK no celular.
+2. Abra o arquivo e permita "instalar apps de fontes desconhecidas" quando o Android pedir.
+3. O ícone **Corrida Canina** aparece na tela de apps.
+
+O botão *voltar* do Android pausa a corrida; no menu, fecha o jogo. O progresso fica salvo no próprio app.
+
+### Pasta com os arquivos
+
+`dist/CorridaCaninaTurbo-pasta.zip` tem a versão offline em arquivos soltos (`index.html`, `jogo.js` e a pasta `musica/`). Extraia numa pasta e abra o `index.html` num navegador. No computador basta dar dois cliques; no celular, alguns navegadores não abrem arquivos locais, e aí o APK é o caminho mais fácil.
+
+### Refazer o APK depois de mudar o jogo
+
+```bash
+npm install
+npm run offline          # gera dist/www (sem internet)
+ANDROID_BUILD_TOOLS=/caminho/build-tools/35.0.0 \
+ANDROID_JAR=/caminho/platforms/android-35/android.jar \
+bash scripts/build-apk.sh   # gera dist/CorridaCaninaTurbo.apk
+```
+
+A chave `android/corrida-dev.keystore` (senha `corrida123`) assina o APK. Use sempre a mesma para que as atualizações instalem por cima sem perder o progresso. É uma chave de desenvolvimento, não serve para publicar na Play Store.
