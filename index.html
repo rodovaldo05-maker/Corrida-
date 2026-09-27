@@ -104,6 +104,7 @@
   #tR { left:calc(110px + var(--sal)); bottom:calc(18px + var(--sab)); width:86px; height:86px; font-size:26px !important; }
   #tS { left:calc(66px + var(--sal)); bottom:calc(118px + var(--sab)); width:60px; height:60px; font-size:11px !important; }
   #tM { right:calc(26px + var(--sar)); bottom:calc(200px + var(--sab)); width:66px; height:66px; border-color:#ff4d5e !important; font-size:11px !important; }
+  #tH.dim { opacity:.45; }
   #tM #tMn { display:block; font-family:'Russo One',sans-serif; font-size:15px; }
   #tN { right:calc(14px + var(--sar)); bottom:calc(18px + var(--sab)); width:90px; height:90px; border-color:var(--acc) !important; }
   #tD { right:calc(114px + var(--sar)); bottom:calc(18px + var(--sab)); width:90px; height:90px; border-color:var(--acc2) !important; }
@@ -116,6 +117,7 @@
     #tJ, #tB { width:60px; height:60px; bottom:calc(108px + var(--sab)); } #tB { right:calc(110px + var(--sar)); }
     #tS { bottom:calc(104px + var(--sab)); left:calc(58px + var(--sal)); }
     #tM { width:60px; height:60px; bottom:calc(178px + var(--sab)); }
+    #tH { width:60px; height:60px; bottom:calc(178px + var(--sab)); right:calc(96px + var(--sar)); }
     body.touch #goals { bottom:calc(252px + var(--sab)); }
   }
   body.touch #map { top:calc(112px + var(--sat)); bottom:auto; width:118px; height:118px; }
@@ -197,6 +199,9 @@
   .item h4 { margin:0; font-size:15px; letter-spacing:.05em; }
   .item small { display:block; color:var(--mut); font-size:12px; font-weight:600; }
   .item button { border:none; border-radius:9px; padding:8px 10px; font-weight:700; font-size:14px; background:var(--acc); color:#1a0a00; min-width:96px; }
+  .mechCard button { justify-self:end; border:none; border-radius:9px; padding:9px 12px; font-weight:700; font-size:14px; background:#a855f7; color:#fff; }
+  .mechCard button:disabled { background:rgba(255,255,255,.1); color:var(--mut); }
+  .mechCard button.eq { background:var(--good); color:#062b12; }
   .item button.eq { background:var(--good); }
   .item button:disabled { background:rgba(255,255,255,.1); color:var(--mut); cursor:default; }
   .item.done h4 { color:var(--good); }
@@ -227,6 +232,17 @@
   .up .pips span.on { background:var(--acc); }
   .up button { grid-column:2; grid-row:1 / span 3; border:none; border-radius:10px; padding:10px 12px; font-weight:700; font-size:15px;
     background:var(--acc); color:#1a0a00; min-width:104px; }
+  .up .xp { grid-column:1 / -1; font-size:12px; line-height:1.35; color:var(--mut); border-top:1px dashed var(--line); padding-top:5px; margin-top:2px; }
+  .up .xp b { color:#9aa3b2; letter-spacing:.06em; }
+  .up .xp.on { color:#e5ecf7; } .up .xp.on b { color:var(--gold); }
+  .mechCard { display:grid; gap:6px; padding:12px 14px; }
+  .mechCard h3 { margin:0; font-size:16px; letter-spacing:.08em; color:#c4b5fd; }
+  .mechCard p { margin:0; font-size:13px; color:#dbe3f2; line-height:1.35; }
+  .mechCard p b { color:var(--gold); letter-spacing:.05em; }
+  #dogPas .xtra { display:block; margin-top:3px; color:#c4b5fd; font-size:12px; }
+  #tH { right:calc(106px + var(--sar)); bottom:calc(200px + var(--sab)); width:66px; height:66px; border-color:#c084fc !important; font-size:9px !important; letter-spacing:.04em !important; }
+  #tH #tHn { display:block; font-family:'Russo One',sans-serif; font-size:15px; }
+  #chipAb { background:rgba(147,51,234,.75); }
   .up button:disabled { background:rgba(255,255,255,.1); color:var(--mut); cursor:default; }
 
   #pause, #results, #loading, #cupEnd { display:flex; flex-direction:column; align-items:center; justify-content:safe center; gap:16px; overflow-y:auto; touch-action:pan-y;
@@ -268,6 +284,7 @@
     #topStack { width:min(300px, calc(100vw - 530px)); top:calc(8px + var(--sat)); }
     body.touch #pauseBtn { right:calc(212px + var(--sar)); top:calc(14px + var(--sat)); }
     #tM { bottom:calc(122px + var(--sab)); right:calc(206px + var(--sar)); width:60px; height:60px; }
+    #tH { bottom:calc(122px + var(--sab)); right:calc(276px + var(--sar)); width:60px; height:60px; }
     body.touch #map { top:calc(96px + var(--sat)); width:96px; height:96px; }
   }
 </style>
@@ -290,7 +307,7 @@
   <div id="topStack">
     <div id="goals" class="panel"></div>
     <div id="narr"></div>
-    <div id="chips"><span id="chipSlip" class="chip" hidden>VÁCUO</span><span id="chipWrong" class="chip" hidden>CONTRAMÃO</span><span id="chipMissile" class="chip" hidden>MÍSSIL VINDO!</span></div>
+    <div id="chips"><span id="chipSlip" class="chip" hidden>VÁCUO</span><span id="chipWrong" class="chip" hidden>CONTRAMÃO</span><span id="chipMissile" class="chip" hidden>MÍSSIL VINDO!</span><span id="chipAb" class="chip" hidden></span></div>
   </div>
   <div id="hTR"><div id="pos" class="disp">1<sup>º</sup></div><div id="posOf">DE 6</div></div>
   <button id="pauseBtn" aria-label="Pausar">❚❚</button>
@@ -304,7 +321,7 @@
 <div id="touch" hidden>
   <button id="tL" aria-label="Esquerda">◀</button><button id="tR" aria-label="Direita">▶</button><button id="tS">FREIO</button>
   <button id="tB">LATIDO</button><button id="tJ">PULO</button>
-  <button id="tD">DRIFT</button><button id="tN">NITRO</button><button id="tM"><span id="tML">MÍSSIL</span> <span id="tMn">1</span></button>
+  <button id="tD">DRIFT</button><button id="tN">NITRO</button><button id="tM"><span id="tML">MÍSSIL</span> <span id="tMn">1</span></button><button id="tH" hidden>HABILIDADE <span id="tHn">1</span></button>
 </div>
 
 <div id="menu" class="screen" hidden>
@@ -333,7 +350,7 @@
       <button class="btn sec" id="onlineBtn">ONLINE</button>
       <button class="btn pri" id="startBtn">CORRER</button>
     </div>
-    <div class="help"><b>↑</b> correr · <b>↓</b> frear · <b>← →</b> virar · <b>SHIFT</b> drift<br><b>N</b> nitro · <b>ESPAÇO</b> pular · <b>B</b> latir · <b>F</b> míssil<br><b>C</b> câmera · <b>ESC</b> pausa</div>
+    <div class="help"><b>↑</b> correr · <b>↓</b> frear · <b>← →</b> virar · <b>SHIFT</b> drift<br><b>N</b> nitro · <b>ESPAÇO</b> pular · <b>B</b> latir · <b>F</b> míssil · <b>R</b> habilidade<br><b>C</b> câmera · <b>ESC</b> pausa</div>
   </div>
 </div>
 
@@ -499,7 +516,7 @@ if (isTouch) document.body.classList.add('touch');
    Progresso salvo (ossos de ouro, melhorias, recordes)
    --------------------------------------------------------------------- */
 const SAVE_KEY = 'corridaCaninaTurbo1';
-const save = { musicMode: 0, vib: true, voice: true, mode: 0, owned: [], looks: {}, stats: {}, ach: [], daily: null, trophies: {}, coins: 400, up: {}, best: {}, dog: 0, track: 0, diff: 1, laps: 3, qual: isTouch ? 1 : 2, music: true, cam: 0, assist: true };
+const save = { mech: {}, musicMode: 0, vib: true, voice: true, mode: 0, owned: [], looks: {}, stats: {}, ach: [], daily: null, trophies: {}, coins: 400, up: {}, best: {}, dog: 0, track: 0, diff: 1, laps: 3, qual: isTouch ? 1 : 2, music: true, cam: 0, assist: true };
 try { Object.assign(save, JSON.parse(localStorage.getItem(SAVE_KEY) || '{}')); } catch (e) { }
 if (save.music === false && save.musicMode === 0 && !('musicMode' in (JSON.parse((() => { try { return localStorage.getItem(SAVE_KEY) || '{}'; } catch (e) { return '{}'; } })())))) save.musicMode = 4;
 function persist() { try { localStorage.setItem(SAVE_KEY, JSON.stringify(save)); } catch (e) { } }
@@ -990,7 +1007,7 @@ function addGear(parent, topY, tz, sc = 1) {
   const flames = [];
   for (const sx of [-1, 1]) {
     const can = new THREE.Mesh(new THREE.CylinderGeometry(0.026, 0.026, 0.16, 12), metalMat);
-    can.rotation.x = Math.PI / 2; can.position.set(sx * 0.034, topY + 0.02, tz); can.castShadow = true; body.add(can);
+    can.rotation.x = Math.PI / 2; can.position.set(sx * 0.034, topY + 0.02, tz); can.castShadow = true; can.userData.can = true; body.add(can);
     const cap = new THREE.Mesh(new THREE.SphereGeometry(0.026, 10, 6, 0, Math.PI * 2, 0, Math.PI / 2), redMetal);
     cap.rotation.x = Math.PI / 2; cap.position.set(sx * 0.034, topY + 0.02, tz + 0.08); body.add(cap);
     const noz = new THREE.Mesh(new THREE.CylinderGeometry(0.012, 0.018, 0.03, 8), metalMat);
@@ -1533,6 +1550,7 @@ function buildRig(b, num, color) {
   D.shoot = () => { D.shootT = 0.45; };
   const attach = () => {
     const o = cloneSkinned(RIG.g.scene); o.scale.setScalar(RIG.s); o.position.y = RIG.y0; holder.add(o);
+    D.rigMeshes = []; o.traverse(m => { if (m.isMesh) D.rigMeshes.push(m); }); if (D.mechTint) D.rigMeshes.forEach(D.mechTint);
     D.mixer = new THREE.AnimationMixer(o);
     for (const n of ['Run', 'Idle', 'Jump_Idle', 'Weapon', 'HitReact']) { const c = RIG.g.animations.find(a => a.name.endsWith('|' + n)); if (c) D.acts[n] = D.mixer.clipAction(c); }
   };
@@ -1817,7 +1835,7 @@ function heightAt(x, z) {
    Construção do mundo de cada pista
    --------------------------------------------------------------------- */
 let world = null, lamps = [], crowd = [], crowdBody = null, crowdHead = null, clouds = [], snowPts = null, seaTex = null;
-let hurdles = [], ramps = [], pads = [], puddles = [], nitros = [], coins = [], LANDS = [], mapBg = null, padTex = null;
+let charges = [], hurdles = [], ramps = [], pads = [], puddles = [], nitros = [], coins = [], LANDS = [], mapBg = null, padTex = null;
 const std = (color, rough = 0.85, metal = 0, extra = {}) => new THREE.MeshStandardMaterial({ color, roughness: rough, metalness: metal, ...extra });
 function mesh(geo, mat, cast = true, recv = true, parent = world) { const m = new THREE.Mesh(geo, mat); m.castShadow = cast; m.receiveShadow = recv; parent.add(m); return m; }
 function inst(geo, mat, count, cast = true) { const m = new THREE.InstancedMesh(geo, mat, count); m.castShadow = cast; m.receiveShadow = true; m.frustumCulled = false; world.add(m); return m; }
@@ -1929,7 +1947,7 @@ function buildWorld(idx) {
 // objetos que se mexem sobem com o relevo só na hora de desenhar (a lógica do jogo continua plana)
 let DYN = [];
 function liftWorld() {
-  DYN = [...ammos.map(a => a.g), ...nitros.map(n => n.g), ...birds.map(b => b.g), ...missilePool, ...carrotPool];
+  DYN = [...charges.map(c => c.g), ...ammos.map(a => a.g), ...nitros.map(n => n.g), ...birds.map(b => b.g), ...missilePool, ...carrotPool];
   if (!TR.elev) return;
   for (const p of crowd) p.y += elevAt(p.x, p.z);
   const skip = new Set(DYN), seen = new Set(), inv = new THREE.Matrix4(), m4 = new THREE.Matrix4(), v = new THREE.Vector3(), box = new THREE.Box3(), sz = new THREE.Vector3();
@@ -2544,10 +2562,13 @@ function buildBone(mat) {
   g.traverse(o => { if (o.isMesh) o.castShadow = true; });
   return g;
 }
+const chargeMat = new THREE.MeshStandardMaterial({ color: 0xc084fc, emissive: 0x9333ea, emissiveIntensity: 1.2, roughness: 0.2, metalness: 0.3, flatShading: true });
+const chargeGlow = new THREE.MeshBasicMaterial({ color: 0xe879f9, transparent: true, opacity: 0.35, blending: THREE.AdditiveBlending, depthWrite: false });
+SHARED.add(chargeMat); SHARED.add(chargeGlow);
 function buildItems() {
-  hurdles = []; ramps = []; pads = []; puddles = []; nitros = []; coins = [];
+  hurdles = []; ramps = []; pads = []; puddles = []; nitros = []; coins = []; charges = [];
   const LAYOUT = [['pad', 0.06, -3], ['hurdle', 0.13], ['coins', 0.19, -4], ['puddle', 0.26, 4], ['nitro', 0.32], ['ramp', 0.4], ['coins', 0.46, 3],
-    ['hurdle', 0.52], ['puddle', 0.59, -3.5], ['pad', 0.65, 3], ['nitro', 0.71], ['coins', 0.77, 0], ['hurdle', 0.83], ['puddle', 0.89, 2.5], ['nitro', 0.95], ['ammo', 0.23], ['ammo', 0.62], ['ammo', 0.925]];
+    ['hurdle', 0.52], ['puddle', 0.59, -3.5], ['pad', 0.65, 3], ['nitro', 0.71], ['coins', 0.77, 0], ['hurdle', 0.83], ['puddle', 0.89, 2.5], ['nitro', 0.95], ['ammo', 0.23], ['ammo', 0.62], ['ammo', 0.925], ['charge', 0.36, 3], ['charge', 0.8, -3]];
   padTex = toTex(drawCanvas(64, 64, (x) => {
     x.fillStyle = '#062a3a'; x.fillRect(0, 0, 64, 64); x.strokeStyle = '#35d0ff'; x.lineWidth = 9;
     for (const y of [10, 42]) { x.beginPath(); x.moveTo(8, y + 18); x.lineTo(32, y); x.lineTo(56, y + 18); x.stroke(); }
@@ -2616,6 +2637,14 @@ function buildItems() {
         g.position.copy(trackPoint(s, dd, 1.1)); world.add(g);
         ammos.push({ s, d: dd, g, cd: 0 });
       }
+    } else if (type === 'charge') {
+      // carga especial: cristal que recarrega a habilidade do upgrade mecânico
+      const g = new THREE.Group();
+      const cr = mesh(new THREE.OctahedronGeometry(0.75, 0), chargeMat, true, false, g); cr.scale.y = 1.4;
+      mesh(new THREE.OctahedronGeometry(1.05, 0), chargeGlow, false, false, g).scale.y = 1.4;
+      const rg = mesh(new THREE.TorusGeometry(1.25, 0.07, 8, 32), chargeGlow, false, false, g); rg.rotation.x = Math.PI / 2;
+      g.position.copy(trackPoint(s, d, 1.5)); world.add(g);
+      charges.push({ s, d, g, cd: 0 });
     } else if (type === 'coins') {
       for (let k = 0; k < 6; k++) {
         const g = buildBone(goldM); g.scale.setScalar(1.1);
@@ -2730,7 +2759,7 @@ function updateBirds(dt, racing) {
     if (birdTimer <= 0 && busy < 1 + save.diff) {
       birdTimer = 6 + Math.random() * 5 - save.diff;
       const free = birds.find(b => b.state === 'off');
-      const cands = runners.filter(r => !r.finished && r.birdT <= 0 && !has(r, 'major'));
+      const cands = runners.filter(r => !r.finished && r.birdT <= 0 && !has(r, 'major') && r.xM !== 'birdProof' && r.nightT <= 0 && r.shield <= 0);
       if (free && cands.length) {
         const tgt = cands.includes(player) && Math.random() < 0.5 ? player : cands[Math.random() * cands.length | 0];
         const a = sampleAt(tgt.dist + 55 + Math.random() * 20);
@@ -2766,7 +2795,7 @@ function updateBirds(dt, racing) {
           _v.set(_hp.x + fx * 1.3 + Math.cos(a) * 0.9, _hp.y + 0.55 + Math.sin(bd.t * 9) * 0.25, _hp.z + fz * 1.3 + Math.sin(a) * 0.9);
           bd.vel.copy(_v).sub(bd.pos).divideScalar(Math.max(dt, 0.001)).clampLength(0, 80);
           bd.pos.lerp(_v, 1 - Math.exp(-10 * dt));
-          if (tg.flyY > 1.5) { birdFlee(bd, tg); continue; }
+          if (tg.flyY > 1.5 || tg.nightT > 0 || tg.shield > 0) { birdFlee(bd, tg); continue; }
           tg.birdT = 0.25;
           if (Math.random() < dt * 1.5) Sfx.squawk(BIRD_KIND().pitch, tg.isPlayer ? 0.6 : 0.2);
           if (bd.t > 6) birdFlee(bd, bd.pos);
@@ -2994,6 +3023,450 @@ const PASSIVES = {
   kemilly: ['CENOURADA', 'Atira cenouras em vez de mísseis: mais rápidas, e quem leva perde nitro'],
 };
 const has = (r, id) => r.b.id === id;
+/* Passivas extras: 4 liberadas ao maximizar um atributo na oficina (S velocidade, A aceleração,
+   C curvas, J pulo) e a 5ª (M) com o upgrade mecânico da loja, que também dá a habilidade (H).
+   S: [nome, texto, condição, bônus de velocidade, cor, estilo da aura]
+   A: [nome, texto, gatilho, efeito, valor, cor]   C/J: [nome, texto, tipo]
+   M: [nome, texto, passiva, cor da pele, força da pele, cor das latas, tamanho]   H: [nome, texto, tipo, cor] */
+const EXTRA = {
+  rex: {
+    S: ['PATRULHA', 'Com 2 ou mais rivais por perto corre mais rápido, com giroflex azul e vermelho', 'pack', 1.09, '#3b82f6', 'siren'],
+    A: ['CAPTURA', 'Acertar um míssil em alguém enche 30 de nitro', 'hitDealt', 'nitro', 30, '#60a5fa'],
+    C: ['ADESTRADO', 'Sustos e bichos voadores atrapalham só pela metade do tempo', 'steady'],
+    J: ['SALTO DE RESGATE', 'Pula 25% mais alto', 'high'],
+    M: ['K9 BLINDADO', 'Colete azul de polícia, latas azuis, fica maior e mísseis o atordoam menos', 'armor', '#1e3a8a', 0.45, '#1d4ed8', 1.1],
+    H: ['LATIDO DE COMANDO', 'Um latido gigante derruba todos que estiverem em volta', 'roar', '#93c5fd'],
+  },
+  pingo: {
+    S: ['ALARME DE INCÊNDIO', 'Com o nitro ligado corre ainda mais e solta faíscas de fogo', 'nitro', 1.07, '#ef4444', 'flame'],
+    A: ['MANGUEIRA', 'Pegar lata de nitro dá 3 segundos de escudo de água', 'can', 'shield', 3, '#38bdf8'],
+    C: ['BOTAS ANTIDERRAPANTES', 'Faz curvas mais fechadas', 'sharp'],
+    J: ['PULO DO CAMINHÃO', 'Ao pousar de um pulo ganha um mini-turbo', 'landBoost'],
+    M: ['VIATURA VERMELHA', 'Manchas vermelhas, latas amarelas e o nitro dura mais', 'tank', '#dc2626', 0.35, '#facc15', 1.08],
+    H: ['JATO DE ÁGUA', 'Espirra água para trás: quem vem atrás escorrega e perde o rumo', 'smoke', '#7dd3fc'],
+  },
+  caramelo: {
+    S: ['VIRADA DE SORTE', 'Em último lugar a sorte vira e ele corre muito mais rápido', 'last', 1.15, '#fbbf24', 'star'],
+    A: ['ACHADO', 'Pegar munição dá um mini-turbo', 'ammo', 'burst', 0.9, '#fde047'],
+    C: ['JEITINHO', 'Raspar na cerca não atrasa', 'rail'],
+    J: ['PULO DA SORTE', 'Nunca tropeça nas barreiras', 'spring'],
+    M: ['CARAMELO DOURADO', 'Pelo dourado, latas amarelas e pega itens de longe', 'magnet', '#f59e0b', 0.55, '#fde047', 1.08],
+    H: ['CHUVA DE OSSOS', 'Puxa todos os itens por perto e enche o nitro', 'magnet', '#fbbf24'],
+  },
+  flecha: {
+    S: ['RETA FINAL', 'Na última volta corre mais rápido, riscando o ar', 'lastLap', 1.08, '#e5e7eb', 'streak'],
+    A: ['LARGADA DE GALGO', 'Na largada dispara com um turbo longo', 'start', 'burst', 2.2, '#e5e7eb'],
+    C: ['CORPO AERODINÂMICO', 'O drift não gasta velocidade', 'driftSpeed'],
+    J: ['VOO RASANTE', 'Cai devagar depois do pulo, planando', 'glide'],
+    M: ['GALGO DE PRATA', 'Pelo prateado, latas ciano e o nitro enche sozinho', 'regen', '#cbd5e1', 0.6, '#22d3ee', 1.06],
+    H: ['DISPARO', 'Turbo enorme por 3 segundos', 'rocket', '#22d3ee'],
+  },
+  nevasca: {
+    S: ['VENTO ÁRTICO', 'Derrapando fica mais rápido e solta neve', 'drift', 1.08, '#e0f2fe', 'snow'],
+    A: ['TRENÓ', 'Cada mini-turbo enche 15 de nitro', 'mini', 'nitro', 15, '#bae6fd'],
+    C: ['DERRAPADA POLAR', 'O mini-turbo do drift carrega mais rápido', 'driftCharge'],
+    J: ['AVALANCHE', 'Ao pousar perto de rivais, a pancada os derruba', 'stomp'],
+    M: ['HUSKY GLACIAL', 'Pelo azul-gelo, latas brancas, fica maior e mais pesado nas trombadas', 'heavy', '#7dd3fc', 0.5, '#f0f9ff', 1.1],
+    H: ['NEVASCA', 'Congela a pista dos rivais à frente: eles escorregam por 4 segundos', 'freeze', '#bae6fd'],
+  },
+  bolinha: {
+    S: ['PUG BRAVO', 'Depois de levar um tombo volta com raiva e mais rápido', 'hurt', 1.14, '#fb923c', 'flame'],
+    A: ['OLHO NO PRÓXIMO', 'Cada ultrapassagem enche 8 de nitro', 'overtake', 'nitro', 8, '#fdba74'],
+    C: ['CENTRO DE GRAVIDADE', 'Trombadas quase não o empurram', 'anchor'],
+    J: ['QUICA-QUICA', 'Aperte pular de novo no ar para quicar mais uma vez', 'double'],
+    M: ['PUG DE AÇO', 'Corpo de aço, latas laranja, fica maior e levanta mais rápido', 'getUp', '#9ca3af', 0.6, '#f97316', 1.15],
+    H: ['ROLO COMPRESSOR', 'Vira uma bola e derruba quem estiver perto', 'quake', '#fb923c'],
+  },
+  pitiquin: {
+    S: ['NO ÓDIO', 'Com o nitro quase vazio corre mais rápido, soltando faíscas vermelhas', 'lowNitro', 1.1, '#ef4444', 'bolt'],
+    A: ['LATIDO ESTRIDENTE', 'O latido assusta rivais em volta dele, até os de trás', 'bark', 'scare', 12, '#fca5a5'],
+    C: ['PILHA ELÉTRICA', 'O mini-turbo dura mais', 'miniLong'],
+    J: ['PULO DE PULGA', 'No ar ganha velocidade em vez de perder', 'airSpeed'],
+    M: ['PINSCHER ARMADO', 'Pelo vinho, latas vermelhas, fica maior e carrega 1 míssil a mais', 'ammoCap', '#7f1d1d', 0.4, '#ef4444', 1.25],
+    H: ['PINSCHER VOADOR', 'Sai voando por 5 segundos, por cima de tudo', 'fly', '#fca5a5'],
+  },
+  princesa: {
+    S: ['REINADO', 'Em 1º lugar corre ainda mais rápido, com brilho de coroa', 'leader', 1.06, '#f9a8d4', 'star'],
+    A: ['DIGNIDADE REAL', 'Ao se levantar de um tombo ganha 3 segundos de escudo', 'stunEnd', 'shield', 3, '#f9a8d4'],
+    C: ['VALSA REAL', 'Derrapar enche o nitro em dobro', 'driftNitro'],
+    J: ['SALTO REAL', 'Pula 25% mais alto', 'high'],
+    M: ['ARMADURA DE RAINHA', 'Pelo rosa, latas douradas e mísseis a atordoam menos', 'armor', '#f472b6', 0.45, '#fbbf24', 1.1],
+    H: ['MANTO REAL', 'Escudo por 7 segundos: nada a derruba', 'shield', '#f9a8d4'],
+  },
+  linda: {
+    S: ['LAMAÇAL', 'Fora da pista corre mais rápido que dentro', 'offroad', 1.12, '#a16207', 'dust'],
+    A: ['ESTOURO', 'Passar numa faixa de turbo dá um mini-turbo extra', 'pad', 'burst', 1.2, '#f59e0b'],
+    C: ['CASCOS FIRMES', 'Não escorrega em curvas lisas, lama, água ou gelo', 'slipGrip'],
+    J: ['PULO DE JAVALI', 'Pular uma barreira enche 25 de nitro', 'hurdleNitro'],
+    M: ['JAVALI COURAÇADO', 'Couro de bronze, latas verdes, fica maior e mais pesado nas trombadas', 'heavy', '#92400e', 0.45, '#22c55e', 1.12],
+    H: ['ESTOURO DA MANADA', 'Uma pancada no chão derruba quem estiver perto', 'quake', '#a16207'],
+  },
+  faiton: {
+    S: ['RELÂMPAGO NEGRO', 'Abaixo do 3º lugar ganha uma aura de raios vermelhos e corre mais rápido', 'behind', 1.12, '#ff1a1a', 'bolt'],
+    A: ['DASH DAS SOMBRAS', 'Ao pular uma barreira se teleporta um pouco para frente, deixando sombras para trás', 'hurdle', 'dash', 9, '#1a1024'],
+    C: ['EQUILÍBRIO DE LOBO', 'Recupera rápido a estabilidade em curvas escorregadias', 'slipGrip'],
+    J: ['PERNAS DE MOLA', 'Pernas mais fortes: o pulo o lança para frente', 'launch'],
+    M: ['LOBO BRANCO', 'Pele branca, latas vermelhas, fica maior e se levanta mais rápido depois de um míssil', 'getUp', '#f4f4f5', 0.85, '#dc2626', 1.15],
+    H: ['NOITE ETERNA', 'O céu escurece, os pássaros fogem dele e os rivais ficam assustados', 'night', '#7f1d1d'],
+  },
+  paz: {
+    S: ['PAZ INTERIOR', 'Sem rivais por perto fica mais rápido', 'alone', 1.08, '#f8fafc', 'cloud'],
+    A: ['BÊNÇÃO', 'Cada osso de ouro enche 6 de nitro', 'coin', 'nitro', 6, '#fde68a'],
+    C: ['CALMARIA', 'Sustos e bichos voadores atrapalham só pela metade do tempo', 'steady'],
+    J: ['CÉU PROTEGIDO', 'No ar os mísseis erram ele', 'airDodge'],
+    M: ['NUVEM DOURADA', 'Nuvem dourada, latas azuis e os pássaros não o atacam', 'birdProof', '#fde68a', 0.4, '#38bdf8', 1.08],
+    H: ['NUVEM DE TEMPESTADE', 'Raios caem nos 2 rivais logo à frente', 'storm', '#fde047'],
+  },
+  pintado: {
+    S: ['PERSEGUIÇÃO', 'No vácuo de um rival corre ainda mais', 'slip', 1.08, '#d6a55f', 'dust'],
+    A: ['MORDIDA', 'Cada ultrapassagem dá um mini-turbo', 'overtake', 'burst', 0.8, '#fbbf24'],
+    C: ['SAVANA', 'Correr fora da pista não deixa lento', 'offroad'],
+    J: ['BOTE', 'O pulo o lança para frente', 'launch'],
+    M: ['ALFA DA MATILHA', 'Pelagem dourada, latas pretas e o nitro enche sozinho', 'regen', '#ca8a04', 0.4, '#1f2937', 1.1],
+    H: ['CAÇADA', 'Dispara 3 mísseis teleguiados de uma vez', 'barrage', '#fbbf24'],
+  },
+  ruivo: {
+    S: ['DINGO FAMINTO', 'Nos primeiros 8 segundos da corrida corre muito mais rápido', 'start', 1.15, '#f97316', 'dust'],
+    A: ['ATERRISSAGEM', 'Ao pousar de um pulo ganha 10 de nitro', 'land', 'nitro', 10, '#fdba74'],
+    C: ['RASPÃO', 'Raspar na cerca não atrasa', 'rail'],
+    J: ['SALTO DO DESERTO', 'Enquanto está no ar o nitro enche', 'airNitro'],
+    M: ['DINGO DE FERRO', 'Pelo cor de ferrugem, latas laranja e se levanta mais rápido', 'getUp', '#c2410c', 0.5, '#fb923c', 1.1],
+    H: ['TEMPESTADE DE AREIA', 'Levanta uma nuvem de poeira: quem vem atrás perde o rumo', 'smoke', '#d6a55f'],
+  },
+  ninja: {
+    S: ['CHAKRA', 'Com o tanque de nitro quase cheio corre mais, com aura roxa', 'fullNitro', 1.07, '#a855f7', 'ring'],
+    A: ['KAWARIMI', 'Ao latir se teleporta um pouco para frente', 'bark', 'dash', 7, '#6b21a8'],
+    C: ['PASSO LEVE', 'Faz curvas mais fechadas', 'sharp'],
+    J: ['PIPA NINJA', 'Cai devagar depois do pulo, planando', 'glide'],
+    M: ['SHINOBI', 'Roupa preta e roxa, latas roxas e carrega 1 míssil a mais', 'ammoCap', '#1e1b4b', 0.55, '#a855f7', 1.1],
+    H: ['TELETRANSPORTE NINJA', 'Some numa fumaça e reaparece bem mais à frente', 'blink', '#a855f7'],
+  },
+  sombra: {
+    S: ['ESPREITA', 'Colado atrás de um rival corre mais rápido', 'close', 1.1, '#4c1d95', 'smoke'],
+    A: ['SUMIÇO', 'Ao se levantar de um tombo se teleporta para frente', 'stunEnd', 'dash', 8, '#1e1b4b'],
+    C: ['DRIFT FANTASMA', 'O drift não gasta velocidade', 'driftSpeed'],
+    J: ['SALTO ESCURO', 'No ar os mísseis erram ele', 'airDodge'],
+    M: ['DOBERMANN DE OBSIDIANA', 'Pelo roxo-escuro, latas roxas e mísseis o atordoam menos', 'armor', '#3b0764', 0.5, '#7c3aed', 1.1],
+    H: ['ECLIPSE', 'O céu escurece, os pássaros fogem dele e os rivais ficam assustados', 'night', '#4c1d95'],
+  },
+  pacoca: {
+    S: ['AÇÚCAR', 'Por 4 segundos depois de pegar uma lata corre mais rápido', 'fed', 1.12, '#fbbf24', 'star'],
+    A: ['LANCHINHO', 'Pegar uma carga especial dá um turbo', 'charge', 'burst', 1.5, '#fde047'],
+    C: ['PATAS SUJAS', 'Lama, água e gelo não atrapalham', 'puddle'],
+    J: ['PULO GORDINHO', 'Nunca tropeça nas barreiras', 'spring'],
+    M: ['PAÇOCA RECHEADA', 'Pelo cor de amendoim, latas marrons e o nitro dura mais', 'tank', '#b45309', 0.45, '#78350f', 1.12],
+    H: ['AÇÚCAR NO SANGUE', 'Turbo enorme por 3 segundos', 'rocket', '#fbbf24'],
+  },
+  raio: {
+    S: ['RETA ELÉTRICA', 'Nas retas corre mais rápido, soltando faíscas', 'straight', 1.07, '#facc15', 'bolt'],
+    A: ['SOBRECARGA', 'Passar numa faixa de turbo enche 20 de nitro', 'pad', 'nitro', 20, '#fde047'],
+    C: ['CURTO-CIRCUITO', 'O mini-turbo do drift carrega mais rápido', 'driftCharge'],
+    J: ['DESCARGA', 'O pulo o lança para frente', 'launch'],
+    M: ['GREYHOUND ELÉTRICO', 'Pelo amarelo, latas azuis e o nitro enche sozinho', 'regen', '#facc15', 0.5, '#2563eb', 1.08],
+    H: ['TROVOADA', 'Raios caem nos 2 rivais logo à frente', 'storm', '#facc15'],
+  },
+  duque: {
+    S: ['PAIOL CHEIO', 'Com 2 ou mais mísseis carregados corre mais rápido', 'armed', 1.07, '#84cc16', 'ring'],
+    A: ['RECARGA', 'Pegar munição enche 15 de nitro', 'ammo', 'nitro', 15, '#bef264'],
+    C: ['TRINCHEIRA', 'Trombadas quase não o empurram', 'anchor'],
+    J: ['PARAQUEDISTA', 'Ao pousar perto de rivais, a pancada os derruba', 'stomp'],
+    M: ['ARSENAL', 'Farda verde-oliva, latas pretas e carrega 1 míssil a mais', 'ammoCap', '#3f6212', 0.45, '#111827', 1.1],
+    H: ['BATERIA DE MÍSSEIS', 'Dispara 3 mísseis teleguiados de uma vez', 'barrage', '#84cc16'],
+  },
+  frufru: {
+    S: ['DESFILE', 'Derrapando fica mais rápido e solta brilhos', 'drift', 1.08, '#f0abfc', 'star'],
+    A: ['POSE', 'Cada mini-turbo dá 2 segundos de escudo', 'mini', 'shield', 2, '#f0abfc'],
+    C: ['PASSO DE BALÉ', 'Derrapar enche o nitro em dobro', 'driftNitro'],
+    J: ['PIRUETA', 'Aperte pular de novo no ar para dar outro pulo', 'double'],
+    M: ['POODLE DE CRISTAL', 'Pelo rosa-cristal, latas lilás e pega itens de longe', 'magnet', '#f5d0fe', 0.55, '#c084fc', 1.1],
+    H: ['BRILHO DE DIVA', 'Escudo por 7 segundos: nada a derruba', 'shield', '#f0abfc'],
+  },
+  major: {
+    S: ['MARCHA FINAL', 'Na última volta corre mais rápido', 'lastLap', 1.08, '#65a30d', 'ring'],
+    A: ['FORMAÇÃO', 'Na largada ganha 4 segundos de escudo', 'start', 'shield', 4, '#84cc16'],
+    C: ['SANGUE-FRIO', 'Sustos e bichos voadores atrapalham só pela metade do tempo', 'steady'],
+    J: ['TREINO DE OBSTÁCULOS', 'Pular uma barreira enche 25 de nitro', 'hurdleNitro'],
+    M: ['BLINDADO', 'Camuflagem militar, latas verdes e mísseis o atordoam menos', 'armor', '#4d7c0f', 0.45, '#365314', 1.12],
+    H: ['ATAQUE AÉREO', 'Bombas caem nos 2 rivais logo à frente', 'storm', '#f97316', 'bomb'],
+  },
+  tofu: {
+    S: ['LANTERNINHA', 'Em último lugar corre muito mais rápido', 'last', 1.15, '#fef3c7', 'dust'],
+    A: ['ROLINHO', 'Ao se levantar de um tombo ganha um mini-turbo', 'stunEnd', 'burst', 1.0, '#fde68a'],
+    C: ['BOLA DE PELO', 'Trombadas quase não o empurram', 'anchor'],
+    J: ['CAMBALHOTA', 'Ao pousar de um pulo ganha um mini-turbo', 'landBoost'],
+    M: ['TOFU BLINDADO', 'Pelo branco, latas pretas, fica maior e se levanta mais rápido', 'getUp', '#fafaf9', 0.6, '#1c1917', 1.18],
+    H: ['BOLA DE BOLICHE', 'Rola como uma bola e derruba quem estiver perto', 'quake', '#fde68a'],
+  },
+  bidu: {
+    S: ['BARRIL CHEIO', 'Com o nitro quase cheio corre mais rápido', 'fullNitro', 1.07, '#fbbf24', 'ring'],
+    A: ['ÁGUA DOS ALPES', 'Pular uma barreira enche 20 de nitro', 'hurdle', 'nitro', 20, '#93c5fd'],
+    C: ['PATAS DE MONTANHA', 'Raspar na cerca não atrasa', 'rail'],
+    J: ['ESTRONDO', 'Ao pousar perto de rivais, a pancada os derruba', 'stomp'],
+    M: ['SÃO BERNARDO DE AÇO', 'Pelo cinza-aço, latas vermelhas, fica maior e mais pesado', 'heavy', '#6b7280', 0.45, '#dc2626', 1.12],
+    H: ['MURALHA', 'Escudo por 7 segundos: nada o derruba', 'shield', '#fbbf24'],
+  },
+  canela: {
+    S: ['ESPÍRITO LIVRE', 'Sem rivais por perto fica mais rápido', 'alone', 1.08, '#fb923c', 'flame'],
+    A: ['PASSO DO AKITA', 'Ao pousar de um pulo se teleporta um pouco para frente', 'land', 'dash', 5, '#9a3412'],
+    C: ['PATA CERTEIRA', 'Não escorrega em curvas lisas, lama, água ou gelo', 'slipGrip'],
+    J: ['SALTO ALTO', 'Pula 25% mais alto', 'high'],
+    M: ['AKITA DE FOGO', 'Pelo vermelho-fogo, latas laranja e o nitro enche sozinho', 'regen', '#dc2626', 0.4, '#f97316', 1.1],
+    H: ['PASSO DO VENTO', 'Some e reaparece bem mais à frente', 'blink', '#fb923c'],
+  },
+  biscoito: {
+    S: ['RASTREADOR', 'Colado atrás de um rival corre mais rápido', 'close', 1.1, '#d97706', 'dust'],
+    A: ['FARO DE OURO', 'Cada osso de ouro dá um mini-turbo', 'coin', 'burst', 0.5, '#fbbf24'],
+    C: ['PATAS CURTAS', 'Lama, água e gelo não atrapalham', 'puddle'],
+    J: ['ORELHAS DE PLANADOR', 'Enquanto está no ar o nitro enche', 'airNitro'],
+    M: ['BEAGLE DETETIVE', 'Pelo caramelo-escuro, latas verdes e pega itens de muito longe', 'magnet', '#92400e', 0.4, '#16a34a', 1.1],
+    H: ['FARO ABSOLUTO', 'Puxa todos os itens por perto e enche o nitro', 'magnet', '#fbbf24'],
+  },
+  emilly: {
+    S: ['SOBREVIVENTE', 'Depois de levar um tombo volta mais rápida', 'hurt', 1.14, '#fda4af', 'smoke'],
+    A: ['VINGANÇA', 'Acertar um míssil em alguém dá um mini-turbo', 'hitDealt', 'burst', 1.0, '#fda4af'],
+    C: ['VIRA-LIXO', 'Correr fora da pista não deixa lenta', 'offroad'],
+    J: ['RABO DE PARAQUEDAS', 'Cai devagar depois do pulo, planando', 'glide'],
+    M: ['SARUÊ NOTURNA', 'Pelo cinza-noite, latas rosa e se levanta mais rápido', 'getUp', '#374151', 0.45, '#ec4899', 1.12],
+    H: ['FEDOR DE SARUÊ', 'Solta um cheiro horrível: quem vem atrás perde o rumo', 'smoke', '#a3e635'],
+  },
+  taissa: {
+    S: ['CAUDA ÁGIL', 'Derrapando fica mais rápida', 'drift', 1.08, '#facc15', 'dust'],
+    A: ['RABO SOLTO', 'Cada mini-turbo a teleporta um pouco para frente', 'mini', 'dash', 6, '#ca8a04'],
+    C: ['VENTOSAS', 'Faz curvas mais fechadas', 'sharp'],
+    J: ['PULO DE PAREDE', 'No ar ganha velocidade em vez de perder', 'airSpeed'],
+    M: ['LAGARTIXA NEON', 'Escamas verde-neon, latas amarelas e os pássaros não a atacam', 'birdProof', '#84cc16', 0.5, '#facc15', 1.15],
+    H: ['CAMUFLAGEM', 'Some e reaparece bem mais à frente', 'blink', '#84cc16'],
+  },
+  tiffany: {
+    S: ['CAÇADORA', 'Colada atrás de um rival corre mais rápido', 'close', 1.1, '#f97316', 'flame'],
+    A: ['LÍNGUA RÁPIDA', 'Cada chiado enche 10 de nitro', 'bark', 'nitro', 10, '#fdba74'],
+    C: ['GARRAS DE TEIÚ', 'Não escorrega em curvas lisas, lama, água ou gelo', 'slipGrip'],
+    J: ['RABADA', 'Ao pousar perto de rivais, a pancada os derruba', 'stomp'],
+    M: ['TEIÚ DE LAVA', 'Escamas cor de lava, latas pretas e mísseis a atordoam menos', 'armor', '#9a3412', 0.45, '#1c1917', 1.12],
+    H: ['CHIADO DA SELVA', 'Um chiado gigante derruba todos que estiverem em volta', 'roar', '#fdba74'],
+  },
+  kemilly: {
+    S: ['SALTITANTE', 'No ar corre mais rápido', 'air', 1.1, '#e9d5ff', 'star'],
+    A: ['PULO DE COELHO', 'Pular uma barreira dá um mini-turbo', 'hurdle', 'burst', 1.0, '#f97316'],
+    C: ['HORTA', 'Derrapar enche o nitro em dobro', 'driftNitro'],
+    J: ['PERNAS DE COELHO', 'Pula 25% mais alto', 'high'],
+    M: ['COELHO DE CHOCOLATE', 'Pelo de chocolate, latas laranja e carrega 1 cenoura a mais', 'ammoCap', '#78350f', 0.5, '#f97316', 1.1],
+    H: ['CHUVA DE CENOURAS', 'Joga 3 cenouras teleguiadas de uma vez', 'barrage', '#f97316'],
+  },
+};
+const X_SLOT = { motor: 'S', acel: 'A', grip: 'C', pulo: 'J' };
+const hexRgb = h => { const c = new THREE.Color(h); return [c.r, c.g, c.b]; };
+const ammoCap = r => (has(r, 'duque') ? 4 : 3) + (r.xM === 'ammoCap' ? 1 : 0);
+const pickR = (r, base) => r.magT > 0 ? 500 : (has(r, 'biscoito') || r.xM === 'magnet') ? 16 : base;
+const massOf = r => (has(r, 'princesa') ? 1e6 : r.b.mass || 1) * (r.xC === 'anchor' ? 3 : 1) * (r.xM === 'heavy' ? 1.8 : 1);
+// liga as passivas extras no corredor conforme as melhorias e o upgrade mecânico
+function setupExtras(r, b, up, mech) {
+  const X = EXTRA[b.id] || {};
+  r.up = up; r.mech = !!mech;
+  r.xS = up.motor >= 5 ? X.S || null : null; r.xA = up.acel >= 5 ? X.A || null : null;
+  r.xC = up.grip >= 5 && X.C ? X.C[2] : null; r.xJ = up.pulo >= 5 && X.J ? X.J[2] : null;
+  r.xM = mech && X.M ? X.M[2] : null; r.xH = mech ? X.H || null : null;
+  r.xScol = r.xS ? hexRgb(r.xS[4]) : null; r.xAcol = r.xA ? hexRgb(r.xA[5]) : null;
+  r.ab = r.xH ? 1 : 0; r.abCD = 0; r.prevAb = false;
+  r.shield = 0; r.rocket = 0; r.flyT = 0; r.icy = 0; r.smokeT = 0; r.magT = 0; r.nightT = 0; r.hurtT = 0; r.fedT = 0; r.aCD = 0;
+  r.rank = r.num; r.sOn = false; r.wasStun = false; r.offroad = false;
+  if (r.xC === 'sharp') r.turn *= 1.15;
+  if (r.xJ === 'high') r.jumpV *= 1.12;
+  if (r.xM === 'tank') r.nitroDrain *= 0.75;
+  if (r.xM === 'ammoCap') r.ammo++;
+}
+function extrasUnlocked(b) {
+  const X = EXTRA[b.id] || {}, up = getUp(b), out = [];
+  for (const [u, sl] of Object.entries(X_SLOT)) if (up[u] >= 5 && X[sl]) out.push(X[sl][0]);
+  if (save.mech[b.id] && X.M) out.push(X.M[0]);
+  return out;
+}
+// visual do upgrade mecânico: pele nova, latas coloridas e corpo maior
+function applyMech(D, b) {
+  const M = EXTRA[b.id] && EXTRA[b.id].M; if (!M) return;
+  const skin = new THREE.Color(M[3]), k = M[4], t = new THREE.Color();
+  const gear = D.flames && D.flames[0] && D.flames[0].parent, skip = new Set();
+  if (gear) gear.traverse(o => skip.add(o));
+  if (D.launcher && D.launcher.noses) D.launcher.noses.forEach(n => n.traverse(o => skip.add(o)));
+  const tint = (o) => {
+    const m = o.material; if (!m || Array.isArray(m) || m === D.vestMat || (m.map && m.transparent)) return;
+    const col = o.geometry && o.geometry.attributes.color;
+    if (col && m.vertexColors) {
+      const g = o.geometry.clone(); g.userData = {}; const c = g.attributes.color;
+      for (let i = 0; i < c.count; i++) { t.fromBufferAttribute(c, i).lerp(skin, k); c.setXYZ(i, t.r, t.g, t.b); }
+      o.geometry = g;
+    } else if (m.color) { o.material = m.clone(); o.material.color.lerp(skin, k); }
+  };
+  D.model.traverse(o => { if (o.isMesh && !skip.has(o) && !SHARED.has(o.material)) tint(o); });
+  D.mechTint = o => { if (!/^Eye/.test(o.material.name || '')) { o.material = o.material.clone(); o.material.color.lerp(skin, k); } };
+  if (D.rigMeshes) D.rigMeshes.forEach(D.mechTint);
+  const canM = new THREE.MeshStandardMaterial({ color: M[5], roughness: 0.3, metalness: 0.55 });
+  if (gear) gear.traverse(o => { if (o.userData.can) o.material = canM; });
+  D.model.scale.multiplyScalar(M[6]);
+}
+// S: condição para a aura de velocidade
+function sCond(r, c) {
+  switch (c) {
+    case 'behind': return r.rank > 3;
+    case 'last': return runners.length > 1 && r.rank === runners.length;
+    case 'leader': return r.rank === 1;
+    case 'nitro': return r.nitroOn;
+    case 'drift': return r.drifting;
+    case 'lastLap': return r.lap === save.laps && save.laps > 1 || (save.laps === 1 && r.dist > L * 0.6);
+    case 'hurt': return r.hurtT > 0;
+    case 'lowNitro': return r.nitro < 25;
+    case 'fullNitro': return r.nitro > 80;
+    case 'slip': return r.slip > 0.5;
+    case 'offroad': return r.offroad;
+    case 'air': return r.air;
+    case 'start': return raceTime < 8;
+    case 'fed': return r.fedT > 0;
+    case 'armed': return r.ammo >= 2;
+    case 'straight': return T[r.idx].dot(T[(r.idx + 60) % N]) > 0.97;
+  }
+  let near = 0, close = false;
+  for (const o of runners) {
+    if (o === r || o.finished) continue;
+    const d = Math.hypot(o.x - r.x, o.z - r.z); if (d < 14) near++; if (d < 30 && c === 'alone') return false;
+    const ds = wrapDelta(o.dist - r.dist); if (ds > 0 && ds < 8 && Math.abs(o.d - r.d) < 4) close = true;
+  }
+  return c === 'pack' ? near >= 2 : c === 'alone' ? true : c === 'close' ? close : false;
+}
+function auraFx(r, dt, col, style) {
+  const y0 = r.y + r.flyY;
+  if (style === 'bolt') {
+    if (Math.random() > dt * 14) return;
+    let x = r.x + (Math.random() - 0.5) * 1.6, y = y0 + 0.2 + Math.random() * 0.6, z = r.z + (Math.random() - 0.5) * 1.6;
+    for (let i = 0; i < 6; i++) { glow.spawn(x, y, z, 0, 0, 0, 0.14, 0.32, 0.1, col, 1, 0, 1); x += (Math.random() - 0.5) * 0.5; y += 0.22; z += (Math.random() - 0.5) * 0.5; }
+    return;
+  }
+  if (Math.random() > dt * 24) return;
+  const x = r.x + (Math.random() - 0.5) * 1.4, z = r.z + (Math.random() - 0.5) * 1.4, y = y0 + 0.4 + Math.random() * 1.1;
+  if (style === 'flame') glow.spawn(x, y0 + 0.3, z, -r.vx * 0.1, 2.5, -r.vz * 0.1, 0.45, 0.55, 0.12, col, 1, -2, 1);
+  else if (style === 'siren') glow.spawn(r.x, y0 + 1.9, r.z, 0, 0, 0, 0.12, 0.7, 0.7, Math.sin(time * 14) > 0 ? [0.2, 0.4, 1] : [1, 0.15, 0.15], 1, 0, 1);
+  else if (style === 'ring') { const a = Math.random() * 6.28; glow.spawn(r.x + Math.cos(a) * 1.3, y, r.z + Math.sin(a) * 1.3, 0, 1.2, 0, 0.5, 0.4, 0.1, col, 0.9, 0, 1); }
+  else if (style === 'streak') glow.spawn(x, y, z, -r.vx * 0.5, 0, -r.vz * 0.5, 0.3, 0.3, 0.05, col, 0.8, 0, 1);
+  else if (style === 'star') glow.spawn(x, y, z, (Math.random() - 0.5) * 2, 1, (Math.random() - 0.5) * 2, 0.6, 0.35, 0.05, col, 1, 0, 1);
+  else dust.spawn(x, y * 0.7, z, -r.vx * 0.15, 0.8, -r.vz * 0.15, 0.8, 0.5, 1.4, col, 0.6, 0, 1.5);
+}
+function ring(r, col, rad, n = 24, sys = glow) { for (let i = 0; i < n; i++) { const a = i / n * 6.28; sys.spawn(r.x, r.y + r.flyY + 0.4, r.z, Math.cos(a) * rad, 0.6, Math.sin(a) * rad, 0.6, 0.6, 1.4, col, 0.8, 0, 2.5); } }
+// teleporta para frente ao longo da pista, deixando um rastro
+function dash(r, m, col) {
+  const a = sampleAt(r.s), fx = a.t.x, fz = a.t.z;
+  for (let i = 0; i < 16; i++) { const k = i / 16 * m; dust.spawn(r.x + fx * k + (Math.random() - 0.5), r.y + 0.5 + Math.random() * 0.8, r.z + fz * k + (Math.random() - 0.5), 0, 0.3, 0, 1.1, 1, 1.8, col, 0.85, -0.3, 1); }
+  r.x += fx * m; r.z += fz * m;
+  if (r.isPlayer) shake(0.15);
+}
+// derruba um rival (respeita escudo e armadura; o cachorro de um amigo é derrubado no aparelho dele)
+function knock(o, t, vy, keep) {
+  if (o.remote || o.finished) return false;
+  if (o.shield > 0) { if (o.isPlayer) pop('ESCUDO!', 'c'); return false; }
+  o.stun = Math.max(o.stun, t * (o.xM === 'armor' ? 0.6 : 1)); o.vy = Math.max(o.vy, vy); o.vx *= keep; o.vz *= keep; o.nitroOn = false; endDrift(o, true); o.hits++;
+  if (o.isPlayer) { shake(0.4); vib(60); }
+  return true;
+}
+// A: gatilhos da passiva de aceleração
+function trig(r, ev) {
+  const a = r.xA; if (!a || a[2] !== ev || r.aCD > 0 || r.remote) return;
+  r.aCD = ev === 'coin' ? 0.3 : 1.2;
+  const v = a[4], col = r.xAcol;
+  if (a[3] === 'nitro') r.nitro = Math.min(100, r.nitro + v);
+  else if (a[3] === 'burst') r.mini = Math.max(r.mini, v);
+  else if (a[3] === 'shield') r.shield = Math.max(r.shield, v);
+  else if (a[3] === 'scare') { for (const o of runners) if (o !== r && Math.hypot(o.x - r.x, o.z - r.z) < v && o.shield <= 0) o.spook = Math.max(o.spook, 1.2); ring(r, col, 8); }
+  else if (a[3] === 'dash') dash(r, v, col);
+  if (a[3] !== 'dash' && a[3] !== 'scare') for (let i = 0; i < 10; i++) glow.spawn(r.x, r.y + 1, r.z, (Math.random() - 0.5) * 4, 2 + Math.random() * 2, (Math.random() - 0.5) * 4, 0.5, 0.4, 0.1, col, 1, 2, 1);
+  if (r.isPlayer) pop(a[0] + '!', 'v');
+}
+function stomp(r) {
+  let n = 0;
+  for (const o of runners) if (o !== r && !o.air && Math.hypot(o.x - r.x, o.z - r.z) < 5 && knock(o, 0.6, 4, 0.5)) n++;
+  ring(r, [0.85, 0.8, 0.7], 7, 20, dust);
+  if (n && r.isPlayer) pop(`${EXTRA[r.b.id].J[0]}! ${n} NO CHÃO`, 'v');
+}
+// céu escuro da habilidade de noite
+let darkT = 0, darkK = 0, darkCol = new THREE.Color(0x2a0c14);
+const _dz = new THREE.Color(0x05030a);
+function applyDark(dt) {
+  const want = darkT > 0 ? 1 : 0; darkT = Math.max(0, darkT - dt);
+  const k = lerp(darkK, want, 1 - Math.exp(-2.5 * dt));
+  if (Math.abs(k - darkK) < 1e-4 && k === want) return;
+  darkK = Math.abs(k - want) < 0.002 ? want : k;
+  const s = TR.sky;
+  sun.intensity = TR.light.sun * (1 - 0.82 * darkK);
+  hemi.intensity = (TR.light.hemi + (save.qual === 0 ? 1.1 : 0)) * (1 - 0.6 * darkK);
+  skyU.zen.value.setHex(s.zen).lerp(_dz, darkK); skyU.hor.value.setHex(s.hor).lerp(darkCol, darkK); skyU.sunCol.value.setHex(s.sun).multiplyScalar(1 - darkK);
+  if (scene.fog) scene.fog.color.setHex(TR.fog[0]).lerp(darkCol, darkK);
+  renderer.toneMappingExposure = 1 - 0.55 * darkK;
+}
+function resetDark() { darkT = 0; darkK = 0.5; applyDark(10); }
+// H: habilidade do upgrade mecânico
+function useAbility(r, fromNet) {
+  const h = r.xH; if (!h) return;
+  if (!fromNet) {
+    if (r.ab <= 0 || r.abCD > 0 || r.stun > 0 || r.finished || state !== 'race') { if (r.isPlayer && r.ab <= 0) pop('SEM CARGA! PEGUE AS CARGAS ESPECIAIS', 'r'); return; }
+    r.ab--;
+  }
+  r.abCD = 1.5;
+  const col = hexRgb(h[3]), kind = h[2], vol = player ? clamp(1 - Math.hypot(r.x - player.x, r.z - player.z) / 90, 0, 1) : 1;
+  if (r.isPlayer) { pop(h[0] + '!', 'o'); narrate(`${h[0]}!`, true); vib([30, 30, 60]); netEvent('ab'); }
+  else narrate(`${r.b.name} USOU ${h[0]}!`);
+  const ahead = (max, n) => runners.filter(o => o !== r && !o.finished && wrapDelta(o.dist - r.dist) > 0 && wrapDelta(o.dist - r.dist) < max).sort((a, b) => wrapDelta(a.dist - r.dist) - wrapDelta(b.dist - r.dist)).slice(0, n);
+  if (kind === 'night') {
+    darkT = 6; darkCol.set(h[3]).multiplyScalar(0.5); r.nightT = 6;
+    for (const bd of birds) if (bd.state !== 'off' && Math.hypot(bd.pos.x - r.x, bd.pos.z - r.z) < 60) birdFlee(bd, r);
+    for (const o of runners) if (o !== r && Math.hypot(o.x - r.x, o.z - r.z) < 45 && o.shield <= 0 && !o.remote) { o.spook = Math.max(o.spook, 2.5); if (o.isPlayer) pop('QUE MEDO!', 'r'); }
+    Sfx.howl(Math.max(0.4, vol)); ring(r, col, 10, 30);
+  } else if (kind === 'storm') {
+    for (const o of ahead(150, 2)) {
+      for (let i = 0; i < 16; i++) glow.spawn(o.x + (Math.random() - 0.5) * (h[4] ? 0.4 : 1.2), o.y + 1 + i * 1.6, o.z + (Math.random() - 0.5) * (h[4] ? 0.4 : 1.2), 0, h[4] ? -20 : 0, 0, 0.35, 1.1, 0.4, col, 1, 0, 1);
+      for (let i = 0; i < 20; i++) { const a = Math.random() * 6.28, u = Math.random() * 8; glow.spawn(o.x, o.y + 0.5, o.z, Math.cos(a) * u, Math.random() * 7, Math.sin(a) * u, 0.5, 1.1, 0.2, col, 1, 8, 2); }
+      knock(o, 1.2, 7, 0.3);
+      if (o.isPlayer) pop(h[4] ? 'BOMBARDEADO!' : 'ATINGIDO POR UM RAIO!', 'r');
+    }
+    Sfx.boom(Math.max(0.3, vol));
+  } else if (kind === 'shield') r.shield = 7;
+  else if (kind === 'rocket') { r.rocket = 3; r.mini = Math.max(r.mini, 0.6); Sfx.boost(); }
+  else if (kind === 'blink') { ring(r, col, 4, 16, dust); dash(r, 28, col); ring(r, col, 4, 16, dust); }
+  else if (kind === 'quake') { for (const o of runners) if (o !== r && Math.hypot(o.x - r.x, o.z - r.z) < 20) knock(o, 0.9, 6, 0.4); ring(r, col, 14, 32, dust); ring(r, col, 9); if (vol > 0.3) shake(0.5 * vol); Sfx.boom(vol); }
+  else if (kind === 'freeze') { for (const o of ahead(90, 6)) if (o.shield <= 0) { o.icy = 4; for (let i = 0; i < 10; i++) glow.spawn(o.x, o.y + 0.6, o.z, (Math.random() - 0.5) * 4, 2, (Math.random() - 0.5) * 4, 0.8, 0.5, 0.1, col, 1, 2, 1); if (o.isPlayer) pop('PISTA CONGELADA!', 'c'); } }
+  else if (kind === 'magnet') { r.magT = 6; r.nitro = 100; ring(r, col, 6); }
+  else if (kind === 'barrage') {
+    Net.mute = true;
+    const tgs = ahead(140, 3); if (!tgs.length) tgs.push(null);
+    for (let i = 0; i < 3; i++) { r.ammo++; r.fireCD = 0; fireMissile(r, tgs[i % tgs.length]); }
+    Net.mute = false;
+  }
+  else if (kind === 'smoke') r.smokeT = 6;
+  else if (kind === 'fly') { r.flyT = 5; if (r.isPlayer) Sfx.boost(); }
+  else if (kind === 'roar') {
+    for (const o of runners) if (o !== r && Math.hypot(o.x - r.x, o.z - r.z) < 30 && knock(o, 1.0, 5, 0.4) && o.isPlayer) pop(`${h[0]}!`, 'r');
+    ring(r, col, 18, 36); Sfx.voice(r.b, Math.max(0.5, vol)); if (vol > 0.3) shake(0.4 * vol);
+  }
+}
+// efeitos contínuos das passivas extras e das habilidades (uma vez por quadro)
+function extrasFrame(dt) {
+  applyDark(dt);
+  for (const r of runners) {
+    if (r.sOn && r.xScol) auraFx(r, dt, r.xScol, r.xS[5]);
+    if (r.xM === 'regen') r.nitro = Math.min(100, r.nitro + 2.5 * dt);
+    if (r.rocket > 0) glow.spawn(r.x - Math.sin(r.h) * 1.2, r.y + 0.7, r.z - Math.cos(r.h) * 1.2, -r.vx * 0.3, 0.5, -r.vz * 0.3, 0.4, 0.8, 0.2, [1, 0.6, 0.15], 1, 0, 1);
+    if (r.icy > 0 && Math.random() < dt * 20) glow.spawn(r.x, r.y + 0.3, r.z, (Math.random() - 0.5) * 3, 0.5, (Math.random() - 0.5) * 3, 0.5, 0.3, 0.05, [0.7, 0.9, 1], 1, 0, 1);
+    if (r.magT > 0 && Math.random() < dt * 20) { const a = Math.random() * 6.28; glow.spawn(r.x + Math.cos(a) * 5, r.y + 1, r.z + Math.sin(a) * 5, -Math.cos(a) * 9, 0, -Math.sin(a) * 9, 0.5, 0.4, 0.1, [1, 0.8, 0.2], 1, 0, 0); }
+    if (r.nightT > 0 && Math.random() < dt * 20) auraFx(r, 1, [0.5, 0.05, 0.08], 'bolt');
+    if (r.smokeT > 0) {
+      const col = hexRgb(r.xH[3]);
+      if (Math.random() < dt * 30) dust.spawn(r.x - Math.sin(r.h) * 2 + (Math.random() - 0.5) * 3, r.y + 0.8, r.z - Math.cos(r.h) * 2 + (Math.random() - 0.5) * 3, (Math.random() - 0.5) * 2, 0.6, (Math.random() - 0.5) * 2, 3, 2, 4.5, col, 0.55, -0.1, 0.6);
+      for (const o of runners) { const ds = wrapDelta(o.dist - r.dist); if (o !== r && ds < -1 && ds > -32 && Math.abs(o.d - r.d) < 7 && o.shield <= 0) { o.spook = Math.max(o.spook, 0.4); o.icy = Math.max(o.icy, 0.3); } }
+    }
+    const D = r.D;
+    if (r.shield > 0 && !D.bubble) { D.bubble = new THREE.Mesh(bubbleGeo, bubbleMat); D.bubble.position.y = 0.9; D.root.add(D.bubble); }
+    if (D.bubble) { D.bubble.visible = r.shield > 0; D.bubble.position.y = 0.9 + r.y + r.flyY; D.bubble.scale.setScalar(1 + Math.sin(time * 8) * 0.04); }
+  }
+}
+const bubbleGeo = new THREE.SphereGeometry(1.5, 24, 16); bubbleGeo.userData.keep = true;
+const bubbleMat = new THREE.MeshBasicMaterial({ color: 0x9fdcff, transparent: true, opacity: 0.22, depthWrite: false, blending: THREE.AdditiveBlending });
+SHARED.add(bubbleMat);
 function statsFor(b, up) {
   return {
     maxV: 30 + b.spd * 1.8 + up.motor * 1.4, accel: 9 + b.acc * 2.4 + up.acel * 1.9,
@@ -3001,12 +3474,13 @@ function statsFor(b, up) {
     jumpV: 9.6 + b.jmp * 0.75 + up.pulo * 0.5, nitroDrain: 30 * (1 - up.nitro * 0.09), nitroPow: 1.3 + up.nitro * 0.03 + (b.id === 'raio' ? 0.2 : 0),
   };
 }
-const NOINPUT = { throttle: 0, brake: false, steer: 0, drift: false, nitro: false, jump: false, bark: false, fire: false };
+const NOINPUT = { throttle: 0, brake: false, steer: 0, drift: false, nitro: false, jump: false, bark: false, fire: false, ab: false };
 
 class Runner {
-  constructor(b, num, isPlayer, up) {
+  constructor(b, num, isPlayer, up, mech) {
     this.b = b; this.num = num; this.isPlayer = isPlayer;
     this.D = buildCreature(b, num, b.color); scene.add(this.D.root);
+    if (mech) applyMech(this.D, b);
     this.look = isPlayer ? getLook(b) : randomLook(); applyLook(this.D, this.look);
     Object.assign(this, statsFor(b, up));
     this.skill = isPlayer ? 1 : DIFFS[save.diff].k * (0.98 + Math.random() * 0.04);
@@ -3020,6 +3494,7 @@ class Runner {
     this.lane = (Math.random() - 0.5) * 8; this.laneT = 1 + Math.random() * 3; this.aiNitro = false; this.jumpPlan = new Map();
     this.minis = 0; this.scared = 0; this.cleanJumps = 0; this.cans = 0; this.hits = 0; this.birdT = 0; this.hitCD = 0;
     this.driftScore = 0; this.coins = 0; this.lapStart = 0; this.bestLap = 0; this.pressT = null; this.wrongT = 0;
+    setupExtras(this, b, up, mech);
   }
   get lap() { return clamp(Math.floor(this.dist / L) + 1, 1, save.laps); }
   place(dist, d) {
@@ -3052,7 +3527,8 @@ function endDrift(r, crashed) {
   r.driftScore += pts;
   if (lvl) {
     r.minis++; if (r.isPlayer) vib(lvl === 2 ? [25, 30, 25] : 25);
-    r.mini = (lvl === 2 ? 1.5 : 0.8) * (has(r, 'frufru') ? 1.5 : 1); r.nitro = Math.min(100, r.nitro + lvl * 8);
+    r.mini = (lvl === 2 ? 1.5 : 0.8) * (has(r, 'frufru') ? 1.5 : 1) * (r.xC === 'miniLong' ? 1.5 : 1); r.nitro = Math.min(100, r.nitro + lvl * 8);
+    trig(r, 'mini');
     if (r.isPlayer) { pop(lvl === 2 ? 'SUPER MINI-TURBO!' : 'MINI-TURBO!', lvl === 2 ? 'o' : 'c'); Sfx.boost(); }
   }
   if (r.isPlayer && pts > 60) pop(`DRIFT +${pts}`, 'g');
@@ -3061,7 +3537,7 @@ function endDrift(r, crashed) {
 const voiceWord = b => b.voice === 'squeak' ? 'GUINCHO!' : b.voice === 'hiss' ? 'CHIADO!' : b.voice === 'grunt' ? 'RONCO!' : 'LATIDO!';
 const voiceSound = b => b.voice === 'squeak' ? 'IIIIIH!' : b.voice === 'hiss' ? 'SSSSSS!' : b.voice === 'grunt' ? 'OINC OINC!' : 'AU AU!';
 function doBark(r) {
-  r.barkCD = has(r, 'rex') ? 4 : 6;
+  r.barkCD = has(r, 'rex') ? 4 : 6; trig(r, 'bark');
   if (has(r, 'pitiquin')) { r.mini = Math.max(r.mini, 1); if (r.isPlayer) pop('MINI-TURBO DO PITIQUIN!', 'c'); }
   const fx = Math.sin(r.h), fz = Math.cos(r.h);
   Sfx.voice(r.b, player ? clamp(1 - Math.hypot(r.x - player.x, r.z - player.z) / 60, 0, 1) : 1);
@@ -3090,8 +3566,12 @@ function doBark(r) {
 
 function stepRunner(r, inp, dt) {
   const prevDist = r.dist, air = r.y > 0.02;
+  if (r.shield > 0 && (r.stun > 0 || r.spook > 0 || r.birdT > 0)) { r.stun = 0; r.spook = 0; r.birdT = 0; }
+  for (const k of ['shield', 'rocket', 'flyT', 'icy', 'smokeT', 'magT', 'nightT', 'hurtT', 'fedT', 'aCD', 'abCD']) if (r[k] > 0) r[k] -= dt;
+  if (r.xC === 'steady') { if (r.spook > 0) r.spook -= dt; if (r.birdT > 0) r.birdT -= dt; }
+  if (r.stun > 0) r.wasStun = true; else if (r.wasStun) { r.wasStun = false; r.hurtT = 5; trig(r, 'stunEnd'); }
   if (r.stun > 0) {
-    r.stun -= dt * (has(r, 'bolinha') ? 2 : 1); inp = NOINPUT;
+    r.stun -= dt * (has(r, 'bolinha') ? 2 : 1) * (r.xM === 'getUp' ? 1.7 : 1); inp = NOINPUT;
     if (r.stun <= 0 && has(r, 'emilly')) { r.mini = 1.3; if (r.isPlayer) pop('FINGIU DE MORTA! MINI-TURBO', 'v'); }
   }
   if (r.spook > 0) { r.spook -= dt; inp = { ...inp, nitro: false, steer: clamp(inp.steer + Math.sin(time * 16 + r.num) * 0.7, -1, 1) }; }
@@ -3102,14 +3582,19 @@ function stepRunner(r, inp, dt) {
   const firePressed = inp.fire && !r.prevFire; r.prevFire = inp.fire;
   r.fireCD -= dt; r.flip = Math.max(0, r.flip - dt);
   if (firePressed) fireMissile(r);
+  const abPressed = inp.ab && !r.prevAb; r.prevAb = inp.ab;
+  if (abPressed) useAbility(r);
 
-  const offroad = Math.abs(r.d) > W / 2 + 0.4 && !has(r, 'ruivo') && r.flyY < 1.5;
-  const trackGrip = has(r, 'nevasca') || has(r, 'taissa') ? Math.max(1, TR.grip) : TR.grip;
-  let grip = r.grip * trackGrip * (offroad ? 0.8 : 1), slow = offroad ? 0.62 : 1;
-  if (has(r, 'pingo') || (has(r, 'taissa') && r.surf === 'ice') || (has(r, 'nevasca') && r.surf === 'ice')) { /* poça não atrapalha */ }
-  else if (!air && r.surf === 'mud') { grip *= 0.5; slow *= 0.62; }
-  else if (!air && r.surf === 'water') { grip *= 0.8; slow *= 0.72; }
-  else if (!air && r.surf === 'ice') grip *= 0.22;
+  r.offroad = Math.abs(r.d) > W / 2 + 0.4 && r.flyY < 1.5;
+  const offroad = r.offroad && !has(r, 'ruivo') && r.xC !== 'offroad' && !(r.xS && r.xS[2] === 'offroad');
+  const firm = r.xC === 'slipGrip';
+  const trackGrip = has(r, 'nevasca') || has(r, 'taissa') || firm ? Math.max(1, TR.grip) : TR.grip;
+  let grip = r.grip * trackGrip * (offroad ? 0.8 : 1) * (firm ? 1.4 : 1), slow = offroad ? 0.62 : 1;
+  if (has(r, 'pingo') || r.xC === 'puddle' || (has(r, 'taissa') && r.surf === 'ice') || (has(r, 'nevasca') && r.surf === 'ice')) { /* poça não atrapalha */ }
+  else if (!air && r.surf === 'mud') { grip *= firm ? 1 : 0.5; slow *= 0.62; }
+  else if (!air && r.surf === 'water') { grip *= firm ? 1 : 0.8; slow *= 0.72; }
+  else if (!air && r.surf === 'ice') grip *= firm ? 0.8 : 0.22;
+  if (r.icy > 0) grip *= 0.2;
 
   r.hitCD = Math.max(0, r.hitCD - dt);
   if (r.birdT > 0) { r.birdT -= dt; inp = { ...inp, steer: clamp(inp.steer + Math.sin(time * 11 + r.num * 2) * 0.45, -1, 1) }; }
@@ -3117,13 +3602,15 @@ function stepRunner(r, inp, dt) {
   if (r.nitroOn) r.nitro = Math.max(0, r.nitro - r.nitroDrain * dt);
   if (has(r, 'canela')) r.nitro = Math.min(100, r.nitro + 3 * dt);
   r.howl = Math.max(0, r.howl - dt);
-  // Paz: com nitro, sobe e voa
-  if (has(r, 'paz')) r.flyY = lerp(r.flyY, r.nitroOn ? 4.5 : 0, 1 - Math.exp(-(r.nitroOn ? 2.2 : 1.4) * dt));
+  // Paz: com nitro, sobe e voa (e quem usa a habilidade de voar)
+  if (has(r, 'paz') || r.flyT > 0 || r.flyY > 0.01) { const up = (has(r, 'paz') && r.nitroOn) || r.flyT > 0; r.flyY = lerp(r.flyY, up ? 4.5 : 0, 1 - Math.exp(-(up ? 2.2 : 1.4) * dt)); }
+  r.sOn = !!r.xS && sCond(r, r.xS[2]);
+  if (r.air && r.xJ === 'airNitro') r.nitro = Math.min(100, r.nitro + 15 * dt);
   r.mini = Math.max(0, r.mini - dt); r.pad = Math.max(0, r.pad - dt);
   let band = 1;
   if (!r.isPlayer && player && !player.finished) band = 1 + clamp((player.dist - r.dist) / 220, -0.07, 0.07);
   const maxV = r.maxV * r.skill * band * slow * (r.nitroOn ? r.nitroPow : 1) * (r.mini > 0 ? 1.15 : 1) * (r.pad > 0 ? 1.22 : 1)
-    * (r.slip > 0.5 ? (has(r, 'flecha') ? 1.14 : 1.06) : 1) * (r.howl > 0 ? 1.15 : 1) * r.pack * (r.spook > 0 ? 0.72 : 1) * (r.birdT > 0 ? 0.7 : 1) * (r.finished ? 0.5 : 1);
+    * (r.slip > 0.5 ? (has(r, 'flecha') ? 1.14 : 1.06) : 1) * (r.howl > 0 ? 1.15 : 1) * (r.sOn ? r.xS[3] : 1) * (r.rocket > 0 ? 1.35 : 1) * (r.xC === 'driftSpeed' && r.drifting ? 1.04 : 1) * r.pack * (r.spook > 0 ? 0.72 : 1) * (r.birdT > 0 ? 0.7 : 1) * (r.finished ? 0.5 : 1);
 
   // volante
   let vF = r.vx * Math.sin(r.h) + r.vz * Math.cos(r.h);
@@ -3132,9 +3619,9 @@ function stepRunner(r, inp, dt) {
   if (r.drifting && (!inp.drift || vF < 10)) endDrift(r, false);
   let yawT;
   if (r.drifting) {
-    r.driftT += dt;
+    r.driftT += dt * (r.xC === 'driftCharge' ? 1.5 : 1);
     yawT = -r.driftDir * r.turn * sf * (0.8 + 0.5 * inp.steer * r.driftDir);
-    r.nitro = Math.min(100, r.nitro + (has(r, 'frufru') ? 16 : 8) * dt);
+    r.nitro = Math.min(100, r.nitro + (has(r, 'frufru') ? 16 : 8) * (r.xC === 'driftNitro' ? 2 : 1) * dt);
   } else yawT = -inp.steer * r.turn * sf * (vF < -1 ? -1 : 1);
   if (TR.drift) yawT *= r.drifting ? 1.15 : (r.isPlayer ? 0.62 : 0.8); // pista de drift: sem derrapar o cachorro não faz a curva
   if (air) yawT *= 0.35;
@@ -3153,33 +3640,39 @@ function stepRunner(r, inp, dt) {
   vF = r.vx * fx + r.vz * fz;
   let vR = r.vx * rx + r.vz * rz;
   if (!air) {
-    if (inp.throttle > 0 && vF < maxV) vF += (r.accel * (r.nitroOn ? 1.7 : 1) * inp.throttle * (1 - 0.55 * clamp(vF / maxV, 0, 1)) + (r.mini > 0 ? 14 : 0) + (r.pad > 0.6 ? 30 : 0)) * dt;
+    if (inp.throttle > 0 && vF < maxV) vF += (r.accel * (r.nitroOn ? 1.7 : 1) * inp.throttle * (1 - 0.55 * clamp(vF / maxV, 0, 1)) + (r.mini > 0 ? 14 : 0) + (r.pad > 0.6 ? 30 : 0) + (r.rocket > 0 ? 22 : 0)) * dt;
     if (!inp.throttle) vF -= Math.sign(vF) * Math.min(Math.abs(vF), 7 * dt);
     if (inp.brake) vF = vF > 0 ? Math.max(0, vF - 38 * dt) : Math.max(-9, vF - 12 * dt);
-    if (inp.drift && !r.drifting && vF > 4) vF -= 10 * dt;
+    if (inp.drift && !r.drifting && vF > 4 && r.xC !== 'driftSpeed') vF -= 10 * dt;
     if (TR.elev && r.flyY < 1.5) vF -= 22 * slopeAlong(r.x, r.z, fx, fz) * dt; // ladeira: descida embala, subida segura
     if (vF > maxV) vF = Math.max(maxV, vF - (vF - maxV) * 2.2 * dt - 2 * dt);
     if (r.drifting) {
       // no drift a velocidade lateral vira velocidade para frente (quase sem perder embalo)
       const sp2 = vF * vF + vR * vR;
       vR *= Math.exp(-(2.6 + r.grip * 0.1) * dt);
-      vF = Math.max(vF, Math.sqrt(Math.max(0, sp2 * (1 - 0.12 * dt) - vR * vR)));
+      vF = Math.max(vF, Math.sqrt(Math.max(0, sp2 * (r.xC === 'driftSpeed' ? 1 : 1 - 0.12 * dt) - vR * vR)));
     } else vR *= Math.exp(-grip * dt);
-  } else vR *= Math.exp(-0.4 * dt);
+  } else { vR *= Math.exp(-0.4 * dt); if (r.xJ === 'airSpeed' && vF < maxV * 1.1) vF += 8 * dt; }
   r.vx = fx * vF + rx * vR; r.vz = fz * vF + rz * vR;
   r.x += r.vx * dt; r.z += r.vz * dt;
   r.speed = vF; r.slide = vR;
 
   // pulo
-  if (jumpPressed && !air && r.stun <= 0) { r.vy = r.jumpV; r.dj = false; if (r.isPlayer) Sfx.jump(); if (r.drifting) endDrift(r, false); }
-  else if (jumpPressed && air && has(r, 'ninja') && !r.dj && r.stun <= 0) {
+  if (jumpPressed && !air && r.stun <= 0) {
+    r.vy = r.jumpV; r.dj = false; if (r.isPlayer) Sfx.jump(); if (r.drifting) endDrift(r, false);
+    if (r.xJ === 'launch') { r.vx += fx * 11; r.vz += fz * 11; for (let i = 0; i < 10; i++) dust.spawn(r.x, 0.3, r.z, -fx * 6 + (Math.random() - 0.5) * 3, 1.5, -fz * 6 + (Math.random() - 0.5) * 3, 0.5, 0.5, 1.3, [0.8, 0.75, 0.7], 0.7, 0, 2); }
+  }
+  else if (jumpPressed && air && (has(r, 'ninja') || r.xJ === 'double') && !r.dj && r.stun <= 0) {
     r.dj = true; r.vy = Math.max(r.vy, 0) + r.jumpV * 0.9;
     if (r.isPlayer) { Sfx.jump(); pop('PULO DUPLO!', 'c'); }
     for (let i = 0; i < 14; i++) { const a = i / 14 * 6.28; dust.spawn(r.x, r.y + 0.3, r.z, Math.cos(a) * 5, -1, Math.sin(a) * 5, 0.5, 0.5, 1.2, [0.85, 0.85, 0.9], 0.6, 0, 3); }
   }
-  r.vy -= GRAV * dt; r.y += r.vy * dt;
+  r.vy -= GRAV * dt * (r.xJ === 'glide' && r.vy < 0 ? 0.45 : 1); r.y += r.vy * dt;
   if (r.y <= 0) {
     if (air) {
+      trig(r, 'land');
+      if (r.xJ === 'landBoost') r.mini = Math.max(r.mini, 0.7);
+      if (r.xJ === 'stomp' && r.vy < -6) stomp(r);
       if (r.isPlayer && r.vy < -8) { Sfx.land(); shake(0.12); }
       if (r.rampAir) { r.rampAir = false; r.nitro = Math.min(100, r.nitro + 12); if (r.isPlayer) pop('SALTO! +NITRO', 'c'); }
       for (let i = 0; i < 10; i++) dustPuff(r, 1.4);
@@ -3203,24 +3696,25 @@ function stepRunner(r, inp, dt) {
     r.x -= a.r.x * sg * over; r.z -= a.r.z * sg * over; r.d = sg * fence;
     const vo = (r.vx * a.r.x + r.vz * a.r.z) * sg;
     if (vo > 0) {
-      r.vx -= a.r.x * sg * vo * 1.3; r.vz -= a.r.z * sg * vo * 1.3; r.vx *= 0.95; r.vz *= 0.95;
+      const rail = r.xC === 'rail';
+      r.vx -= a.r.x * sg * vo * (rail ? 1 : 1.3); r.vz -= a.r.z * sg * vo * (rail ? 1 : 1.3); if (!rail) { r.vx *= 0.95; r.vz *= 0.95; }
       // raspou na cerca: o cachorro se endireita ao longo dela em vez de parar
       const fwd = Math.sin(r.h) * a.t.x + Math.cos(r.h) * a.t.z >= 0 ? 1 : -1;
       r.h += wrapAng(Math.atan2(a.t.x * fwd, a.t.z * fwd) - r.h) * 0.3;
       if (r.isPlayer && vo > 6) { shake(0.3); Sfx.thud(); vib(35); }
-      if (vo > 8) endDrift(r, true);
+      if (vo > 8 && !rail) endDrift(r, true);
     }
   }
   const s = r.s;
   // barreiras
   for (const hd of hurdles) {
     if (Math.floor((prevDist - hd.s) / L) < Math.floor((r.dist - hd.s) / L) && Math.abs(r.d) < W / 2 + 0.6) {
-      if (r.y < 0.55 && r.stun <= 0 && !r.b.fly) {
+      if (r.y < 0.55 && r.stun <= 0 && !r.b.fly && r.xJ !== 'spring' && r.flyY < 1) {
         const roll = has(r, 'tofu');
         r.stun = roll ? 0.4 : 1.0; r.vx *= roll ? 0.65 : 0.25; r.vz *= roll ? 0.65 : 0.25; r.vy = 3; hd.fall = 1; endDrift(r, true); r.nitroOn = false; r.hits++;
         if (r.isPlayer) { Sfx.trip(); pop('TROPEÇOU!', 'r'); shake(0.4); vib(70); }
-      } else if (r.y >= 0.55 || r.b.fly) {
-        r.nitro = Math.min(100, r.nitro + 10); r.cleanJumps++;
+      } else if (r.y >= 0.55 || r.b.fly || r.xJ === 'spring' || r.flyY >= 1) {
+        r.nitro = Math.min(100, r.nitro + 10 + (r.xJ === 'hurdleNitro' ? 25 : 0)); r.cleanJumps++; trig(r, 'hurdle');
         if (r.isPlayer) pop('PULO LIMPO! +NITRO', 'v');
       }
     }
@@ -3235,7 +3729,7 @@ function stepRunner(r, inp, dt) {
   // faixas de aceleração
   for (const pd of pads) {
     if (r.pad > 0.5 || r.y > 0.5) continue;
-    if (Math.abs(wrapDelta(s - pd.s)) < 3.5 && Math.abs(r.d - pd.d) < 2.2) { r.pad = 1.1; if (r.isPlayer) { Sfx.boost(); pop('TURBO!', 'c'); shake(0.1); } }
+    if (Math.abs(wrapDelta(s - pd.s)) < 3.5 && Math.abs(r.d - pd.d) < 2.2) { r.pad = 1.1; trig(r, 'pad'); if (r.isPlayer) { Sfx.boost(); pop('TURBO!', 'c'); shake(0.1); } }
   }
   // poças
   const wasSurf = r.surf; r.surf = null;
@@ -3262,24 +3756,34 @@ function stepRunner(r, inp, dt) {
   for (const n of nitros) {
     if (n.cd > 0 || r.y > 2.4) continue;
     const ds = wrapDelta(s - n.s), dd = r.d - n.d;
-    if (ds * ds + dd * dd < (has(r, 'biscoito') ? 16 : 3.2)) {
-      n.cd = 8; n.g.visible = false; r.nitro = Math.min(100, r.nitro + (has(r, 'pacoca') ? 70 : 35)); r.cans++;
+    if (ds * ds + dd * dd < pickR(r, 3.2)) {
+      n.cd = 8; n.g.visible = false; r.nitro = Math.min(100, r.nitro + (has(r, 'pacoca') ? 70 : 35)); r.cans++; r.fedT = 4; trig(r, 'can');
       if (has(r, 'caramelo') && r.ammo < 3 && Math.random() < 0.35) { r.ammo++; if (r.isPlayer) pop('SORTE! GANHOU UM MÍSSIL', 'g'); }
       if (r.isPlayer) { Sfx.pickup(); pop('NITRO +35', 'c'); vib(15); }
     }
   }
   // caixas de munição
   for (const a of ammos) {
-    if (a.cd > 0 || r.y > 2.4 || r.ammo >= (has(r, 'duque') ? 4 : 3)) continue;
+    if (a.cd > 0 || r.y > 2.4 || r.ammo >= ammoCap(r)) continue;
     const ds = wrapDelta(s - a.s), dd = r.d - a.d;
-    if (ds * ds + dd * dd < (has(r, 'biscoito') ? 16 : 3.4)) { a.cd = 9; a.g.visible = false; r.ammo++; if (r.isPlayer) { Sfx.reload(); pop(`MÍSSIL +1 (${r.ammo}/3)`, 'o'); vib(15); } }
+    if (ds * ds + dd * dd < pickR(r, 3.4)) { a.cd = 9; a.g.visible = false; r.ammo++; trig(r, 'ammo'); if (r.isPlayer) { Sfx.reload(); pop(`MÍSSIL +1 (${r.ammo}/3)`, 'o'); vib(15); } }
+  }
+  // cargas especiais: recarregam a habilidade do upgrade mecânico
+  for (const c of charges) {
+    if (c.cd > 0 || r.y + r.flyY > 3) continue;
+    const ds = wrapDelta(s - c.s), dd = r.d - c.d;
+    if (ds * ds + dd * dd < pickR(r, 4)) {
+      c.cd = 14; c.g.visible = false; trig(r, 'charge');
+      if (r.xH) { r.ab = Math.min(3, r.ab + 1); if (r.isPlayer) { pop(`CARGA ESPECIAL! ${r.xH[0]} ×${r.ab}`, 'o'); Sfx.pickup(); vib(20); } }
+      else { r.nitro = Math.min(100, r.nitro + 20); if (r.isPlayer) { pop('CARGA ESPECIAL +20 NITRO', 'c'); Sfx.pickup(); } }
+    }
   }
   // ossos de ouro — só o jogador coleta
   if (r.isPlayer) for (const c of coins) {
     if (c.taken || r.y > 2.6) continue;
     const ds = wrapDelta(s - c.s), dd = r.d - c.d;
-    if (ds * ds + dd * dd < (has(r, 'biscoito') ? 16 : 3.4)) {
-      c.taken = true; c.g.visible = false; r.coins += has(r, 'caramelo') ? 2 : 1; Sfx.coin();
+    if (ds * ds + dd * dd < pickR(r, 3.4)) {
+      c.taken = true; c.g.visible = false; r.coins += has(r, 'caramelo') ? 2 : 1; Sfx.coin(); trig(r, 'coin');
       if (has(r, 'pacoca')) r.nitro = Math.min(100, r.nitro + 5);
     }
   }
@@ -3377,11 +3881,13 @@ function aiInput(r, dt) {
   }
   let fire = false;
   if (r.ammo > 0 && r.fireCD <= 0 && raceTime > 4 && Math.random() < dt * (0.5 + save.diff * 0.45) && missileTarget(r)) fire = true;
-  return { throttle, brake: false, steer, drift: aiDrift, nitro: r.aiNitro, jump, bark, fire };
+  return { throttle, brake: false, steer, drift: aiDrift, nitro: r.aiNitro, jump, bark, fire, ab: r.ab > 0 && raceTime > 6 && Math.random() < dt * 0.1 };
 }
 
 function passives(dt) {
   if (state !== 'race' && state !== 'finished') return;
+  standings().forEach((r, i) => { if (r.rank && i + 1 < r.rank && raceTime > 2) trig(r, 'overtake'); r.rank = i + 1; });
+  extrasFrame(dt);
   for (const r of runners) {
     if (has(r, 'pintado')) {
       let n = 0; for (const o of runners) if (o !== r && Math.hypot(o.x - r.x, o.z - r.z) < 12) n++;
@@ -3406,11 +3912,11 @@ function interactions(dt) {
     const a = runners[i], b = runners[j], dx = b.x - a.x, dz = b.z - a.z, d2 = dx * dx + dz * dz, m = DOG_R * 2;
     if (d2 < m * m && Math.abs(a.y + a.flyY - b.y - b.flyY) < 1.2) {
       const d = Math.sqrt(d2) || 0.01, nx = dx / d, nz = dz / d, ov = (m - d) / 2;
-      const wa = (b.b.mass || 1) / ((a.b.mass || 1) + (b.b.mass || 1)) * 2, wb = 2 - wa;
+      const wa = Math.min(massOf(b), 50) / (Math.min(massOf(a), 50) + Math.min(massOf(b), 50)) * 2, wb = 2 - wa;
       a.x -= nx * ov * wa; a.z -= nz * ov * wa; b.x += nx * ov * wb; b.z += nz * ov * wb;
       const rv = (b.vx - a.vx) * nx + (b.vz - a.vz) * nz;
       if (rv < 0) {
-        const ma = has(a, 'princesa') ? 1e6 : a.b.mass || 1, mb = has(b, 'princesa') ? 1e6 : b.b.mass || 1, jv = -1.3 * rv / (1 / ma + 1 / mb) * (has(a, 'princesa') || has(b, 'princesa') ? 1.4 : 1);
+        const ma = massOf(a), mb = massOf(b), jv = -1.3 * rv / (1 / ma + 1 / mb) * (has(a, 'princesa') || has(b, 'princesa') ? 1.4 : 1);
         a.vx -= jv / ma * nx; a.vz -= jv / ma * nz; b.vx += jv / mb * nx; b.vz += jv / mb * nz;
         for (const [x, y] of [[a, b], [b, a]]) if (has(x, 'linda') && x.nitroOn && y.stun <= 0) {
           y.stun = 0.8; y.vx *= 0.4; y.vz *= 0.4; y.vy = 5; y.hits++;
@@ -3505,7 +4011,7 @@ function updateMissiles(dt) {
     let hit = null;
     for (const o of runners) {
       if (o === m.owner && m.t < 1.5) continue;
-      if (o.flyY > 1.5 || (m.dodge && m.dodge.has(o))) continue;
+      if (o.flyY > 1.5 || (m.dodge && m.dodge.has(o)) || (o.xJ === 'airDodge' && o.air)) continue;
       if (has(o, 'sombra') && Math.hypot(o.x - m.pos.x, o.z - m.pos.z) < 1.8) {
         m.dodge = m.dodge || new Set(); m.dodge.add(o);
         if (Math.random() < 0.5) { if (o.isPlayer) pop('ESQUIVOU DO MÍSSIL!', 'v'); else if (m.owner.isPlayer) pop('O SOMBRA ESQUIVOU!', 'r'); continue; }
@@ -3525,7 +4031,9 @@ function explodeMissile(m, hit) {
   Sfx.boom(clamp(1 - dPl / 90, 0, 1)); if (dPl < 25) shake(0.6 * (1 - dPl / 25));
   if (!hit) return;
   if (hit.remote) { if (m.owner.isPlayer) { m.owner.missHits++; pop(`ACERTOU ${hit.b.name}!`, 'v'); } return; }
-  hit.stun = 1.4; hit.flip = 1.0; hit.vx *= 0.2; hit.vz *= 0.2; hit.vy = 8; hit.nitroOn = false; hit.hits++;
+  if (hit.shield > 0) { if (hit.isPlayer) pop('O ESCUDO SEGUROU O MÍSSIL!', 'c'); return; }
+  if (m.owner !== hit) trig(m.owner, 'hitDealt');
+  hit.stun = 1.4 * (hit.xM === 'armor' ? 0.6 : 1); hit.flip = 1.0; hit.vx *= 0.2; hit.vz *= 0.2; hit.vy = 8; hit.nitroOn = false; hit.hits++;
   endDrift(hit, true);
   if (m.owner !== hit) m.owner.missHits++;
   if (hit.isPlayer) { pop('ATINGIDO POR UM MÍSSIL!', 'r'); shake(0.8); vib([100, 50, 160]); if (m.owner !== hit) narrate(`${m.owner.b.name} ACERTOU VOCÊ COM UM MÍSSIL!`, true); }
@@ -3539,7 +4047,10 @@ function splatCarrot(m, hit) {
   if (Sfx.ctx) Sfx.noise(0.18, 0.4 * clamp(1 - dPl / 70, 0, 1), 900);
   if (!hit) return;
   if (hit.remote) { if (m.owner.isPlayer) { m.owner.missHits++; pop(`CENOURADA NO ${hit.b.name}!`, 'v'); } return; }
-  hit.stun = 1.1; hit.flip = 0.8; hit.vx *= 0.3; hit.vz *= 0.3; hit.vy = 6; hit.nitroOn = false; hit.nitro = Math.max(0, hit.nitro - 25); hit.hits++;
+  if (hit.shield > 0) { if (hit.isPlayer) pop('O ESCUDO SEGUROU A CENOURA!', 'c'); return; }
+  if (m.owner !== hit) trig(m.owner, 'hitDealt');
+  const arm = hit.xM === 'armor';
+  hit.stun = 1.1 * (arm ? 0.6 : 1); hit.flip = 0.8; hit.vx *= 0.3; hit.vz *= 0.3; hit.vy = 6; hit.nitroOn = false; if (!arm) hit.nitro = Math.max(0, hit.nitro - 25); hit.hits++;
   endDrift(hit, true);
   if (m.owner !== hit) m.owner.missHits++;
   if (hit.isPlayer) { pop('CENOURADA! PERDEU NITRO', 'r'); shake(0.5); vib([80, 40, 120]); if (m.owner !== hit) narrate(`${m.owner.b.name} ACERTOU VOCÊ COM UMA CENOURA!`, true); }
@@ -3553,7 +4064,7 @@ function syncVisual(r) {
   r.D.launcher.noses.forEach((n, i) => { n.visible = i < r.ammo; });
   r.D.model.rotation.x = r.flip > 0 ? -(1 - r.flip) * Math.PI * 2 : 0;
   r.D.model.position.y = r.y + r.flyY;
-  r.D.anim(r.D, { v: Math.hypot(r.vx, r.vz), y: r.y, vy: r.vy, phase: r.phase, yawRate: r.yawRate, stun: r.stun, spook: r.spook, nitro: r.nitroOn, idle: false }, time + r.num);
+  r.D.anim(r.D, { v: Math.hypot(r.vx, r.vz), y: r.y, vy: r.vy, phase: r.phase, yawRate: r.yawRate, stun: r.stun, spook: r.spook, nitro: r.nitroOn || r.rocket > 0, idle: false }, time + r.num);
 }
 
 /* ---------------------------------------------------------------------
@@ -3640,6 +4151,7 @@ function placePreview() {
   if (preview) { scene.remove(preview.root); disposeTree(preview.root); }
   const b = BREEDS[save.dog];
   preview = buildCreature(b, 1, b.color);
+  if (save.mech[b.id]) applyMech(preview, b);
   applyLook(preview, getLook(b));
   scene.add(preview.root);
   const p = trackPoint(22, 0);
@@ -3656,7 +4168,8 @@ function placePreview() {
 function refreshMenu() {
   const b = BREEDS[save.dog], up = getUp(b);
   $('dogName').textContent = b.name; $('dogBreed').textContent = b.raca;
-  const pv = PASSIVES[b.id]; $('dogPas').innerHTML = pv ? `<b>★ ${pv[0]}</b> ${pv[1]}` : '';
+  const pv = PASSIVES[b.id], xs = extrasUnlocked(b);
+  $('dogPas').innerHTML = (pv ? `<b>★ ${pv[0]}</b> ${pv[1]}` : '') + `<span class="xtra">${xs.length ? '+ ' + xs.join(' · ') : 'Passivas extras: maximize atributos na oficina e compre o upgrade mecânico na loja'} (${xs.length}/5)</span>`;
   const rows = [['VELOCIDADE', b.spd, up.motor], ['ACELERAÇÃO', b.acc, up.acel], ['CURVAS', b.han, up.grip], ['PULO', b.jmp, up.pulo]];
   $('stats').innerHTML = rows.map(([n, base, u]) => `<div class="stat"><span>${n}</span><div class="cells">${Array.from({ length: 10 }, (_, i) => `<span class="${i < base ? 'b' : i < base + u ? 'u' : ''}"></span>`).join('')}</div></div>`).join('');
   $('trackName').textContent = TRACKS[save.track].name.split(' ')[0];
@@ -3668,14 +4181,26 @@ function refreshMenu() {
   $('startBtn').textContent = save.mode === 1 ? 'COMEÇAR COPA' : save.mode === 2 ? 'DESAFIO DRIFT' : 'CORRER';
   setCoins();
 }
+function xpLine(b, upId, on) {
+  const x = EXTRA[b.id] && EXTRA[b.id][X_SLOT[upId]]; if (!x) return '';
+  return `<div class="xp ${on ? 'on' : ''}">${on ? '★' : '🔒 NÍVEL 5:'} <b>${x[0]}</b> — ${x[1]}</div>`;
+}
+const MECH_PRICE = 3000;
+function mechCard(b, shop) {
+  const X = EXTRA[b.id]; if (!X || !X.M) return '';
+  const own = !!save.mech[b.id];
+  const btn = shop ? (own ? '<button class="eq" disabled>INSTALADO</button>' : `<button data-mech="1" ${save.coins < MECH_PRICE ? 'disabled' : ''}>COMPRAR ${MECH_PRICE}</button>`) : '';
+  return `<div class="panel mechCard"><h3>${own ? '★' : '🔒'} UPGRADE MECÂNICO${shop ? '' : own ? ' · INSTALADO' : ' · NA LOJA'}</h3>
+    <p><b>${X.M[0]}</b> — ${X.M[1]}</p><p><b>HABILIDADE: ${X.H[0]}</b> — ${X.H[1]}. Use com <b>R</b> ou o botão HABILIDADE: 1 carga na largada e mais nas cargas especiais roxas da pista.</p>${btn}</div>`;
+}
 function renderGarage() {
   const b = BREEDS[save.dog], up = getUp(b);
   $('garageDog').textContent = `${b.name} · ${b.raca}`;
   $('upList').innerHTML = UPS.map(u => {
     const lv = up[u.id], cost = UP_COST[lv], max = lv >= 5;
     return `<div class="up panel"><h3>${u.name}</h3><p>${u.desc}</p><div class="pips">${[0, 1, 2, 3, 4].map(i => `<span class="${i < lv ? 'on' : ''}"></span>`).join('')}</div>
-      <button data-up="${u.id}" ${max || save.coins < cost ? 'disabled' : ''}>${max ? 'MÁXIMO' : 'MELHORAR<br>' + cost}</button></div>`;
-  }).join('');
+      <button data-up="${u.id}" ${max || save.coins < cost ? 'disabled' : ''}>${max ? 'MÁXIMO' : 'MELHORAR<br>' + cost}</button>${xpLine(b, u.id, max)}</div>`;
+  }).join('') + mechCard(b);
   setCoins();
 }
 $('upList').addEventListener('click', e => {
@@ -3705,7 +4230,8 @@ function toShop() {
 function renderShop() {
   const b = BREEDS[save.dog], look = getLook(b);
   $('shopDog').textContent = `${b.name} · ${b.raca}`;
-  $('shopTabs').innerHTML = Object.entries(SHOP).map(([k, c]) => `<button data-c="${k}" class="${k === shopCat ? 'on' : ''}">${c.n}</button>`).join('');
+  $('shopTabs').innerHTML = Object.entries(SHOP).map(([k, c]) => `<button data-c="${k}" class="${k === shopCat ? 'on' : ''}">${c.n}</button>`).join('') + `<button data-c="mech" class="${shopCat === 'mech' ? 'on' : ''}">MECÂNICO</button>`;
+  if (shopCat === 'mech') { $('shopList').innerHTML = mechCard(b, true); setCoins(); return; }
   $('shopList').innerHTML = SHOP[shopCat].items.map(([id, name, price]) => {
     const own = owns(shopCat, id), eq = look[shopCat] === id;
     const sw = shopCat === 'vest' ? (id === 'padrao' ? b.color : '#' + VEST_COLORS[id].toString(16).padStart(6, '0')) : shopCat === 'cape' ? (CAPE_COLORS[id] || 'transparent')
@@ -3719,6 +4245,11 @@ $('shopTabs').addEventListener('click', e => { const t = e.target.closest('butto
 $('shopList').addEventListener('click', e => {
   const t = e.target.closest('button'); if (!t || t.disabled) return;
   const b = BREEDS[save.dog], look = getLook(b);
+  if (t.dataset.mech) {
+    if (save.coins < MECH_PRICE || save.mech[b.id]) return;
+    save.coins -= MECH_PRICE; save.mech[b.id] = true; persist(); Sfx.init(); Sfx.pickup(); Sfx.voice(b, 0.7); vib([30, 30, 60]);
+    placePreview(); renderShop(); return;
+  }
   if (t.dataset.buy) {
     const it = SHOP[shopCat].items.find(i => i[0] === t.dataset.buy);
     if (save.coins < it[2]) return;
@@ -3760,7 +4291,7 @@ function toGarage() {
   ['menu', 'results'].forEach(id => show(id, false)); show('garage', true);
   renderGarage();
 }
-function clearRace() { clearMissiles(); runners.forEach(r => r.dispose()); runners = []; player = null; clearBirds(); }
+function clearRace() { if (typeof resetDark === 'function' && world) resetDark(); clearMissiles(); runners.forEach(r => r.dispose()); runners = []; player = null; clearBirds(); }
 
 function changeTrack(i) {
   save.track = i; persist();
@@ -3788,7 +4319,8 @@ function startRace(online) {
     const b = online ? { ...BREEDS[bi], name: online[k].name, color: online[k].color } : BREEDS[bi];
     let up = pUp;
     if (k !== meK) { const lv = () => clamp(Math.round(avg + DIFFS[save.diff].upOff + (Math.random() * 2 - 1)), 0, 5); up = { motor: lv(), acel: lv(), grip: lv(), nitro: lv(), pulo: lv() }; }
-    const r = new Runner(b, k + 1, k === meK, up);
+    const mech = online ? !!online[k].mech : k === meK ? !!save.mech[b.id] : Math.random() < 0.3;
+    const r = new Runner(b, k + 1, k === meK, up, mech);
     const sl = slots[k], row = Math.floor(sl / 2), col = sl % 2;
     r.place(-5 - row * 6.5 - col * 2.5, col ? 3.6 : -3.6);
     if (cup && k && cup.looks[b.id]) { r.look = cup.looks[b.id]; applyLook(r.D, r.look); }
@@ -3797,7 +4329,7 @@ function startRace(online) {
     if (k === meK) player = r;
   });
   hurdles.forEach(h => { h.fall = 0; h.bar.rotation.x = 0; h.bar.position.y = 0.95; });
-  nitros.forEach(n => { n.cd = 0; n.g.visible = true; });
+  nitros.forEach(n => { n.cd = 0; n.g.visible = true; }); charges.forEach(c => { c.cd = 0; c.g.visible = true; }); resetDark();
   ammos.forEach(a => { a.cd = 0; a.g.visible = true; });
   coins.forEach(c => { c.taken = false; c.g.visible = true; });
   lastLeader = null; lastPos = 5; firstFinisher = false; narrCD = 0; narrT = 0; $('narr').classList.remove('on');
@@ -4011,7 +4543,7 @@ function netSend(m, except) {
   if (Net.host) { for (const [id, c] of Net.conns) if (id !== except && c.open) c.send(m); }
   else if (Net.hostConn && Net.hostConn.open) Net.hostConn.send(m);
 }
-const myNetInfo = () => ({ pid: Net.peer.id, name: me().name, color: me().color, dog: save.dog, host: Net.host });
+const myNetInfo = () => ({ pid: Net.peer.id, name: me().name, color: me().color, dog: save.dog, host: Net.host, mech: !!save.mech[BREEDS[save.dog].id] });
 function netLobby() { const m = { t: 'lobby', players: Net.players, track: save.track, laps: save.laps }; netSend(m); renderRoom(); }
 function netFail(t) { onMsg(Net.inRoom ? 'roomMsg' : 'onMsg', t); }
 async function netCreate() {
@@ -4053,7 +4585,7 @@ function netFromGuest(c, d) {
   if (d.t === 'hello') {
     if (Net.racing || Net.players.length >= 6) { c.send({ t: 'full', why: Net.racing ? 'A corrida já começou' : 'A sala está cheia' }); setTimeout(() => c.close(), 300); return; }
     Net.conns.set(c.peer, c);
-    Net.players = Net.players.filter(p => p.pid !== c.peer).concat({ pid: c.peer, name: String(d.name).slice(0, 12), color: d.color, dog: clamp(d.dog | 0, 0, BREEDS.length - 1), host: false });
+    Net.players = Net.players.filter(p => p.pid !== c.peer).concat({ pid: c.peer, name: String(d.name).slice(0, 12), color: d.color, dog: clamp(d.dog | 0, 0, BREEDS.length - 1), host: false, mech: !!d.mech });
     netLobby(); Sfx.beep(false); return;
   }
   if (d.t === 'dog') { const p = Net.players.find(p => p.pid === c.peer); if (p) { p.dog = clamp(d.dog | 0, 0, BREEDS.length - 1); netLobby(); } return; }
@@ -4071,7 +4603,7 @@ function netFromHost(d) {
 }
 function netStartRace() {
   if (Net.players.length < 2) return onMsg('roomMsg', 'Precisa de pelo menos 2 jogadores');
-  Net.players[0].dog = save.dog;
+  Net.players[0].dog = save.dog; Net.players[0].mech = !!save.mech[BREEDS[save.dog].id];
   const m = { t: 'start', track: save.track, laps: save.laps, players: Net.players };
   netSend(m); netApply(m);
 }
@@ -4091,9 +4623,10 @@ function netApply(d) {
     if (d.e === 'bark') { doBark(r); if (Sfx.ctx) Sfx.voice(r.b, clamp(1 - Math.hypot(r.x - player.x, r.z - player.z) / 70, 0, 1)); }
     else if (d.e === 'fire') { r.ammo = Math.max(r.ammo, 1); r.fireCD = 0; const st = r.stun; r.stun = 0; fireMissile(r, runners.find(x => x.pid === d.tg) || null); r.stun = st; }
     else if (d.e === 'jump') { r.vy = r.jumpV; }
+    else if (d.e === 'ab') useAbility(r, true);
   }
 }
-function netEvent(e, extra) { if (Net.racing) netSend({ t: 'ev', pid: Net.peer.id, e, ...extra }); }
+function netEvent(e, extra) { if (Net.racing && !Net.mute) netSend({ t: 'ev', pid: Net.peer.id, e, ...extra }); }
 // 15 vezes por segundo cada aparelho manda a posição do próprio cachorro
 function netTick(dt) {
   if (!Net.racing || !player) return;
@@ -4316,6 +4849,8 @@ function updateHud(dt) {
   player.lockT -= dt; $('chipMissile').hidden = !(player.lockT > 0);
   if (player.lockT > 0 && Math.random() < dt * 6) Sfx.lockon();
   $('tMn').textContent = player.ammo;
+  if (player.xH) { $('tHn').textContent = player.ab; $('tH').classList.toggle('dim', player.ab <= 0); $('chipAb').textContent = `R · ${player.xH[0]} ×${player.ab}`; }
+  show('tH', !!player.xH); show('chipAb', !!player.xH && !isTouch);
   drawMap(); drawGauge();
   const sb = $('topStack').getBoundingClientRect(); $('pops').style.top = Math.round(sb.bottom + 6) + 'px';
 }
@@ -4326,7 +4861,7 @@ function setFx(lines, vig) { fxEl.style.opacity = lines; vigEl.style.opacity = v
    Entrada
    --------------------------------------------------------------------- */
 const keys = {};
-const touch = { left: false, right: false, brake: false, drift: false, nitro: false, jump: false, bark: false, fire: false };
+const touch = { left: false, right: false, brake: false, drift: false, nitro: false, jump: false, bark: false, fire: false, ab: false };
 addEventListener('keydown', e => {
   if (e.target && e.target.tagName === 'INPUT') return;
   if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Space', 'Enter'].includes(e.code)) e.preventDefault();
@@ -4369,7 +4904,7 @@ function bindHold(id, prop) {
   el.addEventListener('contextmenu', e => e.preventDefault());
 }
 bindHold('tL', 'left'); bindHold('tR', 'right'); bindHold('tS', 'brake'); bindHold('tD', 'drift');
-bindHold('tN', 'nitro'); bindHold('tJ', 'jump'); bindHold('tB', 'bark'); bindHold('tM', 'fire');
+bindHold('tN', 'nitro'); bindHold('tJ', 'jump'); bindHold('tB', 'bark'); bindHold('tM', 'fire'); bindHold('tH', 'ab');
 const click = (id, fn) => $(id).addEventListener('click', e => { e.stopPropagation(); e.currentTarget.blur(); Sfx.init(); fn(); });
 function changeDog(dir) { save.dog = (save.dog + dir + BREEDS.length) % BREEDS.length; persist(); placePreview(); refreshMenu(); Sfx.voice(BREEDS[save.dog], 0.8); }
 click('prevDog', () => changeDog(-1));
@@ -4429,7 +4964,7 @@ function playerInput() {
     steer: (right ? 1 : 0) - (left ? 1 : 0),
     drift: !!(k.ShiftLeft || k.ShiftRight || t.drift),
     nitro: !!(k.KeyN || k.ControlLeft || k.ControlRight || t.nitro),
-    jump: !!(k.Space || t.jump), bark: !!(k.KeyB || k.KeyE || t.bark), fire: !!(k.KeyF || k.KeyX || t.fire),
+    jump: !!(k.Space || t.jump), bark: !!(k.KeyB || k.KeyE || t.bark), fire: !!(k.KeyF || k.KeyX || t.fire), ab: !!(k.KeyR || k.KeyH || t.ab),
   };
 }
 
@@ -4444,6 +4979,7 @@ function frame() {
   if (state !== 'paused') {
     for (const c of clouds) { c.position.x += dt * 2; if (c.position.x > 950) c.position.x = -950; }
     for (const a of ammos) { a.g.rotation.y += dt * 1.5; a.g.position.y = 1.1 + Math.sin(time * 3 + a.s) * 0.12; if (a.cd > 0) { a.cd -= dt; if (a.cd <= 0) a.g.visible = true; } }
+    for (const c of charges) { c.g.rotation.y += dt * 1.6; c.g.position.y = 1.5 + Math.sin(time * 2.5 + c.s) * 0.2; if (c.cd > 0) { c.cd -= dt; if (c.cd <= 0) c.g.visible = true; } }
     for (const n of nitros) { n.g.rotation.y += dt * 2; n.g.position.y = 1.3 + Math.sin(time * 3 + n.s) * 0.15; if (n.cd > 0) { n.cd -= dt; if (n.cd <= 0) n.g.visible = true; } }
     for (const c of coins) c.g.rotation.y += dt * 3;
     for (const h of hurdles) if (h.fall > 0) { h.fall = Math.max(0, h.fall - dt * 0.5); const k = smooth(0, 0.25, 1 - h.fall) * (h.fall > 0.1 ? 1 : h.fall * 10); h.bar.rotation.x = k * 1.4; h.bar.position.y = 0.95 - k * 0.8; }
@@ -4491,7 +5027,7 @@ function frame() {
       if (n > 0 && n <= 3) { spans[3 - n].className = 'r'; setLamps(4 - n, false); Sfx.beep(false); }
       if (n <= 0) {
         spans.forEach(s => s.className = 'g'); setLamps(3, true); Sfx.beep(true);
-        showBig('VAI!', 900); state = 'race'; speak('Valendo!', true);
+        showBig('VAI!', 900); state = 'race'; speak('Valendo!', true); runners.forEach(r => trig(r, 'start'));
         setTimeout(() => show('lights', false), 900);
         if (player.pressT !== null) {
           if (player.pressT <= 0.6) { player.mini = 1.2; pop('LARGADA PERFEITA!', 'v'); Sfx.boost(); vib(40); speak('Largada perfeita!', true); }
