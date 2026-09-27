@@ -70,6 +70,7 @@ Se o `modelos.js` não carregar, o jogo usa os modelos feitos por código. O scr
 | Biscoito | Beagle | Beagle, Poly by Google |
 | Linda | Javali | enviado pelo jogador |
 | Kemilly | Coelho bocó (atira cenouras) | enviado pelo jogador |
+| Davi | Galinha, dinossauro e dinossauro robô | Chicken (jeremy), T-Rex (Quaternius) e robô, enviados pelo jogador |
 
 Os modelos de terceiros vêm do [Poly Pizza](https://poly.pizza) (Poly by Google e os outros autores: CC-BY 3.0; Quaternius: CC0). O Paz voa numa nuvem (sem mochila a jato) e passa por cima de barreiras, poças e bolas.
 
@@ -112,6 +113,17 @@ A habilidade é usada com **R** (ou o botão HABILIDADE no celular). Você larga
 | Taissa | **CAUDA ÁGIL** Derrapando fica mais rápida | **RABO SOLTO** Cada mini-turbo a teleporta um pouco para frente | **VENTOSAS** Faz curvas mais fechadas | **PULO DE PAREDE** No ar ganha velocidade em vez de perder | **LAGARTIXA NEON** Escamas verde-neon, latas amarelas e os pássaros não a atacam | **CAMUFLAGEM** Some e reaparece bem mais à frente |
 | Tiffany | **CAÇADORA** Colada atrás de um rival corre mais rápido | **LÍNGUA RÁPIDA** Cada chiado enche 10 de nitro | **GARRAS DE TEIÚ** Não escorrega em curvas lisas, lama, água ou gelo | **RABADA** Ao pousar perto de rivais, a pancada os derruba | **TEIÚ DE LAVA** Escamas cor de lava, latas pretas e mísseis a atordoam menos | **CHIADO DA SELVA** Um chiado gigante derruba todos que estiverem em volta |
 | Kemilly | **SALTITANTE** No ar corre mais rápido | **PULO DE COELHO** Pular uma barreira dá um mini-turbo | **HORTA** Derrapar enche o nitro em dobro | **PERNAS DE COELHO** Pula 25% mais alto | **COELHO DE CHOCOLATE** Pelo de chocolate, latas laranja e carrega 1 cenoura a mais | **CHUVA DE CENOURAS** Joga 3 cenouras teleguiadas de uma vez |
+
+## Davi, a Galinha Ancestral
+
+A Davi muda de forma:
+
+- **Galinha**: começa fraca, com 1 quadrado em cada atributo. Os pássaros não a atacam.
+- **Dinossauro** (T-Rex): ao deixar **Músculos** e **Garras** no máximo na oficina, vira dinossauro de vez e fica com um dos atributos base mais altos do jogo.
+- **Dinossauro robô**: o upgrade mecânico dela só pode ser comprado depois de Músculos e Garras no máximo. Vira um dinossauro robô blindado que lança **4 mísseis de uma vez**, cada um atrás de um rival.
+- Ainda galinha, cada **carga especial** (cristal roxo) tem 20% de chance de transformá-la em dinossauro por 12 segundos.
+
+Modelos: Chicken (jeremy, Poly Pizza), T-Rex (Quaternius, CC0) e um dinossauro robô, enviados pelo jogador.
 
 ## Campeonato, loja e missões
 

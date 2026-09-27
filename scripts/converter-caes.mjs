@@ -3,7 +3,7 @@
 import { chromium } from 'playwright-core';
 import { readFileSync, existsSync, writeFileSync } from 'node:fs';
 const ROOT = '/tmp/claude-0/-home-user-Corrida-/12c70dc5-3af9-5060-bc59-59419b3aa5b3/scratchpad';
-const CFG = JSON.parse(readFileSync(ROOT + '/caes-cfg.json', 'utf8'));
+const CFG = JSON.parse(readFileSync(ROOT + '/' + (process.env.CFG || 'caes-cfg.json'), 'utf8'));
 const mode = process.argv[2] || 'preview';
 const browser = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium-1194/chrome-linux/chrome', args:['--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader'] });
 const page = await browser.newPage({ viewport: { width: 1600, height: 1000 } });
@@ -42,7 +42,7 @@ const out = await page.evaluate(async ({ CFG, mode }) => {
       for (const gr of groups) {
         const m = mats[gr.materialIndex] || mats[0];
         const base = m.color ? m.color.clone() : new THREE.Color(1, 1, 1);
-        const tex = m.map && m.map.image ? texPixels(m.map) : null;
+        const tm = m.map || m.emissiveMap, tex = tm && tm.image ? texPixels(tm) : null;
         for (let t = gr.start; t < gr.start + gr.count; t += 3) {
           const ids = [0, 1, 2].map(k => idx ? idx.getX(t + k) : t + k);
           col.copy(base);

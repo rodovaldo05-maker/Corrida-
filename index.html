@@ -470,6 +470,7 @@
 <script src="modelos.js"></script>
 <script src="caes.js"></script>
 <script src="coelho.js"></script>
+<script src="trex.js"></script>
 <script type="importmap">
 { "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js", "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/" } }
 </script>
@@ -962,7 +963,19 @@ const BREEDS = [
     eye: 0x0a0a0a, eyeR: 0.011, len: 0.68, chW: 0.13, chH: 0.075, backY: 0.13, headL: [0.2, 0.068, 0.048], bone: 0.02, legU: 0.13, gearS: 0.8,
     tailL: 0.9, tailR: 0.068, spd: 4, acc: 3, han: 4, jmp: 2 },
   { id: 'kemilly', name: 'KEMILLY', raca: 'COELHO BOCÓ', kind: 'rig', color: '#a855f7', pitch: 1.6, voice: 'squeak', mass: 0.85, spd: 3, acc: 5, han: 4, jmp: 5 },
+  // Davi: galinha fraca que vira dinossauro (músculos e garras no máximo) e dinossauro robô (upgrade mecânico)
+  { id: 'davi', name: 'DAVI', raca: 'GALINHA ANCESTRAL', kind: 'glb', model: 'galinha', biped: true, color: '#dc2626', pitch: 1.9, voice: 'cluck', mass: 0.6, gearY: 0.72, spd: 1, acc: 1, han: 1, jmp: 1 },
 ];
+const DAVI_FORMS = {
+  galinha: {},
+  dino: { kind: 'rig', rig: 'trex', raca: 'DINOSSAURO ANCESTRAL', voice: 'roar', pitch: 0.8, mass: 2, spd: 5, acc: 5, han: 4, jmp: 3 },
+  robo: { model: 'robodino', raca: 'DINOSSAURO ROBÔ', voice: 'roar', pitch: 0.6, mass: 2.2, spd: 5, acc: 5, han: 5, jmp: 3, missiles4: true, gearY: 0, gearDz: 0 },
+};
+const daviReady = up => up.acel >= 5 && up.grip >= 5;
+const daviForm = (up, mech) => mech && daviReady(up) ? 'robo' : daviReady(up) ? 'dino' : 'galinha';
+function formBreed(b, form) { return b.id === 'davi' ? { ...b, ...DAVI_FORMS[form], form } : b; }
+// o bicho como ele aparece agora (a Davi muda de forma conforme a oficina e a loja)
+function viewBreed(b) { return b.id === 'davi' ? formBreed(b, daviForm(getUp(b), save.mech && save.mech[b.id])) : b; }
 
 function numberTex(num, color) {
   const t = new THREE.CanvasTexture(drawCanvas(64, 64, (x) => {
@@ -1484,7 +1497,8 @@ function animGlb(D, st, t) {
     if (D.prop) D.prop.rotation.z += 0.4 + amp * 0.9;
   } else {
     const ph = st.phase, A = 0.62 * amp;
-    if (air) u.set(-0.75, -0.75, 0.8, 0.8);
+    if (b.biped) { const l = Math.sin(ph) * A * 1.25, r = -l; if (air) u.set(-0.5, 0.4, -0.5, 0.4); else u.set(l, r, l, r); } // bípede: perna esquerda e direita alternadas
+    else if (air) u.set(-0.75, -0.75, 0.8, 0.8);
     else u.set(Math.sin(ph) * A, Math.sin(ph + 0.55) * A, Math.sin(ph + Math.PI + 0.2) * A, Math.sin(ph + Math.PI + 0.75) * A);
     D.body.position.y = air ? 0 : Math.abs(Math.cos(ph)) * 0.06 * amp + (st.idle ? Math.sin(t * 3.5) * 0.008 : 0);
     D.body.rotation.x = air ? clamp(-st.vy * 0.03, -0.3, 0.3) : Math.sin(ph * 2) * 0.035 * amp;
@@ -1497,11 +1511,12 @@ function animGlb(D, st, t) {
 /* ---------------------------------------------------------------------
    Kemilly (coelho.js): modelo com esqueleto, usa as animações do próprio .glb
    --------------------------------------------------------------------- */
-const RIG = { g: null, s: 1, y0: 0, wait: [] };
-(function loadRig() {
-  if (!window.COELHO) return;
+const RIGS = {};
+function loadRigAsset(name, b64, h, clips) {
+  const R = RIGS[name] = { g: null, s: 1, y0: 0, wait: [], h, clips };
+  if (!b64) return;
   try {
-    const raw = atob(window.COELHO), u8 = new Uint8Array(raw.length);
+    const raw = atob(b64), u8 = new Uint8Array(raw.length);
     for (let i = 0; i < raw.length; i++) u8[i] = raw.charCodeAt(i);
     new GLTFLoader().parse(u8.buffer, '', g => {
       g.scene.traverse(o => {
@@ -1511,11 +1526,13 @@ const RIG = { g: null, s: 1, y0: 0, wait: [] };
       });
       g.scene.updateMatrixWorld(true);
       const box = new THREE.Box3().setFromObject(g.scene, true);
-      RIG.s = 1.55 / (box.max.y - box.min.y); RIG.y0 = -box.min.y * RIG.s; RIG.g = g;
-      RIG.wait.splice(0).forEach(f => f());
-    }, e => console.warn('coelho não carregado', e));
-  } catch (e) { console.warn('coelho não carregado', e); }
-})();
+      R.s = h / (box.max.y - box.min.y); R.y0 = -box.min.y * R.s; R.g = g;
+      R.wait.splice(0).forEach(f => f());
+    }, e => console.warn(name + ' não carregado', e));
+  } catch (e) { console.warn(name + ' não carregado', e); }
+}
+loadRigAsset('coelho', window.COELHO, 1.55, { Run: 'Run', Idle: 'Idle', Jump_Idle: 'Jump_Idle', Weapon: 'Weapon', HitReact: 'HitReact' });
+loadRigAsset('trex', window.TREX, 1.8, { Run: 'TRex_Run', Idle: 'TRex_Idle', Jump_Idle: 'TRex_Jump', Weapon: 'TRex_Attack', HitReact: 'TRex_Idle' });
 function carrotMesh(s = 1) {
   const g = new THREE.Group();
   const c = new THREE.Mesh(new THREE.ConeGeometry(0.06 * s, 0.34 * s, 8), carrotMat); c.rotation.x = Math.PI / 2; c.castShadow = true; g.add(c);
@@ -1525,11 +1542,12 @@ function carrotMesh(s = 1) {
 function buildRig(b, num, color) {
   const root = new THREE.Group(), model = new THREE.Group(), body = new THREE.Group();
   root.add(model); model.add(body); model.scale.setScalar(b.scale || 1);
-  const H = 1.55, k = 0.75;
+  const R = RIGS[b.rig || 'coelho'], H = R.h, k = 0.75;
   const holder = new THREE.Group(); body.add(holder);
   const head = new THREE.Group(); head.position.set(0, H * 0.72, 0.15); body.add(head);
-  // mochila a jato em pé nas costas, com as cenouras (munição) espetadas
   const padMat = new THREE.MeshStandardMaterial({ color, roughness: 0.45, metalness: 0.15 });
+  if (b.rig === 'trex') return buildTrexGear(b, num, color, { root, model, body, holder, head, padMat, R, H });
+  // mochila a jato em pé nas costas, com as cenouras (munição) espetadas
   const pack = new THREE.Mesh(new THREE.BoxGeometry(0.34, 0.36, 0.12), padMat); pack.position.set(0, H * 0.5, -0.24); pack.castShadow = true; body.add(pack);
   const nm = new THREE.MeshStandardMaterial({ map: numberTex(num, color), transparent: true, roughness: 0.5, side: THREE.DoubleSide });
   const pl = new THREE.Mesh(new THREE.PlaneGeometry(0.2, 0.2), nm); pl.position.set(0, H * 0.5, -0.305); pl.rotation.y = Math.PI; body.add(pl);
@@ -1548,13 +1566,38 @@ function buildRig(b, num, color) {
   const hi = { hat: [0, 0.32, -0.02], s: 0.17 * k, eye: [0.08, 0, 0.1], er: 0.03, cape: [0, H * 0.62, -0.2], capeW: 0.3, capeL: 0.9, noGlasses: true };
   const D = { root, model, body, torso: body, neckPiv: head, headPiv: head, head, legs: [], tails: [], ears: [], tongue: new THREE.Group(), flames, stars, excl, blob, b, launcher, anim: animRig, vestMat: padMat, hi, crown: null, mixer: null, acts: {}, cur: '', shootT: 0, lastT: null };
   D.shoot = () => { D.shootT = 0.45; };
+  rigAttach(D, R, holder);
+  return D;
+}
+function rigAttach(D, R, holder) {
   const attach = () => {
-    const o = cloneSkinned(RIG.g.scene); o.scale.setScalar(RIG.s); o.position.y = RIG.y0; holder.add(o);
+    const o = cloneSkinned(R.g.scene); o.scale.setScalar(R.s); o.position.y = R.y0; holder.add(o);
     D.rigMeshes = []; o.traverse(m => { if (m.isMesh) D.rigMeshes.push(m); }); if (D.mechTint) D.rigMeshes.forEach(D.mechTint);
     D.mixer = new THREE.AnimationMixer(o);
-    for (const n of ['Run', 'Idle', 'Jump_Idle', 'Weapon', 'HitReact']) { const c = RIG.g.animations.find(a => a.name.endsWith('|' + n)); if (c) D.acts[n] = D.mixer.clipAction(c); }
+    for (const [key, n] of Object.entries(R.clips)) { const c = R.g.animations.find(a => a.name.endsWith('|' + n)); if (c) D.acts[key] = D.mixer.clipAction(c); }
   };
-  if (RIG.g) attach(); else RIG.wait.push(attach);
+  if (R.g) attach(); else R.wait.push(attach);
+}
+// Davi em forma de dinossauro: T-Rex deitado para frente, com a sela e o lança-mísseis nas costas
+function buildTrexGear(b, num, color, o) {
+  const { root, model, body, holder, head, padMat, R, H } = o, z0 = -0.4, y0 = H * 0.72;
+  head.position.set(0, H * 0.88, 1.75);
+  const pad = new THREE.Mesh(new THREE.SphereGeometry(1, 20, 8, 0, Math.PI * 2, 0, Math.PI / 2), padMat);
+  pad.scale.set(0.42, 0.09, 0.55); pad.position.set(0, y0, z0); pad.castShadow = true; body.add(pad);
+  const nm = new THREE.MeshStandardMaterial({ map: numberTex(num, color), transparent: true, roughness: 0.5, side: THREE.DoubleSide });
+  for (const sx of [-1, 1]) { const pl = new THREE.Mesh(new THREE.PlaneGeometry(0.3, 0.3), nm); pl.position.set(sx * 0.43, y0 - 0.03, z0); pl.rotation.y = sx * Math.PI / 2; body.add(pl); }
+  const { flames, launcher } = addGear(body, y0 + 0.03, z0, 2.6);
+  const stars = new THREE.Group(); stars.position.set(0, 0.5, 0); head.add(stars);
+  for (let i = 0; i < 4; i++) { const st = new THREE.Mesh(new THREE.OctahedronGeometry(0.08), starMat); st.position.set(Math.cos(i * 1.57) * 0.3, 0, Math.sin(i * 1.57) * 0.3); stars.add(st); }
+  stars.visible = false;
+  const excl = new THREE.Sprite(new THREE.SpriteMaterial({ map: exclTex, depthTest: false }));
+  excl.scale.set(0.4, 0.4, 1); excl.position.set(0, 0.8, 0); excl.visible = false; head.add(excl);
+  const blob = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), new THREE.MeshBasicMaterial({ map: blobTex, transparent: true, depthWrite: false }));
+  blob.rotation.x = -Math.PI / 2; blob.position.y = 0.04; blob.scale.set(1.6, 4.2, 1); root.add(blob);
+  const hi = { hat: [0, 0.34, -0.1], s: 0.22, eye: [0.08, 0, 0.1], er: 0.03, cape: [0, y0 + 0.05, z0 + 0.3], capeW: 0.4, capeL: 1.2, noGlasses: true };
+  const D = { root, model, body, torso: body, neckPiv: head, headPiv: head, head, legs: [], tails: [], ears: [], tongue: new THREE.Group(), flames, stars, excl, blob, b, launcher, anim: animRig, vestMat: padMat, hi, crown: null, mixer: null, acts: {}, cur: '', shootT: 0, lastT: null, runK: 17 };
+  D.shoot = () => { D.shootT = 0.45; };
+  rigAttach(D, R, holder);
   return D;
 }
 function animRig(D, st, t) {
@@ -1569,7 +1612,7 @@ function animRig(D, st, t) {
       if (old) a.crossFadeFrom(old, 0.15, false);
       D.cur = want;
     }
-    if (D.acts.Run) D.acts.Run.timeScale = clamp(st.v / 11, 0.7, 2.2);
+    if (D.acts.Run) D.acts.Run.timeScale = clamp(st.v / (D.runK || 11), 0.6, 2.2);
     D.mixer.update(dt);
   }
   D.body.rotation.x = air ? clamp(-st.vy * 0.02, -0.25, 0.25) : amp * 0.12;
@@ -2759,7 +2802,7 @@ function updateBirds(dt, racing) {
     if (birdTimer <= 0 && busy < 1 + save.diff) {
       birdTimer = 6 + Math.random() * 5 - save.diff;
       const free = birds.find(b => b.state === 'off');
-      const cands = runners.filter(r => !r.finished && r.birdT <= 0 && !has(r, 'major') && r.xM !== 'birdProof' && r.nightT <= 0 && r.shield <= 0);
+      const cands = runners.filter(r => !r.finished && r.birdT <= 0 && !has(r, 'major') && !has(r, 'davi') && r.xM !== 'birdProof' && r.nightT <= 0 && r.shield <= 0);
       if (free && cands.length) {
         const tgt = cands.includes(player) && Math.random() < 0.5 ? player : cands[Math.random() * cands.length | 0];
         const a = sampleAt(tgt.dist + 55 + Math.random() * 20);
@@ -2913,6 +2956,10 @@ const Sfx = {
       for (let k = 0; k < 2; k++) { this.noise(0.32, 0.32 * vol, 3800 * p, t + k * 0.36, null, 'highpass'); this.noise(0.3, 0.12 * vol, 1600 * p, t + k * 0.36); }
     } else if (b.voice === 'grunt') { // oinc do javali
       for (let k = 0; k < 3; k++) { const s0 = t + k * 0.17; this.tone(190 * p, 0.12, 'square', 0.12 * vol, 110 * p, s0); this.tone(95 * p, 0.12, 'sawtooth', 0.12 * vol, 70 * p, s0); this.noise(0.1, 0.2 * vol, 500, s0, null, 'lowpass'); }
+    } else if (b.voice === 'cluck') { // cocoricó de galinha
+      for (let k = 0; k < 3; k++) { const s0 = t + k * (k === 2 ? 0.2 : 0.13); this.tone((k === 2 ? 1300 : 900) * p, k === 2 ? 0.22 : 0.07, 'square', 0.09 * vol, (k === 2 ? 800 : 700) * p, s0); }
+    } else if (b.voice === 'roar') { // rugido de dinossauro
+      this.noise(0.9, 0.5 * vol, 260 * p, t, null, 'lowpass'); this.tone(120 * p, 0.9, 'sawtooth', 0.22 * vol, 55 * p, t); this.tone(180 * p, 0.7, 'square', 0.08 * vol, 70 * p, t + 0.05);
     } else if (b.voice === 'squeak') { // guincho de coelho
       for (let k = 0; k < 2; k++) { const s0 = t + k * 0.16; this.tone(1500 * p, 0.1, 'triangle', 0.16 * vol, 2300 * p, s0); this.tone(3000 * p, 0.07, 'sine', 0.06 * vol, 2400 * p, s0); }
     } else this.bark(p, vol);
@@ -3021,6 +3068,7 @@ const PASSIVES = {
   taissa: ['GRUDENTA', 'Não escorrega em poças nem no gelo e faz curvas mais fechadas'],
   tiffany: ['RABO-CHICOTE', 'O chiado dela derruba quem estiver perto'],
   kemilly: ['CENOURADA', 'Atira cenouras em vez de mísseis: mais rápidas, e quem leva perde nitro'],
+  davi: ['ANCESTRAL', 'Os pássaros não a atacam. Como galinha, pegar uma carga especial tem 20% de chance de virar dinossauro por 12 segundos'],
 };
 const has = (r, id) => r.b.id === id;
 /* Passivas extras: 4 liberadas ao maximizar um atributo na oficina (S velocidade, A aceleração,
@@ -3029,6 +3077,14 @@ const has = (r, id) => r.b.id === id;
    A: [nome, texto, gatilho, efeito, valor, cor]   C/J: [nome, texto, tipo]
    M: [nome, texto, passiva, cor da pele, força da pele, cor das latas, tamanho]   H: [nome, texto, tipo, cor] */
 const EXTRA = {
+  davi: {
+    S: ['VÁCUO JURÁSSICO', 'No vácuo de um rival corre ainda mais rápido', 'slip', 1.09, '#65a30d', 'dust'],
+    A: ['FORÇA JURÁSSICA', 'Ao pousar de um pulo ganha um mini-turbo (com as garras, vira dinossauro)', 'land', 'burst', 0.8, '#84cc16'],
+    C: ['GARRAS DE RAPTOR', 'Faz curvas mais fechadas (com os músculos, vira dinossauro)', 'sharp'],
+    J: ['VOO DE GALINHA', 'Bate as asas e cai devagar depois do pulo', 'glide'],
+    M: ['DINOSSAURO ROBÔ', 'Vira um dinossauro robô blindado que lança 4 mísseis de uma vez. Só depois de maximizar Músculos e Garras', 'armor', '#9ca3af', 0, '#dc2626', 1],
+    H: ['RUGIDO JURÁSSICO', 'Um rugido que derruba todos que estiverem em volta', 'roar', '#dc2626'],
+  },
   rex: {
     S: ['PATRULHA', 'Com 2 ou mais rivais por perto corre mais rápido, com giroflex azul e vermelho', 'pack', 1.09, '#3b82f6', 'siren'],
     A: ['CAPTURA', 'Acertar um míssil em alguém enche 30 de nitro', 'hitDealt', 'nitro', 30, '#60a5fa'],
@@ -3366,6 +3422,22 @@ function knock(o, t, vy, keep) {
   return true;
 }
 // A: gatilhos da passiva de aceleração
+// Davi muda de forma no meio da corrida (troca o modelo e os atributos, mantém nitro e munição)
+function setForm(r, form, secs = 0) {
+  const base = BREEDS.find(x => x.id === 'davi'), fb = formBreed(base, form);
+  fb.name = r.b.name; fb.color = r.b.color;
+  const old = r.D; scene.remove(old.root); disposeTree(old.root);
+  r.b = fb; r.form = form; r.formT = secs;
+  r.D = buildCreature(fb, r.num, fb.color); if (r.mech && form === 'robo') applyMech(r.D, fb); applyLook(r.D, r.look); scene.add(r.D.root);
+  Object.assign(r, statsFor(fb, r.up));
+  if (r.xC === 'sharp') r.turn *= 1.15; if (r.xJ === 'high') r.jumpV *= 1.12; if (r.xM === 'tank') r.nitroDrain *= 0.75;
+  for (let i = 0; i < 40; i++) { const a = Math.random() * 6.28, u = 2 + Math.random() * 5; dust.spawn(r.x, r.y + 0.8, r.z, Math.cos(a) * u, Math.random() * 4, Math.sin(a) * u, 1, 0.8, 2.2, form === 'dino' ? [0.45, 0.6, 0.3] : [0.95, 0.95, 0.95], 0.8, 0, 2); }
+  const vol = player ? clamp(1 - Math.hypot(r.x - player.x, r.z - player.z) / 80, 0, 1) : 1;
+  if (Sfx.ctx) Sfx.voice(fb, Math.max(0.3, vol));
+  if (form === 'dino') { if (r.isPlayer) { pop('DAVI VIROU DINOSSAURO!', 'g'); shake(0.4); vib([40, 30, 80]); } else narrate(`${r.b.name} VIROU DINOSSAURO!`); }
+  else if (r.isPlayer) pop('VOLTOU A SER GALINHA', 'r');
+  if (r.isPlayer) netEvent('form', { f: form });
+}
 function trig(r, ev) {
   const a = r.xA; if (!a || a[2] !== ev || r.aCD > 0 || r.remote) return;
   r.aCD = ev === 'coin' ? 0.3 : 1.2;
@@ -3534,8 +3606,8 @@ function endDrift(r, crashed) {
   if (r.isPlayer && pts > 60) pop(`DRIFT +${pts}`, 'g');
 }
 
-const voiceWord = b => b.voice === 'squeak' ? 'GUINCHO!' : b.voice === 'hiss' ? 'CHIADO!' : b.voice === 'grunt' ? 'RONCO!' : 'LATIDO!';
-const voiceSound = b => b.voice === 'squeak' ? 'IIIIIH!' : b.voice === 'hiss' ? 'SSSSSS!' : b.voice === 'grunt' ? 'OINC OINC!' : 'AU AU!';
+const voiceWord = b => b.voice === 'cluck' ? 'COCORICÓ!' : b.voice === 'roar' ? 'RUGIDO!' : b.voice === 'squeak' ? 'GUINCHO!' : b.voice === 'hiss' ? 'CHIADO!' : b.voice === 'grunt' ? 'RONCO!' : 'LATIDO!';
+const voiceSound = b => b.voice === 'cluck' ? 'CÓ CÓ CÓ!' : b.voice === 'roar' ? 'ROAAAR!' : b.voice === 'squeak' ? 'IIIIIH!' : b.voice === 'hiss' ? 'SSSSSS!' : b.voice === 'grunt' ? 'OINC OINC!' : 'AU AU!';
 function doBark(r) {
   r.barkCD = has(r, 'rex') ? 4 : 6; trig(r, 'bark');
   if (has(r, 'pitiquin')) { r.mini = Math.max(r.mini, 1); if (r.isPlayer) pop('MINI-TURBO DO PITIQUIN!', 'c'); }
@@ -3568,6 +3640,7 @@ function stepRunner(r, inp, dt) {
   const prevDist = r.dist, air = r.y > 0.02;
   if (r.shield > 0 && (r.stun > 0 || r.spook > 0 || r.birdT > 0)) { r.stun = 0; r.spook = 0; r.birdT = 0; }
   for (const k of ['shield', 'rocket', 'flyT', 'icy', 'smokeT', 'magT', 'nightT', 'hurtT', 'fedT', 'aCD', 'abCD']) if (r[k] > 0) r[k] -= dt;
+  if (r.formT > 0) { r.formT -= dt; if (r.formT <= 0) setForm(r, 'galinha'); }
   if (r.xC === 'steady') { if (r.spook > 0) r.spook -= dt; if (r.birdT > 0) r.birdT -= dt; }
   if (r.stun > 0) r.wasStun = true; else if (r.wasStun) { r.wasStun = false; r.hurtT = 5; trig(r, 'stunEnd'); }
   if (r.stun > 0) {
@@ -3774,6 +3847,7 @@ function stepRunner(r, inp, dt) {
     const ds = wrapDelta(s - c.s), dd = r.d - c.d;
     if (ds * ds + dd * dd < pickR(r, 4)) {
       c.cd = 14; c.g.visible = false; trig(r, 'charge');
+      if (has(r, 'davi') && r.form === 'galinha' && !r.remote && Math.random() < 0.2) setForm(r, 'dino', 12);
       if (r.xH) { r.ab = Math.min(3, r.ab + 1); if (r.isPlayer) { pop(`CARGA ESPECIAL! ${r.xH[0]} ×${r.ab}`, 'o'); Sfx.pickup(); vib(20); } }
       else { r.nitro = Math.min(100, r.nitro + 20); if (r.isPlayer) { pop('CARGA ESPECIAL +20 NITRO', 'c'); Sfx.pickup(); } }
     }
@@ -3958,7 +4032,7 @@ function buildMissileMesh() {
 let carrotPool = [];
 function buildMissiles() {
   missilePool = []; missiles = []; carrotPool = [];
-  for (let i = 0; i < 10; i++) { const m = buildMissileMesh(); world.add(m); missilePool.push(m); }
+  for (let i = 0; i < 16; i++) { const m = buildMissileMesh(); world.add(m); missilePool.push(m); }
   for (let i = 0; i < 6; i++) { const m = carrotMesh(3); m.visible = false; world.add(m); carrotPool.push(m); }
 }
 const poolOf = m => m.carrot ? carrotPool : missilePool;
@@ -3978,11 +4052,21 @@ function fireMissile(r, forceTg) {
   if (r.ammo <= 0 || r.fireCD > 0 || r.stun > 0 || !pool.length) { if (r.isPlayer && r.ammo <= 0) pop(carrot ? 'SEM CENOURAS! PEGUE AS CAIXAS' : 'SEM MÍSSEIS! PEGUE AS CAIXAS', 'r'); return; }
   r.ammo--; r.fireCD = 0.7;
   if (r.D.shoot) r.D.shoot();
-  const mesh = pool.pop(), p = r.D.launcher.muzzle.getWorldPosition(new THREE.Vector3());
+  const p = r.D.launcher.muzzle.getWorldPosition(new THREE.Vector3());
   const tg = forceTg !== undefined ? forceTg : missileTarget(r), fx = Math.sin(r.h), fz = Math.cos(r.h), sp = Math.max(0, r.speed) + (carrot ? 48 : 38);
   if (r.isPlayer) netEvent('fire', { tg: tg && tg.pid });
-  mesh.visible = true; mesh.position.copy(p);
-  missiles.push({ mesh, pos: p, vel: new THREE.Vector3(fx * sp, 3, fz * sp), owner: r, target: tg, t: 0, carrot });
+  // dinossauro robô: 4 mísseis de uma vez, cada um atrás de um rival diferente
+  const shots = r.b.missiles4 ? 4 : 1, tgs = [tg];
+  if (shots > 1) {
+    const more = runners.filter(o => o !== r && o !== tg && !o.finished && wrapDelta(o.dist - r.dist) > -5 && wrapDelta(o.dist - r.dist) < 140).sort((a, b) => wrapDelta(a.dist - r.dist) - wrapDelta(b.dist - r.dist));
+    while (tgs.length < shots) tgs.push(more.length ? more.shift() : tgs[0]);
+  }
+  for (let k = 0; k < shots && pool.length; k++) {
+    const mesh = pool.pop(), side = shots > 1 ? (k - 1.5) * 0.7 : 0, q = p.clone().add(new THREE.Vector3(fz * side, k * 0.08, -fx * side));
+    mesh.visible = true; mesh.position.copy(q);
+    missiles.push({ mesh, pos: q, vel: new THREE.Vector3(fx * sp + fz * side * 6, 3 + k, fz * sp - fx * side * 6), owner: r, target: tgs[k], t: 0, carrot });
+  }
+  if (shots > 1 && r.isPlayer) pop('SALVA DE 4 MÍSSEIS!', 'o');
   const vol = player ? clamp(1 - Math.hypot(r.x - player.x, r.z - player.z) / 70, 0, 1) : 1;
   Sfx.launch(vol);
   for (let i = 0; i < 12; i++) dust.spawn(p.x, p.y, p.z, (Math.random() - 0.5) * 4 - fx * 6, Math.random() * 2, (Math.random() - 0.5) * 4 - fz * 6, 0.8, 0.5, 1.6, [0.8, 0.8, 0.8], 0.6, -1, 2);
@@ -4149,9 +4233,9 @@ function setCoins() { document.querySelectorAll('.cval').forEach(e => e.textCont
 
 function placePreview() {
   if (preview) { scene.remove(preview.root); disposeTree(preview.root); }
-  const b = BREEDS[save.dog];
+  const b = viewBreed(BREEDS[save.dog]);
   preview = buildCreature(b, 1, b.color);
-  if (save.mech[b.id]) applyMech(preview, b);
+  if (save.mech[b.id] && b.form !== 'dino') applyMech(preview, b);
   applyLook(preview, getLook(b));
   scene.add(preview.root);
   const p = trackPoint(22, 0);
@@ -4166,7 +4250,7 @@ function placePreview() {
   preview.root.position.set(p.x, 0.3, p.z);
 }
 function refreshMenu() {
-  const b = BREEDS[save.dog], up = getUp(b);
+  const b = viewBreed(BREEDS[save.dog]), up = getUp(b);
   $('dogName').textContent = b.name; $('dogBreed').textContent = b.raca;
   const pv = PASSIVES[b.id], xs = extrasUnlocked(b);
   $('dogPas').innerHTML = (pv ? `<b>★ ${pv[0]}</b> ${pv[1]}` : '') + `<span class="xtra">${xs.length ? '+ ' + xs.join(' · ') : 'Passivas extras: maximize atributos na oficina e compre o upgrade mecânico na loja'} (${xs.length}/5)</span>`;
@@ -4189,7 +4273,8 @@ const MECH_PRICE = 3000;
 function mechCard(b, shop) {
   const X = EXTRA[b.id]; if (!X || !X.M) return '';
   const own = !!save.mech[b.id];
-  const btn = shop ? (own ? '<button class="eq" disabled>INSTALADO</button>' : `<button data-mech="1" ${save.coins < MECH_PRICE ? 'disabled' : ''}>COMPRAR ${MECH_PRICE}</button>`) : '';
+  const lock = b.id === 'davi' && !daviReady(getUp(b));
+  const btn = shop ? (own ? '<button class="eq" disabled>INSTALADO</button>' : lock ? '<button disabled>MAXIMIZE MÚSCULOS E GARRAS</button>' : `<button data-mech="1" ${save.coins < MECH_PRICE ? 'disabled' : ''}>COMPRAR ${MECH_PRICE}</button>`) : '';
   return `<div class="panel mechCard"><h3>${own ? '★' : '🔒'} UPGRADE MECÂNICO${shop ? '' : own ? ' · INSTALADO' : ' · NA LOJA'}</h3>
     <p><b>${X.M[0]}</b> — ${X.M[1]}</p><p><b>HABILIDADE: ${X.H[0]}</b> — ${X.H[1]}. Use com <b>R</b> ou o botão HABILIDADE: 1 carga na largada e mais nas cargas especiais roxas da pista.</p>${btn}</div>`;
 }
@@ -4208,6 +4293,7 @@ $('upList').addEventListener('click', e => {
   const b = BREEDS[save.dog], up = getUp(b), id = bt.dataset.up, cost = UP_COST[up[id]];
   if (save.coins < cost || up[id] >= 5) return;
   save.coins -= cost; up[id]++; if (up[id] >= 5) save.stats.maxUp = 1; persist(); claimAchievements();
+  if (b.id === 'davi' && daviReady(up) && (id === 'acel' || id === 'grip')) { placePreview(); pop('DAVI VIROU DINOSSAURO!', 'g'); Sfx.init(); Sfx.voice(viewBreed(b), 1); }
   Sfx.init(); Sfx.pickup(); Sfx.voice(b, 0.6);
   renderGarage();
 });
@@ -4246,7 +4332,7 @@ $('shopList').addEventListener('click', e => {
   const t = e.target.closest('button'); if (!t || t.disabled) return;
   const b = BREEDS[save.dog], look = getLook(b);
   if (t.dataset.mech) {
-    if (save.coins < MECH_PRICE || save.mech[b.id]) return;
+    if (save.coins < MECH_PRICE || save.mech[b.id] || (b.id === 'davi' && !daviReady(getUp(b)))) return;
     save.coins -= MECH_PRICE; save.mech[b.id] = true; persist(); Sfx.init(); Sfx.pickup(); Sfx.voice(b, 0.7); vib([30, 30, 60]);
     placePreview(); renderShop(); return;
   }
@@ -4316,11 +4402,14 @@ function startRace(online) {
   const meK = online ? online.findIndex(p => p.pid === Net.peer.id) : 0;
   order.forEach((bi, k) => {
     // online: o cachorro leva o apelido e a cor do jogador
-    const b = online ? { ...BREEDS[bi], name: online[k].name, color: online[k].color } : BREEDS[bi];
+    const b0 = online ? { ...BREEDS[bi], name: online[k].name, color: online[k].color } : BREEDS[bi];
     let up = pUp;
     if (k !== meK) { const lv = () => clamp(Math.round(avg + DIFFS[save.diff].upOff + (Math.random() * 2 - 1)), 0, 5); up = { motor: lv(), acel: lv(), grip: lv(), nitro: lv(), pulo: lv() }; }
-    const mech = online ? !!online[k].mech : k === meK ? !!save.mech[b.id] : Math.random() < 0.3;
-    const r = new Runner(b, k + 1, k === meK, up, mech);
+    let mech = online ? !!online[k].mech : k === meK ? !!save.mech[b0.id] : Math.random() < 0.3;
+    if (b0.id === 'davi' && !online && !daviReady(up)) mech = false; // o robô só vem depois de músculos e garras no máximo
+    const form = b0.id !== 'davi' ? null : online ? online[k].form || 'galinha' : daviForm(up, mech);
+    const b = form ? formBreed(b0, form) : b0;
+    const r = new Runner(b, k + 1, k === meK, up, mech && form !== 'dino'); r.form = form;
     const sl = slots[k], row = Math.floor(sl / 2), col = sl % 2;
     r.place(-5 - row * 6.5 - col * 2.5, col ? 3.6 : -3.6);
     if (cup && k && cup.looks[b.id]) { r.look = cup.looks[b.id]; applyLook(r.D, r.look); }
@@ -4543,7 +4632,7 @@ function netSend(m, except) {
   if (Net.host) { for (const [id, c] of Net.conns) if (id !== except && c.open) c.send(m); }
   else if (Net.hostConn && Net.hostConn.open) Net.hostConn.send(m);
 }
-const myNetInfo = () => ({ pid: Net.peer.id, name: me().name, color: me().color, dog: save.dog, host: Net.host, mech: !!save.mech[BREEDS[save.dog].id] });
+const myNetInfo = () => ({ pid: Net.peer.id, name: me().name, color: me().color, dog: save.dog, host: Net.host, mech: !!save.mech[BREEDS[save.dog].id], form: viewBreed(BREEDS[save.dog]).form || null });
 function netLobby() { const m = { t: 'lobby', players: Net.players, track: save.track, laps: save.laps }; netSend(m); renderRoom(); }
 function netFail(t) { onMsg(Net.inRoom ? 'roomMsg' : 'onMsg', t); }
 async function netCreate() {
@@ -4585,7 +4674,7 @@ function netFromGuest(c, d) {
   if (d.t === 'hello') {
     if (Net.racing || Net.players.length >= 6) { c.send({ t: 'full', why: Net.racing ? 'A corrida já começou' : 'A sala está cheia' }); setTimeout(() => c.close(), 300); return; }
     Net.conns.set(c.peer, c);
-    Net.players = Net.players.filter(p => p.pid !== c.peer).concat({ pid: c.peer, name: String(d.name).slice(0, 12), color: d.color, dog: clamp(d.dog | 0, 0, BREEDS.length - 1), host: false, mech: !!d.mech });
+    Net.players = Net.players.filter(p => p.pid !== c.peer).concat({ pid: c.peer, name: String(d.name).slice(0, 12), color: d.color, dog: clamp(d.dog | 0, 0, BREEDS.length - 1), host: false, mech: !!d.mech, form: ['galinha', 'dino', 'robo'].includes(d.form) ? d.form : null });
     netLobby(); Sfx.beep(false); return;
   }
   if (d.t === 'dog') { const p = Net.players.find(p => p.pid === c.peer); if (p) { p.dog = clamp(d.dog | 0, 0, BREEDS.length - 1); netLobby(); } return; }
@@ -4603,7 +4692,7 @@ function netFromHost(d) {
 }
 function netStartRace() {
   if (Net.players.length < 2) return onMsg('roomMsg', 'Precisa de pelo menos 2 jogadores');
-  Net.players[0].dog = save.dog; Net.players[0].mech = !!save.mech[BREEDS[save.dog].id];
+  Object.assign(Net.players[0], { dog: save.dog, mech: !!save.mech[BREEDS[save.dog].id], form: viewBreed(BREEDS[save.dog]).form || null });
   const m = { t: 'start', track: save.track, laps: save.laps, players: Net.players };
   netSend(m); netApply(m);
 }
@@ -4624,6 +4713,7 @@ function netApply(d) {
     else if (d.e === 'fire') { r.ammo = Math.max(r.ammo, 1); r.fireCD = 0; const st = r.stun; r.stun = 0; fireMissile(r, runners.find(x => x.pid === d.tg) || null); r.stun = st; }
     else if (d.e === 'jump') { r.vy = r.jumpV; }
     else if (d.e === 'ab') useAbility(r, true);
+    else if (d.e === 'form' && has(r, 'davi') && DAVI_FORMS[d.f]) setForm(r, d.f);
   }
 }
 function netEvent(e, extra) { if (Net.racing && !Net.mute) netSend({ t: 'ev', pid: Net.peer.id, e, ...extra }); }

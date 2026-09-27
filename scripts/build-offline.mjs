@@ -25,4 +25,5 @@ cpSync('musica', 'dist/www/musica', { recursive: true });
 cpSync('modelos.js', 'dist/www/modelos.js');
 cpSync('caes.js', 'dist/www/caes.js');
 cpSync('coelho.js', 'dist/www/coelho.js');
+cpSync('trex.js', 'dist/www/trex.js');
 console.log('dist/www pronto');
