@@ -122,7 +122,7 @@
 
   /* ---------- telas ---------- */
   .screen { position:fixed; inset:0; z-index:30; }
-  #menu, #garage { display:grid; grid-template-columns:1fr minmax(300px,390px); grid-template-rows:auto minmax(0,1fr) auto; gap:14px;
+  #menu, #garage, #shop, #missions { display:grid; grid-template-columns:1fr minmax(300px,390px); grid-template-rows:auto minmax(0,1fr) auto; gap:14px;
     padding:calc(18px + var(--sat)) calc(18px + var(--sar)) calc(18px + var(--sab)) calc(18px + var(--sal));
     background:linear-gradient(90deg, rgba(6,8,14,.55), transparent 38%, transparent 52%, rgba(6,8,14,.7)); }
   .brand { grid-column:1; grid-row:1; }
@@ -151,7 +151,32 @@
   .opt { border:1px solid var(--line); background:var(--glass); border-radius:10px; padding:8px 6px; text-align:center; font-size:15px; min-width:0; }
   .opt .lbl { font-size:10px; display:block; }
   .opt b { display:block; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-  .ctas { display:grid; grid-template-columns:1fr 1.6fr; gap:8px; }
+  .ctas { display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; }
+  .ctas .btn.sec { font-size:15px; padding:11px 6px; letter-spacing:.06em; }
+  #startBtn { grid-column:1 / -1; }
+  .opts.four { grid-template-columns:repeat(4, 1fr); }
+  .tabs { display:flex; gap:6px; flex-wrap:wrap; }
+  .tabs button { flex:1 1 auto; border:1px solid var(--line); background:var(--glass); border-radius:9px; padding:8px; font-size:13px; letter-spacing:.06em; font-weight:700; }
+  .tabs button.on { background:var(--acc); color:#1a0a00; border-color:transparent; }
+  .shopList { display:grid; gap:6px; }
+  .item { display:grid; grid-template-columns:auto 1fr auto; gap:10px; align-items:center; padding:9px 12px; }
+  .item .sw { width:18px; height:18px; border-radius:50%; border:2px solid rgba(255,255,255,.5); }
+  .item h4 { margin:0; font-size:15px; letter-spacing:.05em; }
+  .item small { display:block; color:var(--mut); font-size:12px; font-weight:600; }
+  .item button { border:none; border-radius:9px; padding:8px 10px; font-weight:700; font-size:14px; background:var(--acc); color:#1a0a00; min-width:96px; }
+  .item button.eq { background:var(--good); }
+  .item button:disabled { background:rgba(255,255,255,.1); color:var(--mut); cursor:default; }
+  .item.done h4 { color:var(--good); }
+  .item .rw { color:var(--gold); font-size:14px; text-align:right; white-space:nowrap; }
+  .bar2 { height:6px; background:rgba(255,255,255,.12); border-radius:3px; margin-top:5px; overflow:hidden; }
+  .bar2 i { display:block; height:100%; background:var(--acc2); }
+  #trophy svg { width:min(170px, 38vw, 22vh); height:auto; filter:drop-shadow(0 8px 20px rgba(0,0,0,.5)); }
+  #cupReward { color:var(--gold); font-size:18px; letter-spacing:.08em; text-align:center; }
+  #cupTag { font-size:12px; color:var(--gold); letter-spacing:.12em; margin-top:4px; }
+  #narr { position:absolute; left:50%; top:calc(19% + var(--sat)); transform:translateX(-50%); padding:6px 16px; border-radius:99px;
+    background:var(--glass2); border:1px solid var(--line); font-size:17px; letter-spacing:.06em; white-space:nowrap; opacity:0; transition:opacity .3s; max-width:calc(100vw - 32px); overflow:hidden; text-overflow:ellipsis; }
+  #narr.on { opacity:1; }
+  body.touch #narr { top:calc(40% + var(--sat)); font-size:14px; }
   .btn { border:none; border-radius:12px; padding:14px 10px; font-size:18px; letter-spacing:.1em; font-weight:700; }
   .btn.sec { background:rgba(255,255,255,.12); border:1px solid var(--line); }
   .btn.pri { background:linear-gradient(180deg,#ff9a3d,#ff5a14); color:#1a0a00; font-family:'Russo One',sans-serif; font-weight:400; font-size:21px;
@@ -160,7 +185,7 @@
   .help { font-size:13px; letter-spacing:.06em; color:#cfd8ea; text-align:right; line-height:1.55; text-shadow:0 1px 6px #000; }
   .help b { color:#fff; }
   #upList { display:grid; gap:8px; }
-  #garageBack { position:sticky; bottom:0; flex:none; }
+  #garageBack, #shopBack, #missBack { position:sticky; bottom:0; flex:none; }
   .up { display:grid; grid-template-columns:1fr auto; gap:4px 10px; align-items:center; padding:10px 14px; }
   .up h3 { margin:0; font-size:17px; letter-spacing:.08em; }
   .up p { margin:0; font-size:13px; color:var(--mut); grid-column:1; }
@@ -171,9 +196,9 @@
     background:var(--acc); color:#1a0a00; min-width:104px; }
   .up button:disabled { background:rgba(255,255,255,.1); color:var(--mut); cursor:default; }
 
-  #pause, #results, #loading { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px;
+  #pause, #results, #loading, #cupEnd { display:flex; flex-direction:column; align-items:center; justify-content:safe center; gap:16px; overflow-y:auto; touch-action:pan-y;
     background:rgba(6,8,14,.72); padding:calc(16px + var(--sat)) 16px calc(16px + var(--sab)); }
-  #pause h2, #results h2 { margin:0; font-size:clamp(34px,6vw,58px); font-style:italic; color:#fff; text-shadow:0 4px 0 rgba(0,0,0,.4), 0 0 26px rgba(255,122,26,.55); }
+  #pause h2, #results h2, #cupEnd h2 { margin:0; font-size:clamp(34px,6vw,58px); font-style:italic; color:#fff; text-shadow:0 4px 0 rgba(0,0,0,.4), 0 0 26px rgba(255,122,26,.55); }
   .menuList { display:grid; gap:8px; width:min(340px,100%); }
   .menuList.three { grid-template-columns:1fr 1fr 1fr; width:min(560px,100%); }
   .resWrap { display:flex; gap:14px; flex-wrap:wrap; justify-content:center; max-width:100%; }
@@ -190,14 +215,16 @@
   #loading { z-index:60; background:#0a0d14; font-size:18px; letter-spacing:.3em; }
 
   @media (max-width:820px), (orientation:portrait) {
-    #menu, #garage { grid-template-columns:1fr; grid-template-rows:auto minmax(0,1fr) auto; background:linear-gradient(180deg, rgba(6,8,14,.55), transparent 26%, transparent 45%, rgba(6,8,14,.85)); }
+    #menu, #garage, #shop, #missions { grid-template-columns:1fr; grid-template-rows:auto minmax(0,1fr) auto; background:linear-gradient(180deg, rgba(6,8,14,.55), transparent 26%, transparent 45%, rgba(6,8,14,.85)); }
     .coins { grid-column:1; grid-row:1; }
     .side { grid-column:1; grid-row:2 / span 2; }
+    #shop .side, #missions .side { max-height:58vh; }
+    .opts.four .opt { padding:7px 3px; } .opts.four .opt b { font-size:14px; }
     .help { display:none; }
     #board { display:none; }
   }
   @media (max-height:520px) and (orientation:landscape) {
-    #menu, #garage { grid-template-columns:1fr minmax(280px,340px); }
+    #menu, #garage, #shop, #missions { grid-template-columns:1fr minmax(280px,340px); }
     .brand h1 { font-size:34px; }
     .card { padding:8px 12px; } .stats { gap:4px; margin-top:6px; } #dogName { font-size:22px; }
     .btn { padding:10px; } .help { display:none; }
@@ -221,8 +248,10 @@
       <div><div class="lbl">Tempo</div><div id="time" class="disp mono">0:00.00</div></div>
     </div>
     <div id="bestLap" class="mono"></div>
+    <div id="cupTag" class="mono"></div>
   </div>
   <ol id="board"></ol>
+  <div id="narr"></div>
   <div id="goals" class="panel"></div>
   <div id="chips"><span id="chipSlip" class="chip" hidden>VÁCUO</span><span id="chipWrong" class="chip" hidden>CONTRAMÃO</span><span id="chipMissile" class="chip" hidden>MÍSSIL VINDO!</span></div>
   <div id="hTR"><div id="pos" class="disp">1<sup>º</sup></div><div id="posOf">DE 6</div></div>
@@ -252,13 +281,16 @@
       </div>
       <div class="stats" id="stats"></div>
     </div>
-    <div class="opts">
+    <div class="opts four">
+      <button class="opt" id="modeBtn"><span class="lbl">Modo</span><b id="modeName">CORRIDA</b></button>
       <button class="opt" id="trackBtn"><span class="lbl">Pista</span><b id="trackName">PARQUE</b></button>
       <button class="opt" id="diffBtn"><span class="lbl">Rivais</span><b id="diffName">NORMAL</b></button>
       <button class="opt" id="lapsBtn"><span class="lbl">Voltas</span><b id="lapsName">3</b></button>
     </div>
     <div class="ctas">
       <button class="btn sec" id="garageBtn">OFICINA</button>
+      <button class="btn sec" id="shopBtn">LOJA</button>
+      <button class="btn sec" id="missBtn">MISSÕES</button>
       <button class="btn pri" id="startBtn">CORRER</button>
     </div>
     <div class="help"><b>↑</b> correr · <b>↓</b> frear · <b>← →</b> virar · <b>SHIFT</b> drift<br><b>N</b> nitro · <b>ESPAÇO</b> pular · <b>B</b> latir · <b>F</b> míssil<br><b>C</b> câmera · <b>ESC</b> pausa</div>
@@ -274,6 +306,34 @@
   </div>
 </div>
 
+<div id="shop" class="screen" hidden>
+  <div class="brand"><h1 class="disp">Loja</h1><div class="tag" id="shopDog">REX</div></div>
+  <div class="coins panel disp"><svg viewBox="0 0 32 32" aria-hidden="true"><path fill="#ffc53d" d="M8 6a4 4 0 0 0-3.7 5.5A4 4 0 0 0 8 19l1-.2 6.6 6.6-.2 1a4 4 0 0 0 7.5 1.9A4 4 0 0 0 26 22.5 4 4 0 0 0 23 16l-1 .2-6.6-6.6.2-1A4 4 0 0 0 8 6z"/></svg><span class="cval mono">0</span></div>
+  <div class="side">
+    <div class="tabs" id="shopTabs"></div>
+    <div id="shopList" class="shopList"></div>
+    <button class="btn pri" id="shopBack">PRONTO</button>
+  </div>
+</div>
+
+<div id="missions" class="screen" hidden>
+  <div class="brand"><h1 class="disp">Missões</h1><div class="tag" id="dailyTag">NOVAS MISSÕES À MEIA-NOITE</div></div>
+  <div class="coins panel disp"><svg viewBox="0 0 32 32" aria-hidden="true"><path fill="#ffc53d" d="M8 6a4 4 0 0 0-3.7 5.5A4 4 0 0 0 8 19l1-.2 6.6 6.6-.2 1a4 4 0 0 0 7.5 1.9A4 4 0 0 0 26 22.5 4 4 0 0 0 23 16l-1 .2-6.6-6.6.2-1A4 4 0 0 0 8 6z"/></svg><span class="cval mono">0</span></div>
+  <div class="side">
+    <div class="tabs" id="missTabs"><button data-t="daily" class="on">DIÁRIAS</button><button data-t="ach">CONQUISTAS</button></div>
+    <div id="missList" class="shopList"></div>
+    <button class="btn pri" id="missBack">VOLTAR</button>
+  </div>
+</div>
+
+<div id="cupEnd" class="screen" hidden>
+  <h2 class="disp" id="cupTitle">CAMPEÃO DA COPA!</h2>
+  <div id="trophy"></div>
+  <div class="panel tbl"><table id="cupTable"></table></div>
+  <div id="cupReward"></div>
+  <div class="menuList"><button class="btn pri" id="cupDone">VOLTAR AO MENU</button></div>
+</div>
+
 <div id="pause" class="screen" hidden>
   <h2 class="disp">PAUSA</h2>
   <div id="pauseGoals" class="panel"></div>
@@ -283,6 +343,7 @@
     <button class="btn sec" id="camBtn">CÂMERA: ATRÁS</button>
     <button class="btn sec" id="assistBtn">ASSISTÊNCIA: LIGADA</button>
     <button class="btn sec" id="qualBtn">GRÁFICOS: ALTA</button>
+    <button class="btn sec" id="vibBtn">VIBRAÇÃO: LIGADA</button>
     <button class="btn sec" id="musicBtn">MÚSICA: TODAS</button>
     <button class="btn sec" id="quitBtn">SAIR PARA O MENU</button>
   </div>
@@ -293,6 +354,7 @@
   <div class="resWrap">
     <div class="panel tbl"><table id="resTable"></table></div>
     <div class="panel rewards" id="rewards"></div>
+    <div class="panel tbl" id="cupPanel" hidden><table id="cupMid"></table></div>
   </div>
   <div id="recordMsg"></div>
   <div class="menuList three">
@@ -348,7 +410,7 @@ if (isTouch) document.body.classList.add('touch');
    Progresso salvo (ossos de ouro, melhorias, recordes)
    --------------------------------------------------------------------- */
 const SAVE_KEY = 'corridaCaninaTurbo1';
-const save = { musicMode: 0, coins: 400, up: {}, best: {}, dog: 0, track: 0, diff: 1, laps: 3, qual: isTouch ? 1 : 2, music: true, cam: 0, assist: true };
+const save = { musicMode: 0, vib: true, mode: 0, owned: [], looks: {}, stats: {}, ach: [], daily: null, trophies: {}, coins: 400, up: {}, best: {}, dog: 0, track: 0, diff: 1, laps: 3, qual: isTouch ? 1 : 2, music: true, cam: 0, assist: true };
 try { Object.assign(save, JSON.parse(localStorage.getItem(SAVE_KEY) || '{}')); } catch (e) { }
 if (save.music === false && save.musicMode === 0 && !('musicMode' in (JSON.parse((() => { try { return localStorage.getItem(SAVE_KEY) || '{}'; } catch (e) { return '{}'; } })())))) save.musicMode = 4;
 function persist() { try { localStorage.setItem(SAVE_KEY, JSON.stringify(save)); } catch (e) { } }
@@ -877,11 +939,13 @@ function buildDog(b, num, color) {
   }), head, 'head');
   const eyeMat = b.eye === 0x4aa3ff ? new THREE.MeshStandardMaterial({ color: 0x4aa3ff, roughness: 0.05, emissive: 0x0a2440 }) : new THREE.MeshStandardMaterial({ color: b.eye, roughness: 0.06 });
   const er = b.eyeR || sw * 0.24;
+  let eyeP = [0, 0, 0];
   {
     const ze = hp.zStop - sl * 0.08, p = headProfile(b, ze), a = 0.42;
     for (const sx of [-1, 1]) {
       const e = new THREE.Mesh(new THREE.SphereGeometry(er, 12, 9), eyeMat);
       e.position.set(sx * Math.cos(a) * p.w * 0.9, p.yc + Math.sin(a) * p.h * 0.9, ze + er * 0.3); head.add(e);
+      if (sx > 0) eyeP = [e.position.x, e.position.y, e.position.z];
       const lid = new THREE.Mesh(new THREE.SphereGeometry(er * 1.12, 12, 6, 0, Math.PI * 2, 0, Math.PI * 0.42), lidMat);
       lid.position.copy(e.position); lid.rotation.x = -0.2; head.add(lid);
     }
@@ -905,7 +969,7 @@ function buildDog(b, num, color) {
   }
   if (b.crown) { // coroinha dourada
     const gold = new THREE.MeshStandardMaterial({ color: 0xffc53d, roughness: 0.3, metalness: 0.6, emissive: 0x3a2400 });
-    const crown = new THREE.Group(); crown.position.set(0, sh * 0.95, -sl * 0.1); crown.rotation.x = -0.15; head.add(crown);
+    var crown = new THREE.Group(); crown.position.set(0, sh * 0.95, -sl * 0.1); crown.rotation.x = -0.15; head.add(crown);
     crown.add(new THREE.Mesh(new THREE.CylinderGeometry(0.032, 0.036, 0.018, 16, 1, true), gold));
     for (let i = 0; i < 5; i++) {
       const a = i / 5 * Math.PI * 2, sp = new THREE.Mesh(new THREE.ConeGeometry(0.009, 0.026, 6), gold);
@@ -1026,7 +1090,127 @@ function buildDog(b, num, color) {
   model.scale.setScalar(DOG_S);
   const blob = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), new THREE.MeshBasicMaterial({ map: blobTex, transparent: true, depthWrite: false }));
   blob.rotation.x = -Math.PI / 2; blob.position.y = 0.04; blob.scale.set(b.chW * 5 * DOG_S, b.len * 1.5 * DOG_S, 1); root.add(blob);
-  return { root, model, body, torso, neckPiv, headPiv, head, legs, tails, ears, tongue, flames, stars, excl, blob, b, launcher, anim: animDog };
+  const hi = { hat: [0, sh * 0.9, -sl * 0.12], s: sw, eye: eyeP, er, cape: [0, cy + b.chH * 0.98, b.len / 2 - 0.15], capeW: b.chW, capeL: b.len };
+  return { root, model, body, torso, neckPiv, headPiv, head, legs, tails, ears, tongue, flames, stars, excl, blob, b, launcher, anim: animDog, vestMat, hi, crown: typeof crown !== 'undefined' ? crown : null };
+}
+
+/* ---------------------------------------------------------------------
+   Loja de visual: chapéus, óculos, capas, coletes e rastros
+   --------------------------------------------------------------------- */
+const SHOP = {
+  hat: { n: 'CHAPÉUS', items: [['none', 'NENHUM', 0], ['bone', 'BONÉ', 150], ['festa', 'CHAPÉU DE FESTA', 200], ['cartola', 'CARTOLA', 300], ['cowboy', 'CHAPÉU DE CAUBÓI', 350], ['capacete', 'CAPACETE DE CORRIDA', 450], ['coroa', 'COROA DE REI', 800]] },
+  glasses: { n: 'ÓCULOS', items: [['none', 'NENHUM', 0], ['escuro', 'ÓCULOS ESCUROS', 150], ['nerd', 'ÓCULOS DE NERD', 200], ['aviador', 'AVIADOR', 250], ['coracao', 'CORAÇÃO', 300]] },
+  cape: { n: 'CAPAS', items: [['none', 'NENHUMA', 0], ['vermelha', 'CAPA VERMELHA', 300], ['azul', 'CAPA AZUL', 300], ['roxa', 'CAPA ROXA', 350], ['dourada', 'CAPA DOURADA', 600]] },
+  vest: { n: 'COLETES', items: [['padrao', 'COR ORIGINAL', 0], ['preto', 'PRETO', 100], ['branco', 'BRANCO', 100], ['vermelho', 'VERMELHO', 100], ['azul', 'AZUL', 100], ['verde', 'VERDE', 100], ['roxo', 'ROXO', 100], ['rosa', 'ROSA', 100], ['dourado', 'DOURADO', 300]] },
+  trail: { n: 'RASTROS', items: [['none', 'NENHUM', 0], ['bolhas', 'BOLHAS', 350], ['coracoes', 'CORAÇÕES', 450], ['estrelas', 'ESTRELAS', 500], ['fogo', 'FOGO', 550], ['arcoiris', 'ARCO-ÍRIS', 700]] },
+};
+const VEST_COLORS = { preto: 0x1c1c1f, branco: 0xf2f2f2, vermelho: 0xd81f2a, azul: 0x1f5fff, verde: 0x16a34a, roxo: 0x7c3aed, rosa: 0xff4fa3, dourado: 0xffc53d };
+const CAPE_COLORS = { vermelha: '#d81f2a', azul: '#1f5fff', roxa: '#7c3aed', dourada: '#ffc53d' };
+const TRAIL_SW = { bolhas: '#9fdcff', coracoes: '#ff5f9e', estrelas: '#ffe14d', fogo: '#ff7a1a', arcoiris: 'linear-gradient(90deg,#f33,#fc3,#3c6,#39f,#c3f)' };
+const HAT_SW = { bone: '#d81f2a', festa: '#ff4fa3', cartola: '#1a1a1a', cowboy: '#8a5a2b', capacete: '#f4f4f4', coroa: '#ffc53d' };
+const GL_SW = { escuro: '#111', nerd: '#333', aviador: '#c9a24a', coracao: '#ff5f9e' };
+const DEFAULT_LOOK = { hat: 'none', glasses: 'none', cape: 'none', vest: 'padrao', trail: 'none' };
+const owns = (cat, id) => SHOP[cat].items.find(i => i[0] === id)[2] === 0 || save.owned.includes(cat + ':' + id);
+function getLook(b) { return Object.assign({}, DEFAULT_LOOK, save.looks[b.id] || {}); }
+function randomLook() {
+  const pick = (cat, p) => Math.random() < p ? SHOP[cat].items[1 + (Math.random() * (SHOP[cat].items.length - 1) | 0)][0] : SHOP[cat].items[0][0];
+  return { hat: pick('hat', 0.35), glasses: pick('glasses', 0.25), cape: pick('cape', 0.12), vest: 'padrao', trail: pick('trail', 0.15) };
+}
+function lm(color, rough = 0.5, metal = 0, extra = {}) { return new THREE.MeshStandardMaterial({ color, roughness: rough, metalness: metal, ...extra }); }
+function makeHat(type, s) {
+  const g = new THREE.Group(), add = (geo, m, x = 0, y = 0, z = 0) => { const o = new THREE.Mesh(geo, m); o.position.set(x, y, z); o.castShadow = true; g.add(o); return o; };
+  if (type === 'bone') {
+    add(new THREE.SphereGeometry(s * 0.95, 18, 10, 0, Math.PI * 2, 0, Math.PI / 2), lm(0xd81f2a, 0.6)).scale.y = 0.75;
+    add(new THREE.BoxGeometry(s * 1.3, s * 0.06, s * 0.9), lm(0xf4f4f4, 0.6), 0, s * 0.03, s * 1.05);
+    add(new THREE.SphereGeometry(s * 0.12, 8, 6), lm(0xf4f4f4), 0, s * 0.72, 0);
+  } else if (type === 'festa') {
+    const tex = new THREE.CanvasTexture(drawCanvas(64, 64, (x) => { for (let i = 0; i < 8; i++) { x.fillStyle = i % 2 ? '#ffe14d' : '#ff4fa3'; x.fillRect(0, i * 8, 64, 8); } }));
+    tex.colorSpace = THREE.SRGBColorSpace;
+    add(new THREE.ConeGeometry(s * 0.6, s * 1.9, 20), lm(0xffffff, 0.6, 0, { map: tex }), 0, s * 0.9, 0);
+    add(new THREE.SphereGeometry(s * 0.2, 10, 8), lm(0x35d0ff, 0.9), 0, s * 1.9, 0);
+  } else if (type === 'cartola') {
+    const blk = lm(0x151515, 0.45);
+    add(new THREE.CylinderGeometry(s * 1.25, s * 1.25, s * 0.08, 24), blk, 0, s * 0.02, 0);
+    add(new THREE.CylinderGeometry(s * 0.72, s * 0.76, s * 1.4, 24), blk, 0, s * 0.72, 0);
+    add(new THREE.CylinderGeometry(s * 0.78, s * 0.78, s * 0.26, 24), lm(0xd81f2a, 0.5), 0, s * 0.22, 0);
+  } else if (type === 'cowboy') {
+    const brown = lm(0x8a5a2b, 0.8);
+    add(new THREE.CylinderGeometry(s * 1.7, s * 1.7, s * 0.07, 28), brown).scale.z = 0.85;
+    add(new THREE.CylinderGeometry(s * 0.72, s * 0.85, s * 0.95, 20), brown, 0, s * 0.48, 0);
+    add(new THREE.CylinderGeometry(s * 0.87, s * 0.87, s * 0.2, 20), lm(0x2b1a0e, 0.6), 0, s * 0.14, 0);
+  } else if (type === 'capacete') {
+    add(new THREE.SphereGeometry(s * 1.25, 22, 12, 0, Math.PI * 2, 0, Math.PI * 0.55), lm(0xf4f4f4, 0.15, 0.2), 0, -s * 0.25, 0);
+    add(new THREE.SphereGeometry(s * 1.27, 22, 12, -0.3, 0.6, 0, Math.PI * 0.55), lm(0xd81f2a, 0.2), 0, -s * 0.25, 0);
+    add(new THREE.BoxGeometry(s * 1.2, s * 0.35, s * 0.1), lm(0x111a2a, 0.05, 0.3), 0, s * 0.25, s * 1.05);
+  } else if (type === 'coroa') {
+    const gold = lm(0xffc53d, 0.3, 0.6, { emissive: 0x3a2400 });
+    add(new THREE.CylinderGeometry(s * 0.82, s * 0.88, s * 0.42, 24, 1, true), gold, 0, s * 0.2, 0).material.side = THREE.DoubleSide;
+    for (let i = 0; i < 7; i++) {
+      const a = i / 7 * Math.PI * 2;
+      add(new THREE.ConeGeometry(s * 0.16, s * 0.42, 6), gold, Math.cos(a) * s * 0.82, s * 0.6, Math.sin(a) * s * 0.82);
+      add(new THREE.SphereGeometry(s * 0.1, 8, 6), lm(i % 2 ? 0x2d6bff : 0xe11d48, 0.1), Math.cos(a) * s * 0.86, s * 0.22, Math.sin(a) * s * 0.86);
+    }
+  }
+  g.rotation.x = -0.15;
+  return g;
+}
+function makeGlasses(type, hi) {
+  const g = new THREE.Group(), [ex, ey, ez] = hi.eye, lr = hi.er * 1.7, zf = ez + hi.er * 0.95;
+  const frameM = lm({ escuro: 0x111111, nerd: 0x1a1a1a, aviador: 0xc9a24a, coracao: 0xff5f9e }[type], 0.3, type === 'aviador' ? 0.7 : 0.1);
+  const lensM = lm({ escuro: 0x050505, nerd: 0xcfe8ff, aviador: 0x3b2a18, coracao: 0xff9ec4 }[type], 0.05, 0.2, { transparent: true, opacity: type === 'nerd' ? 0.35 : 0.85 });
+  for (const sx of [-1, 1]) {
+    if (type === 'coracao') {
+      const sh = new THREE.Shape(), k = lr * 1.1;
+      sh.moveTo(0, -k); sh.bezierCurveTo(k * 1.2, -k * 0.2, k * 0.9, k * 1.0, 0, k * 0.45); sh.bezierCurveTo(-k * 0.9, k * 1.0, -k * 1.2, -k * 0.2, 0, -k);
+      const h = new THREE.Mesh(new THREE.ExtrudeGeometry(sh, { depth: lr * 0.15, bevelEnabled: false }), lensM); h.position.set(sx * ex, ey, zf); g.add(h);
+    } else {
+      const lens = new THREE.Mesh(new THREE.CylinderGeometry(lr, lr, lr * 0.12, 20), lensM); lens.rotation.x = Math.PI / 2; lens.position.set(sx * ex, ey, zf); g.add(lens);
+      if (type === 'aviador') lens.scale.set(1, 1, 1.2);
+      const fr = new THREE.Mesh(new THREE.TorusGeometry(lr, lr * (type === 'nerd' ? 0.22 : 0.13), 8, 24), frameM); fr.position.set(sx * ex, ey, zf); g.add(fr);
+    }
+  }
+  if (ex > lr) { const br = new THREE.Mesh(new THREE.BoxGeometry(ex * 2 - lr * 1.6, lr * 0.18, lr * 0.18), frameM); br.position.set(0, ey + lr * 0.25, zf); g.add(br); }
+  return g;
+}
+function makeCape(type, w, l) {
+  const col = CAPE_COLORS[type];
+  const tex = new THREE.CanvasTexture(drawCanvas(64, 96, (x) => {
+    const gr = x.createLinearGradient(0, 0, 0, 96); gr.addColorStop(0, col); gr.addColorStop(1, type === 'dourada' ? '#b8860b' : '#00000088');
+    x.fillStyle = col; x.fillRect(0, 0, 64, 96); x.fillStyle = gr; x.fillRect(0, 0, 64, 96);
+    x.fillStyle = 'rgba(255,255,255,.85)'; x.beginPath(); x.ellipse(32, 54, 8, 7, 0, 0, 7); x.fill();
+    for (const [dx, dy] of [[-9, -8], [-3, -12], [3, -12], [9, -8]]) { x.beginPath(); x.ellipse(32 + dx, 54 + dy, 3, 3.6, 0, 0, 7); x.fill(); }
+  }));
+  tex.colorSpace = THREE.SRGBColorSpace;
+  const geo = new THREE.PlaneGeometry(w * 2.3, l * 0.55, 1, 6); geo.translate(0, -l * 0.275, 0);
+  const pp = geo.attributes.position; for (let i = 0; i < pp.count; i++) { const y = pp.getY(i); pp.setX(i, pp.getX(i) * (1 + (-y / l) * 0.6)); }
+  const m = new THREE.Mesh(geo, lm(0xffffff, 0.6, type === 'dourada' ? 0.4 : 0, { map: tex, side: THREE.DoubleSide }));
+  m.castShadow = true;
+  return m;
+}
+function applyLook(D, look) {
+  if (D.lookG) D.lookG.forEach(g => { if (g.parent) g.parent.remove(g); disposeTree(g); });
+  D.lookG = []; D.cape = null; D.look = look;
+  if (D.crown) D.crown.visible = look.hat === 'none';
+  D.vestMat.color.set(look.vest === 'padrao' ? D.b.color : VEST_COLORS[look.vest]);
+  D.vestMat.metalness = look.vest === 'dourado' ? 0.7 : 0.15;
+  const hi = D.hi;
+  if (look.hat !== 'none') { const g = makeHat(look.hat, hi.s); g.position.set(...hi.hat); D.head.add(g); D.lookG.push(g); }
+  if (look.glasses !== 'none') { const g = makeGlasses(look.glasses, hi); D.head.add(g); D.lookG.push(g); }
+  if (look.cape !== 'none') {
+    const piv = new THREE.Group(); piv.position.set(...hi.cape); piv.add(makeCape(look.cape, hi.capeW, hi.capeL)); piv.rotation.x = 1.3;
+    D.body.add(piv); D.lookG.push(piv); D.cape = piv;
+  }
+}
+const _tc = new THREE.Color();
+function trailFx(r, dt) {
+  const tr = r.look && r.look.trail, v = Math.hypot(r.vx, r.vz);
+  if (!tr || tr === 'none' || v < 6 || Math.random() > dt * 30) return;
+  const bx = r.x - Math.sin(r.h) * 1.4 + (Math.random() - 0.5) * 0.8, bz = r.z - Math.cos(r.h) * 1.4 + (Math.random() - 0.5) * 0.8, by = 0.5 + r.y + Math.random() * 0.6;
+  if (tr === 'bolhas') dust.spawn(bx, by, bz, (Math.random() - 0.5), 1.5, (Math.random() - 0.5), 1.4, 0.35, 0.6, [0.65, 0.88, 1], 0.55, -1.5, 1);
+  else if (tr === 'coracoes') glow.spawn(bx, by, bz, 0, 1.2, 0, 0.9, 0.45, 0.25, [1, 0.3, 0.6], 0.9, -0.5, 1);
+  else if (tr === 'estrelas') glow.spawn(bx, by, bz, (Math.random() - 0.5) * 2, 1, (Math.random() - 0.5) * 2, 0.7, 0.3, 0.05, [1, 0.92, 0.4], 1, 0, 1);
+  else if (tr === 'fogo') glow.spawn(bx, 0.35 + r.y, bz, 0, 2.5, 0, 0.45, 0.6, 0.15, Math.random() < 0.5 ? [1, 0.45, 0.1] : [1, 0.8, 0.2], 1, -2, 1);
+  else if (tr === 'arcoiris') { _tc.setHSL((time * 0.6 + Math.random() * 0.1) % 1, 0.9, 0.6); glow.spawn(bx, by, bz, 0, 0.3, 0, 0.8, 0.5, 0.35, [_tc.r, _tc.g, _tc.b], 0.9, 0, 1); }
 }
 
 function buildCreature(b, num, color) { return b.kind === 'lizard' ? buildLizard(b, num, color) : buildDog(b, num, color); }
@@ -1141,7 +1325,8 @@ function buildLizard(b, num, color) {
   model.scale.setScalar(S);
   const blob = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), new THREE.MeshBasicMaterial({ map: blobTex, transparent: true, depthWrite: false }));
   blob.rotation.x = -Math.PI / 2; blob.position.y = 0.04; blob.scale.set(HW * 6 * S, (BL + b.tailL * 0.6) * 1.3 * S, 1); root.add(blob);
-  return { root, model, body, torso, neckPiv, headPiv, head, legs, tails, ears: [], tongue, flames, stars, excl, blob, b, launcher, anim: animLizard };
+  const hi = { hat: [0, hh * 0.92, hl * 0.02], s: hw * 0.85, eye: [hw * 0.8, hh * 0.42, hl * 0.12], er: b.eyeR, cape: [0, by + HH * 0.95, BL * 0.28], capeW: HW, capeL: BL };
+  return { root, model, body, torso, neckPiv, headPiv, head, legs, tails, ears: [], tongue, flames, stars, excl, blob, b, launcher, anim: animLizard, vestMat: padMat, hi, crown: null };
 }
 
 // efeitos comuns a todos os bichos (nitro, tontura, susto, sombra)
@@ -1150,6 +1335,7 @@ function animCommon(D, st, t) {
   D.stars.visible = st.stun > 0; if (st.stun > 0) D.stars.rotation.y = t * 7;
   D.excl.visible = st.spook > 0;
   D.blob.material.opacity = 1 / (1 + st.y * 0.6);
+  if (D.cape) D.cape.rotation.x = 1.3 + clamp(st.v / 14, 0, 1) * 0.35 + Math.sin(t * 13) * 0.06 * clamp(st.v / 14, 0, 1);
 }
 function animLizard(D, st, t) {
   const amp = clamp(st.v / 10, 0, 1), air = st.y > 0.05, ph = st.phase * 1.25;
@@ -1205,6 +1391,7 @@ function animDog(D, st, t) {
   D.stars.visible = st.stun > 0; if (st.stun > 0) D.stars.rotation.y = t * 7;
   D.excl.visible = st.spook > 0;
   D.blob.material.opacity = 1 / (1 + st.y * 0.6);
+  if (D.cape) D.cape.rotation.x = 1.3 + clamp(st.v / 14, 0, 1) * 0.35 + Math.sin(t * 13) * 0.06 * clamp(st.v / 14, 0, 1);
 }
 
 /* ---------------------------------------------------------------------
@@ -2018,7 +2205,8 @@ function updateBirds(dt, racing) {
           bd.pos.addScaledVector(bd.vel, dt);
           if (d < 2.4) {
             bd.state = 'harass'; bd.t = 0;
-            if (tg.isPlayer) { pop(`${BIRD_KIND().name} NA CARA! LATE!`, 'r'); Sfx.squawk(BIRD_KIND().pitch, 1); }
+            if (tg.isPlayer) { pop(`${BIRD_KIND().name} NA CARA! LATE!`, 'r'); Sfx.squawk(BIRD_KIND().pitch, 1); vib([20, 30, 20, 30, 20]); }
+            else narrate(`${BIRD_KIND().name} ATACANDO ${tg.b.name}!`);
           }
           if (bd.t > 12) birdFlee(bd, bd.pos);
         } else {
@@ -2223,6 +2411,7 @@ class Runner {
   constructor(b, num, isPlayer, up) {
     this.b = b; this.num = num; this.isPlayer = isPlayer;
     this.D = buildCreature(b, num, b.color); scene.add(this.D.root);
+    this.look = isPlayer ? getLook(b) : randomLook(); applyLook(this.D, this.look);
     Object.assign(this, statsFor(b, up));
     this.skill = isPlayer ? 1 : DIFFS[save.diff].k * (0.98 + Math.random() * 0.04);
     this.x = 0; this.z = 0; this.h = 0; this.vx = 0; this.vz = 0; this.y = 0; this.vy = 0; this.yawRate = 0;
@@ -2265,7 +2454,7 @@ function endDrift(r, crashed) {
   const pts = Math.round(r.driftT * 140);
   r.driftScore += pts;
   if (lvl) {
-    r.minis++;
+    r.minis++; if (r.isPlayer) vib(lvl === 2 ? [25, 30, 25] : 25);
     r.mini = lvl === 2 ? 1.5 : 0.8; r.nitro = Math.min(100, r.nitro + lvl * 8);
     if (r.isPlayer) { pop(lvl === 2 ? 'SUPER MINI-TURBO!' : 'MINI-TURBO!', lvl === 2 ? 'o' : 'c'); Sfx.boost(); }
   }
@@ -2396,7 +2585,7 @@ function stepRunner(r, inp, dt) {
       // raspou na cerca: o cachorro se endireita ao longo dela em vez de parar
       const fwd = Math.sin(r.h) * a.t.x + Math.cos(r.h) * a.t.z >= 0 ? 1 : -1;
       r.h += wrapAng(Math.atan2(a.t.x * fwd, a.t.z * fwd) - r.h) * 0.3;
-      if (r.isPlayer && vo > 6) { shake(0.3); Sfx.thud(); }
+      if (r.isPlayer && vo > 6) { shake(0.3); Sfx.thud(); vib(35); }
       if (vo > 8) endDrift(r, true);
     }
   }
@@ -2406,7 +2595,7 @@ function stepRunner(r, inp, dt) {
     if (Math.floor((prevDist - hd.s) / L) < Math.floor((r.dist - hd.s) / L) && Math.abs(r.d) < W / 2 + 0.6) {
       if (r.y < 0.55 && r.stun <= 0) {
         r.stun = 1.0; r.vx *= 0.25; r.vz *= 0.25; r.vy = 3; hd.fall = 1; endDrift(r, true); r.nitroOn = false; r.hits++;
-        if (r.isPlayer) { Sfx.trip(); pop('TROPEÇOU!', 'r'); shake(0.4); }
+        if (r.isPlayer) { Sfx.trip(); pop('TROPEÇOU!', 'r'); shake(0.4); vib(70); }
       } else if (r.y >= 0.55) {
         r.nitro = Math.min(100, r.nitro + 10); r.cleanJumps++;
         if (r.isPlayer) pop('PULO LIMPO! +NITRO', 'v');
@@ -2441,7 +2630,8 @@ function stepRunner(r, inp, dt) {
     if (!bl.active || r.hitCD > 0 || r.stun > 0 || r.y > bl.r * 1.25) continue;
     if (Math.abs(wrapDelta(s - bl.s)) < bl.r + 0.7 && Math.abs(r.d - bl.d) < bl.r + 0.8) {
       r.stun = 0.9; r.hitCD = 2; r.vx *= 0.3; r.vz *= 0.3; r.vy = 5; r.hits++; endDrift(r, true);
-      if (r.isPlayer) { Sfx.thud(); Sfx.trip(); shake(0.5); pop(bl.hitMsg, 'r'); }
+      if (r.isPlayer) { Sfx.thud(); Sfx.trip(); shake(0.5); pop(bl.hitMsg, 'r'); vib([80, 40, 80]); }
+      else narrate(`BOLADA EM ${r.b.name}!`);
     }
   }
   // latas de nitro
@@ -2450,14 +2640,14 @@ function stepRunner(r, inp, dt) {
     const ds = wrapDelta(s - n.s), dd = r.d - n.d;
     if (ds * ds + dd * dd < 3.2) {
       n.cd = 8; n.g.visible = false; r.nitro = Math.min(100, r.nitro + 35); r.cans++;
-      if (r.isPlayer) { Sfx.pickup(); pop('NITRO +35', 'c'); }
+      if (r.isPlayer) { Sfx.pickup(); pop('NITRO +35', 'c'); vib(15); }
     }
   }
   // caixas de munição
   for (const a of ammos) {
     if (a.cd > 0 || r.y > 2.4 || r.ammo >= 3) continue;
     const ds = wrapDelta(s - a.s), dd = r.d - a.d;
-    if (ds * ds + dd * dd < 3.4) { a.cd = 9; a.g.visible = false; r.ammo++; if (r.isPlayer) { Sfx.reload(); pop(`MÍSSIL +1 (${r.ammo}/3)`, 'o'); } }
+    if (ds * ds + dd * dd < 3.4) { a.cd = 9; a.g.visible = false; r.ammo++; if (r.isPlayer) { Sfx.reload(); pop(`MÍSSIL +1 (${r.ammo}/3)`, 'o'); vib(15); } }
   }
   // ossos de ouro — só o jogador coleta
   if (r.isPlayer) for (const c of coins) {
@@ -2491,6 +2681,7 @@ function dustPuff(r, k = 1) {
 }
 
 function effects(r, dt) {
+  trailFx(r, dt);
   const v = Math.hypot(r.vx, r.vz);
   if (!r.air && v > 8 && Math.random() < dt * v * (r.drifting ? 1.6 : 0.5) * (save.qual === 0 ? 0.5 : 1)) dustPuff(r, r.drifting ? 1.3 : 1);
   if (r.drifting && !r.air) {
@@ -2667,7 +2858,8 @@ function explodeMissile(m, hit) {
   hit.stun = 1.4; hit.flip = 1.0; hit.vx *= 0.2; hit.vz *= 0.2; hit.vy = 8; hit.nitroOn = false; hit.hits++;
   endDrift(hit, true);
   if (m.owner !== hit) m.owner.missHits++;
-  if (hit.isPlayer) { pop('ATINGIDO POR UM MÍSSIL!', 'r'); shake(0.8); }
+  if (hit.isPlayer) { pop('ATINGIDO POR UM MÍSSIL!', 'r'); shake(0.8); vib([100, 50, 160]); }
+  else if (!m.owner.isPlayer && m.owner !== hit) narrate(`${m.owner.b.name} ACERTOU ${hit.b.name} COM UM MÍSSIL!`);
   if (m.owner.isPlayer && hit !== m.owner) { pop(`ACERTOU ${hit.b.name}!`, 'v'); m.owner.nitro = Math.min(100, m.owner.nitro + 10); }
 }
 
@@ -2725,6 +2917,7 @@ function showBig(text, ms = 1200, small = '') {
   el.classList.remove('pop'); void el.offsetWidth; el.classList.add('pop');
   clearTimeout(bigTimer); if (ms) bigTimer = setTimeout(() => { el.innerHTML = ''; }, ms);
 }
+function vib(p) { if (save.vib && navigator.vibrate) try { navigator.vibrate(p); } catch (e) { } }
 function show(id, on) { $(id).hidden = !on; }
 function setCoins() { document.querySelectorAll('.cval').forEach(e => e.textContent = save.coins.toLocaleString('pt-BR')); }
 
@@ -2732,6 +2925,7 @@ function placePreview() {
   if (preview) { scene.remove(preview.root); disposeTree(preview.root); }
   const b = BREEDS[save.dog];
   preview = buildCreature(b, 1, b.color);
+  applyLook(preview, getLook(b));
   scene.add(preview.root);
   const p = trackPoint(22, 0);
   if (!turntable || turntable.parent !== world) {
@@ -2752,6 +2946,9 @@ function refreshMenu() {
   $('trackName').textContent = TRACKS[save.track].name.split(' ')[0];
   $('diffName').textContent = DIFFS[save.diff].n;
   $('lapsName').textContent = save.laps;
+  $('modeName').textContent = save.mode ? 'COPA' : 'CORRIDA';
+  if (save.mode) $('trackName').textContent = 'TODAS';
+  $('startBtn').textContent = save.mode ? 'COMEÇAR COPA' : 'CORRER';
   setCoins();
 }
 function renderGarage() {
@@ -2768,7 +2965,7 @@ $('upList').addEventListener('click', e => {
   const bt = e.target.closest('button[data-up]'); if (!bt || bt.disabled) return;
   const b = BREEDS[save.dog], up = getUp(b), id = bt.dataset.up, cost = UP_COST[up[id]];
   if (save.coins < cost || up[id] >= 5) return;
-  save.coins -= cost; up[id]++; persist();
+  save.coins -= cost; up[id]++; if (up[id] >= 5) save.stats.maxUp = 1; persist(); claimAchievements();
   Sfx.init(); Sfx.pickup(); Sfx.voice(b, 0.6);
   renderGarage();
 });
@@ -2776,12 +2973,69 @@ $('upList').addEventListener('click', e => {
 function toMenu() {
   clearRace();
   state = 'menu';
-  ['hud', 'results', 'pause', 'touch', 'lights', 'garage'].forEach(id => show(id, false));
+  ['hud', 'results', 'pause', 'touch', 'lights', 'garage', 'shop', 'missions', 'cupEnd'].forEach(id => show(id, false));
   show('menu', true); $('big').innerHTML = ''; $('pops').innerHTML = '';
   setFx(0, 0);
   if (Sfx.ctx) ['wind', 'skid', 'nitro'].forEach(n => Sfx.setLoop(n, 0));
-  placePreview(); refreshMenu();
+  ensureDaily(); placePreview(); refreshMenu();
 }
+let shopCat = 'hat', missTab = 'daily';
+function toShop() {
+  state = 'shop'; ['menu'].forEach(id => show(id, false)); show('shop', true);
+  renderShop();
+}
+function renderShop() {
+  const b = BREEDS[save.dog], look = getLook(b);
+  $('shopDog').textContent = `${b.name} · ${b.raca}`;
+  $('shopTabs').innerHTML = Object.entries(SHOP).map(([k, c]) => `<button data-c="${k}" class="${k === shopCat ? 'on' : ''}">${c.n}</button>`).join('');
+  $('shopList').innerHTML = SHOP[shopCat].items.map(([id, name, price]) => {
+    const own = owns(shopCat, id), eq = look[shopCat] === id;
+    const sw = shopCat === 'vest' ? (id === 'padrao' ? b.color : '#' + VEST_COLORS[id].toString(16).padStart(6, '0')) : shopCat === 'cape' ? (CAPE_COLORS[id] || 'transparent')
+      : shopCat === 'trail' ? (TRAIL_SW[id] || 'transparent') : shopCat === 'hat' ? (HAT_SW[id] || 'transparent') : (GL_SW[id] || 'transparent');
+    const btn = eq ? `<button class="eq" disabled>EM USO</button>` : own ? `<button data-eq="${id}">USAR</button>` : `<button data-buy="${id}" ${save.coins < price ? 'disabled' : ''}>COMPRAR ${price}</button>`;
+    return `<div class="item panel"><span class="sw" style="background:${sw}"></span><div><h4>${name}</h4><small>${own ? (eq ? 'equipado no ' + b.name : 'seu') : price + ' ossos de ouro'}</small></div>${btn}</div>`;
+  }).join('');
+  setCoins();
+}
+$('shopTabs').addEventListener('click', e => { const t = e.target.closest('button[data-c]'); if (!t) return; shopCat = t.dataset.c; renderShop(); });
+$('shopList').addEventListener('click', e => {
+  const t = e.target.closest('button'); if (!t || t.disabled) return;
+  const b = BREEDS[save.dog], look = getLook(b);
+  if (t.dataset.buy) {
+    const it = SHOP[shopCat].items.find(i => i[0] === t.dataset.buy);
+    if (save.coins < it[2]) return;
+    save.coins -= it[2]; save.owned.push(shopCat + ':' + it[0]); addStat('bought'); Sfx.init(); Sfx.pickup(); vib(30);
+    look[shopCat] = it[0];
+  } else if (t.dataset.eq) { look[shopCat] = t.dataset.eq; Sfx.init(); Sfx.beep(false); }
+  save.looks[b.id] = look; persist();
+  if (preview) applyLook(preview, look);
+  claimAchievements();
+  renderShop();
+});
+function toMissions() {
+  state = 'missions'; show('menu', false); show('missions', true);
+  claimDaily(); renderMissions(); setCoins();
+}
+function renderMissions() {
+  ensureDaily();
+  document.querySelectorAll('#missTabs button').forEach(bt => bt.classList.toggle('on', bt.dataset.t === missTab));
+  const now = new Date(), mid = new Date(now); mid.setHours(24, 0, 0, 0);
+  const hrs = Math.floor((mid - now) / 3600000), min = Math.floor((mid - now) / 60000) % 60;
+  $('dailyTag').textContent = missTab === 'daily' ? `NOVAS MISSÕES EM ${hrs}H ${min}MIN` : `${save.ach.length} DE ${ACHIEVEMENTS.length} CONQUISTAS`;
+  if (missTab === 'daily') {
+    $('missList').innerHTML = save.daily.ids.map(id => {
+      const m = DAILY_POOL.find(x => x.id === id), pr = Math.min(dailyProg(m), m.n), done = save.daily.claimed.includes(id);
+      return `<div class="item panel ${done ? 'done' : ''}"><span class="sw" style="background:${done ? 'var(--good)' : 'transparent'}"></span><div><h4>${m.txt}</h4><div class="bar2"><i style="width:${pr / m.n * 100}%"></i></div><small>${pr}/${m.n}</small></div><span class="rw">${done ? 'RECEBIDO' : '+' + DAILY_REWARD}</span></div>`;
+    }).join('') + `<div class="item panel ${save.daily.bonus ? 'done' : ''}"><span class="sw" style="background:${save.daily.bonus ? 'var(--good)' : 'transparent'}"></span><div><h4>Bônus: complete as 3 missões</h4><small>${save.daily.claimed.length}/3</small></div><span class="rw">${save.daily.bonus ? 'RECEBIDO' : '+' + DAILY_BONUS}</span></div>`;
+  } else {
+    $('missList').innerHTML = ACHIEVEMENTS.map(a => {
+      const done = save.ach.includes(a.id), v = Math.min(a.v(), a.g);
+      return `<div class="item panel ${done ? 'done' : ''}"><span class="sw" style="background:${done ? 'var(--gold)' : 'transparent'}"></span><div><h4>${a.n}</h4><small>${a.d}${done ? '' : ' · ' + v + '/' + a.g}</small>${done ? '' : `<div class="bar2"><i style="width:${v / a.g * 100}%"></i></div>`}</div><span class="rw">${done ? '✓' : '+' + a.r}</span></div>`;
+    }).join('');
+  }
+}
+$('missTabs').addEventListener('click', e => { const t = e.target.closest('button[data-t]'); if (!t) return; missTab = t.dataset.t; renderMissions(); });
+
 function toGarage() {
   if (state === 'results') { clearRace(); placePreview(); }
   state = 'garage';
@@ -2806,7 +3060,7 @@ function startRace() {
   camera.clearViewOffset();
   const pUp = getUp(BREEDS[save.dog]);
   const avg = Object.values(pUp).reduce((a, b) => a + b, 0) / 5;
-  const order = [save.dog, ...BREEDS.map((_, i) => i).filter(i => i !== save.dog).sort(() => Math.random() - 0.5).slice(0, 5)];
+  const order = cup ? [save.dog, ...cup.rivals] : [save.dog, ...BREEDS.map((_, i) => i).filter(i => i !== save.dog).sort(() => Math.random() - 0.5).slice(0, 5)];
   const slots = [5, ...[0, 1, 2, 3, 4].sort(() => Math.random() - 0.5)];
   order.forEach((bi, k) => {
     const b = BREEDS[bi];
@@ -2815,6 +3069,7 @@ function startRace() {
     const r = new Runner(b, k + 1, k === 0, up);
     const sl = slots[k], row = Math.floor(sl / 2), col = sl % 2;
     r.place(-5 - row * 6.5 - col * 2.5, col ? 3.6 : -3.6);
+    if (cup && k && cup.looks[b.id]) { r.look = cup.looks[b.id]; applyLook(r.D, r.look); }
     r.lane = r.d; runners.push(r);
     if (!k) player = r;
   });
@@ -2822,6 +3077,8 @@ function startRace() {
   nitros.forEach(n => { n.cd = 0; n.g.visible = true; });
   ammos.forEach(a => { a.cd = 0; a.g.visible = true; });
   coins.forEach(c => { c.taken = false; c.g.visible = true; });
+  lastLeader = null; lastPos = 5; firstFinisher = false; narrCD = 0; narrT = 0; $('narr').classList.remove('on');
+  $('cupTag').textContent = cup ? `COPA · CORRIDA ${cup.idx + 1}/${cup.tracks.length}` : '';
   clearMissiles(); dust.clear(); glow.clear(); clearBirds(); pickGoals(); $('goals').classList.remove('mini');
   raceTime = 0; countdown = 4.0; lastCount = 4; finishTimer = 0;
   state = 'countdown';
@@ -2878,6 +3135,133 @@ function checkGoals(dt) {
   if (changed || Math.random() < dt * 4) renderGoals();
 }
 
+const ST = () => save.stats;
+function stat(k) { return save.stats[k] || 0; }
+function addStat(k, v = 1) { save.stats[k] = (save.stats[k] || 0) + v; }
+const DAILY_POOL = [
+  { id: 'win', txt: 'Vença 1 corrida', n: 1, stat: 'wins' },
+  { id: 'podium', txt: 'Chegue ao pódio 2 vezes', n: 2, stat: 'podiums' },
+  { id: 'races', txt: 'Complete 3 corridas', n: 3, stat: 'races' },
+  { id: 'minis', txt: 'Faça 8 mini-turbos', n: 8, stat: 'minis' },
+  { id: 'missiles', txt: 'Acerte 4 mísseis', n: 4, stat: 'missHits' },
+  { id: 'birds', txt: 'Espante 4 bichos voadores', n: 4, stat: 'scared' },
+  { id: 'coins', txt: 'Pegue 25 ossos de ouro na pista', n: 25, stat: 'coins' },
+  { id: 'jumps', txt: 'Pule 8 barreiras sem tropeçar', n: 8, stat: 'cleanJumps' },
+  { id: 'cans', txt: 'Pegue 6 latas de nitro', n: 6, stat: 'cans' },
+];
+const DAILY_REWARD = 250, DAILY_BONUS = 300;
+function todayKey() { const d = new Date(); return `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`; }
+function ensureDaily() {
+  const k = todayKey();
+  if (save.daily && save.daily.date === k) return;
+  let h = 7; for (const ch of k) h = (h * 31 + ch.charCodeAt(0)) >>> 0;
+  const pool = DAILY_POOL.slice();
+  for (let i = pool.length - 1; i > 0; i--) { h = (h * 1103515245 + 12345) >>> 0; const j = h % (i + 1); [pool[i], pool[j]] = [pool[j], pool[i]]; }
+  const ids = pool.slice(0, 3).map(m => m.id), base = {};
+  ids.forEach(id => { const m = DAILY_POOL.find(x => x.id === id); base[m.stat] = stat(m.stat); });
+  save.daily = { date: k, ids, base, claimed: [], bonus: false };
+  persist();
+}
+function dailyProg(m) { return Math.max(0, stat(m.stat) - (save.daily.base[m.stat] || 0)); }
+function claimDaily() {
+  ensureDaily();
+  const out = [];
+  for (const id of save.daily.ids) {
+    const m = DAILY_POOL.find(x => x.id === id);
+    if (!save.daily.claimed.includes(id) && dailyProg(m) >= m.n) { save.daily.claimed.push(id); save.coins += DAILY_REWARD; out.push([`Missão diária: ${m.txt}`, DAILY_REWARD]); }
+  }
+  if (!save.daily.bonus && save.daily.claimed.length === save.daily.ids.length) { save.daily.bonus = true; save.coins += DAILY_BONUS; out.push(['Todas as missões do dia', DAILY_BONUS]); }
+  return out;
+}
+const ACHIEVEMENTS = [
+  { id: 'first', n: 'Primeira corrida', d: 'Complete uma corrida', v: () => stat('races'), g: 1, r: 100 },
+  { id: 'win1', n: 'Primeira vitória', d: 'Vença uma corrida', v: () => stat('wins'), g: 1, r: 200 },
+  { id: 'win10', n: 'Campeão de verdade', d: 'Vença 10 corridas', v: () => stat('wins'), g: 10, r: 800 },
+  { id: 'podium10', n: 'Freguês do pódio', d: 'Chegue ao pódio 10 vezes', v: () => stat('podiums'), g: 10, r: 400 },
+  { id: 'minis50', n: 'Rei do drift', d: 'Faça 50 mini-turbos', v: () => stat('minis'), g: 50, r: 500 },
+  { id: 'miss20', n: 'Mira de águia', d: 'Acerte 20 mísseis', v: () => stat('missHits'), g: 20, r: 500 },
+  { id: 'birds30', n: 'Espantalho', d: 'Espante 30 bichos voadores', v: () => stat('scared'), g: 30, r: 500 },
+  { id: 'coins200', n: 'Garimpeiro', d: 'Pegue 200 ossos de ouro na pista', v: () => stat('coins'), g: 200, r: 500 },
+  { id: 'jumps50', n: 'Saltador', d: 'Pule 50 barreiras sem tropeçar', v: () => stat('cleanJumps'), g: 50, r: 400 },
+  { id: 'cup1', n: 'Taça na estante', d: 'Vença um campeonato', v: () => stat('cups'), g: 1, r: 1000 },
+  { id: 'cupHard', n: 'Lenda das pistas', d: 'Vença um campeonato no difícil', v: () => stat('cupsHard'), g: 1, r: 2000 },
+  { id: 'tracks', n: 'Turista', d: 'Vença nas 3 pistas', v: () => (save.stats.tracksWon || []).length, g: 3, r: 600 },
+  { id: 'zoo', n: 'Zoológico completo', d: 'Vença com 6 corredores diferentes', v: () => (save.stats.breedsWon || []).length, g: 6, r: 1200 },
+  { id: 'style', n: 'Estiloso', d: 'Compre 5 itens na loja', v: () => stat('bought'), g: 5, r: 300 },
+  { id: 'tuned', n: 'Tunado', d: 'Deixe uma melhoria no nível máximo', v: () => stat('maxUp'), g: 1, r: 300 },
+];
+function claimAchievements(quiet) {
+  const out = [];
+  for (const a of ACHIEVEMENTS) {
+    if (save.ach.includes(a.id) || a.v() < a.g) continue;
+    save.ach.push(a.id); save.coins += a.r; out.push([`Conquista: ${a.n}`, a.r]);
+    if (!quiet) pop(`CONQUISTA: ${a.n.toUpperCase()}! +${a.r}`, 'g');
+  }
+  if (out.length) persist();
+  return out;
+}
+function recordRaceStats(pos) {
+  const p = player, S = save.stats;
+  addStat('races'); if (pos === 1) addStat('wins'); if (pos <= 3) addStat('podiums');
+  addStat('minis', p.minis); addStat('missHits', p.missHits); addStat('scared', p.scared);
+  addStat('coins', p.coins); addStat('cleanJumps', p.cleanJumps); addStat('cans', p.cans);
+  if (pos === 1) {
+    S.tracksWon = S.tracksWon || []; if (!S.tracksWon.includes(TR.id)) S.tracksWon.push(TR.id);
+    S.breedsWon = S.breedsWon || []; if (!S.breedsWon.includes(p.b.id)) S.breedsWon.push(p.b.id);
+  }
+}
+
+/* ---------------------------------------------------------------------
+   Campeonato: 3 corridas (Parque, Praia, Pico) com pontos por posição
+   --------------------------------------------------------------------- */
+const CUP_POINTS = [10, 7, 5, 3, 2, 1], CUP_PRIZE = [1000, 600, 400, 0, 0, 0];
+let cup = null;
+function startCup() {
+  Sfx.init();
+  const rivals = BREEDS.map((_, i) => i).filter(i => i !== save.dog).sort(() => Math.random() - 0.5).slice(0, 5);
+  cup = { idx: 0, tracks: [0, 1, 2], rivals, pts: {}, looks: {} };
+  rivals.forEach(i => cup.looks[BREEDS[i].id] = randomLook());
+  loadTrack(0, startRace);
+}
+function loadTrack(i, then) {
+  show('loading', true);
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    save.track = i; persist();
+    buildWorld(i); turntable = null;
+    show('loading', false); then();
+  }));
+}
+function cupTableRows(highlight) {
+  const ids = [BREEDS[save.dog].id, ...cup.rivals.map(i => BREEDS[i].id)];
+  const rows = ids.map(id => ({ b: BREEDS.find(x => x.id === id), p: cup.pts[id] || 0 })).sort((a, b) => b.p - a.p);
+  return rows.map((r, i) => `<tr class="${r.b.id === BREEDS[save.dog].id ? 'me' : ''}"><td class="disp">${i + 1}º</td><td><i style="background:${r.b.color}"></i></td><td>${r.b.name}${r.b.id === BREEDS[save.dog].id ? ' · VOCÊ' : ''}</td><td class="mono">${r.p} pts</td></tr>`).join('');
+}
+function trophySVG(place) {
+  const c = ['#ffc53d', '#d7dde6', '#cd7f32'][place - 1] || '#555b66', d = ['#b8860b', '#9aa3ae', '#8b5a2b'][place - 1] || '#333';
+  return `<svg viewBox="0 0 120 140" role="img" aria-label="troféu"><path fill="${d}" d="M22 20h-14c0 22 10 34 26 36l2-8c-9-2-14-11-14-20zm76 0h14c0 22-10 34-26 36l-2-8c9-2 14-11 14-20z"/>
+    <path fill="${c}" d="M24 10h72v26c0 24-16 40-36 42-20-2-36-18-36-42z"/><rect x="52" y="76" width="16" height="22" fill="${d}"/>
+    <rect x="34" y="96" width="52" height="12" rx="3" fill="${c}"/><rect x="26" y="108" width="68" height="18" rx="4" fill="${d}"/>
+    <text x="60" y="52" text-anchor="middle" font-family="Russo One, Arial Black, sans-serif" font-size="26" fill="${d}">${place <= 3 ? place + 'º' : ''}</text></svg>`;
+}
+function showCupEnd() {
+  const ids = [BREEDS[save.dog].id, ...cup.rivals.map(i => BREEDS[i].id)];
+  const order = ids.map(id => ({ id, p: cup.pts[id] || 0 })).sort((a, b) => b.p - a.p);
+  const place = order.findIndex(o => o.id === BREEDS[save.dog].id) + 1;
+  const prize = Math.round(CUP_PRIZE[place - 1] * DIFFS[save.diff].reward);
+  save.coins += prize;
+  if (place === 1) { addStat('cups'); if (save.diff === 2) addStat('cupsHard'); }
+  const prev = save.trophies[save.diff]; if (!prev || place < prev) save.trophies[save.diff] = place;
+  const extra = claimAchievements(true);
+  persist(); setCoins();
+  $('cupTitle').textContent = place === 1 ? 'CAMPEÃO DA COPA!' : place <= 3 ? `${place}º LUGAR NA COPA` : `${place}º LUGAR`;
+  $('trophy').innerHTML = trophySVG(place);
+  $('cupTable').innerHTML = cupTableRows();
+  $('cupReward').innerHTML = (prize ? `PRÊMIO DA COPA +${prize}` : 'SEM PRÊMIO DESTA VEZ') + extra.map(([t, v]) => `<br>${t.toUpperCase()} +${v}`).join('');
+  show('results', false); show('cupEnd', true);
+  if (place === 1) { Sfx.fanfare(); vib([60, 40, 60, 40, 140]); }
+}
+function finishCup() { cup = null; show('cupEnd', false); toMenu(); }
+
 function standings() {
   return runners.slice().sort((a, b) => {
     if (a.finished && b.finished) return a.finishTime - b.finishTime;
@@ -2907,10 +3291,23 @@ function showResults() {
   for (const x of raceGoals) if (x.g.final && !x.done) x.done = x.g.ok(player, pos);
   const goalsDone = raceGoals.filter(x => x.done).length, goalV = goalsDone * GOAL_REWARD;
   renderGoals();
-  const total = place + coinV + drift + goalV;
-  save.coins += total;
+  recordRaceStats(pos);
+  const extras = [...claimDaily(), ...claimAchievements(true)];
+  const extraV = extras.reduce((a, e) => a + e[1], 0);
+  const total = place + coinV + drift + goalV + extraV;
+  save.coins += total - extraV;
+  if (pos === 1) vib([60, 40, 60, 40, 120]);
+  if (cup) {
+    list.forEach((r, i) => { cup.pts[r.b.id] = (cup.pts[r.b.id] || 0) + CUP_POINTS[i]; });
+    $('cupMid').innerHTML = `<tr><td colspan="4" class="lbl">COPA · CORRIDA ${cup.idx + 1} DE ${cup.tracks.length}</td></tr>` + cupTableRows();
+  }
+  show('cupPanel', !!cup);
+  $('resAgain').textContent = cup ? (cup.idx < cup.tracks.length - 1 ? 'PRÓXIMA PISTA' : 'VER TROFÉU') : 'DE NOVO';
+  $('resMenu').textContent = cup ? 'SAIR DA COPA' : 'MENU';
+  show('resGarage', !cup);
   $('rewards').innerHTML = `<div><span>${pos}º lugar</span><b>+${place}</b></div><div><span>Ossos de ouro × ${player.coins}</span><b>+${coinV}</b></div>` +
     `<div><span>Drift (${player.driftScore} pts)</span><b>+${drift}</b></div><div><span>Desafios ${goalsDone}/${raceGoals.length}</span><b>+${goalV}</b></div>` +
+    extras.map(([t, v]) => `<div><span>${t}</span><b>+${v}</b></div>`).join('') +
     `<div class="goalsRes">${raceGoals.map(x => goalLine(x)).join('')}</div><div class="tot"><span>TOTAL</span><b class="disp">+${total}</b></div>`;
   const key = TR.id + '_' + save.laps, rec = save.best[key];
   if (player.finished && (!rec || player.finishTime < rec)) { save.best[key] = player.finishTime; $('recordMsg').textContent = 'NOVO RECORDE DA PISTA!'; }
@@ -2928,6 +3325,7 @@ function refreshPauseBtns() {
   $('camBtn').textContent = 'CÂMERA: ' + CAMS[save.cam];
   $('assistBtn').textContent = 'ASSISTÊNCIA: ' + (save.assist ? 'LIGADA' : 'DESLIGADA');
   $('qualBtn').textContent = 'GRÁFICOS: ' + QUALS[save.qual].n;
+  $('vibBtn').textContent = 'VIBRAÇÃO: ' + (save.vib ? 'LIGADA' : 'DESLIGADA');
   $('musicBtn').textContent = 'MÚSICA: ' + MUSIC_MODES[save.musicMode];
 }
 
@@ -2980,7 +3378,25 @@ function drawGauge() {
   } else if (player.barkCD <= 0) { c.fillStyle = '#ffc53d'; c.font = '700 13px Rajdhani, sans-serif'; c.fillText('LATIDO PRONTO', cx, cy - 34); }
   c.restore();
 }
-let lastBoard = '';
+let lastBoard = '', narrT = 0, narrCD = 0, lastLeader = null, lastPos = 0, firstFinisher = false;
+function narrate(text, prio) {
+  if (!player || (narrCD > 0 && !prio)) return;
+  const el = $('narr'); el.textContent = text; el.classList.add('on');
+  narrT = 2.6; narrCD = prio ? 1.2 : 2.4;
+}
+function narrator(list, dt) {
+  narrT -= dt; narrCD -= dt;
+  if (narrT <= 0) $('narr').classList.remove('on');
+  if (state !== 'race' || raceTime < 3) { lastLeader = list[0]; lastPos = list.indexOf(player); return; }
+  const lead = list[0], pos = list.indexOf(player);
+  if (lead !== lastLeader && !lead.finished) {
+    if (lead.isPlayer) narrate('VOCÊ ESTÁ NA LIDERANÇA!', true);
+    else narrate(`${lead.b.name} ASSUMIU A LIDERANÇA!`, true);
+  } else if (pos < lastPos && list[pos + 1]) narrate(`VOCÊ ULTRAPASSOU ${list[pos + 1].b.name}!`);
+  else if (pos > lastPos && list[pos - 1] && !list[pos - 1].finished) narrate(`${list[pos - 1].b.name} ULTRAPASSOU VOCÊ!`);
+  if (!firstFinisher && lead.finished) { firstFinisher = true; if (!lead.isPlayer) narrate(`${lead.b.name} VENCEU A CORRIDA!`, true); }
+  lastLeader = lead; lastPos = pos;
+}
 function updateHud(dt) {
   const list = standings(), pos = list.indexOf(player) + 1;
   $('lap').textContent = player.lap;
@@ -2988,6 +3404,7 @@ function updateHud(dt) {
   $('pos').innerHTML = pos + '<sup>º</sup>';
   const html = list.map((r, i) => `<li class="${r.isPlayer ? 'me' : ''}"><span class="n">${i + 1}</span><i style="background:${r.b.color}"></i>${r.b.name}</li>`).join('');
   if (html !== lastBoard) { $('board').innerHTML = html; lastBoard = html; }
+  narrator(list, dt);
   $('chipSlip').hidden = !(player.slip > 0.5);
   const wrong = T[player.idx].x * Math.sin(player.h) + T[player.idx].z * Math.cos(player.h) < -0.3 && Math.hypot(player.vx, player.vz) > 3;
   player.wrongT = wrong ? player.wrongT + dt : 0;
@@ -3016,12 +3433,15 @@ addEventListener('keydown', e => {
     if (e.code === 'Enter' || e.code === 'Space') startRace();
     if (e.code === 'KeyG') toGarage();
     if (e.code === 'KeyT') changeTrack((save.track + 1) % TRACKS.length);
-  } else if (state === 'garage') {
+  } else if (state === 'garage' || state === 'shop' || state === 'missions') {
     if (e.code === 'Escape' || e.code === 'Enter') toMenu();
   } else if (state === 'results') {
-    if (e.code === 'Enter' || e.code === 'Space') startRace();
-    if (e.code === 'Escape') toMenu();
-    if (e.code === 'KeyG') toGarage();
+    if (!$('cupEnd').hidden) { if (['Enter', 'Space', 'Escape'].includes(e.code)) finishCup(); }
+    else {
+      if (e.code === 'Enter' || e.code === 'Space') resAgain();
+      if (e.code === 'Escape') { cup = null; toMenu(); }
+      if (e.code === 'KeyG' && !cup) toGarage();
+    }
   } else if (state === 'paused') {
     if (e.code === 'Escape' || e.code === 'KeyP') setPaused(false);
     if (e.code === 'KeyQ') toMenu();
@@ -3053,17 +3473,29 @@ click('diffBtn', () => { save.diff = (save.diff + 1) % DIFFS.length; persist(); 
 click('lapsBtn', () => { save.laps = save.laps >= 7 ? 1 : save.laps + 2; persist(); refreshMenu(); Sfx.beep(false); });
 click('garageBtn', toGarage);
 click('garageBack', toMenu);
-click('startBtn', startRace);
+click('startBtn', () => save.mode ? startCup() : startRace());
+click('modeBtn', () => { save.mode = 1 - save.mode; persist(); refreshMenu(); Sfx.beep(false); });
+click('shopBtn', toShop);
+click('shopBack', () => { claimAchievements(); toMenu(); });
+click('missBtn', toMissions);
+click('missBack', toMenu);
 click('pauseBtn', () => setPaused(true));
 click('resumeBtn', () => setPaused(false));
 click('restartBtn', () => { show('pause', false); startRace(); });
-click('quitBtn', toMenu);
+click('quitBtn', () => { cup = null; toMenu(); });
+click('vibBtn', () => { save.vib = !save.vib; persist(); refreshPauseBtns(); vib(40); });
 click('camBtn', () => { save.cam = (save.cam + 1) % CAMS.length; persist(); refreshPauseBtns(); });
 click('assistBtn', () => { save.assist = !save.assist; persist(); refreshPauseBtns(); });
 click('qualBtn', () => { save.qual = (save.qual + 1) % QUALS.length; persist(); applyQuality(); refreshPauseBtns(); });
 click('musicBtn', () => { cycleMusic(); refreshPauseBtns(); });
-click('resAgain', startRace);
-click('resMenu', toMenu);
+click('resAgain', resAgain);
+function resAgain() {
+  if (!cup) return startRace();
+  if (cup.idx < cup.tracks.length - 1) { cup.idx++; loadTrack(cup.tracks[cup.idx], startRace); }
+  else showCupEnd();
+}
+click('resMenu', () => { cup = null; toMenu(); });
+click('cupDone', finishCup);
 click('resGarage', toGarage);
 
 function playerInput() {
@@ -3112,7 +3544,7 @@ function frame() {
     }
   }
 
-  if (state === 'menu' || state === 'garage') {
+  if (state === 'menu' || state === 'garage' || state === 'shop' || state === 'missions') {
     menuAng += dt * 0.35;
     if (preview && turntable) {
       turntable.rotation.y += dt * 0.4;
@@ -3140,7 +3572,7 @@ function frame() {
         showBig('VAI!', 900); state = 'race';
         setTimeout(() => show('lights', false), 900);
         if (player.pressT !== null) {
-          if (player.pressT <= 0.6) { player.mini = 1.2; pop('LARGADA PERFEITA!', 'v'); Sfx.boost(); }
+          if (player.pressT <= 0.6) { player.mini = 1.2; pop('LARGADA PERFEITA!', 'v'); Sfx.boost(); vib(40); }
           else if (player.pressT > 1.4) { player.stun = 0.7; pop('QUEIMOU A LARGADA!', 'r'); }
         }
         runners.forEach(r => { if (!r.isPlayer && Math.random() < 0.35) r.mini = 0.8; });

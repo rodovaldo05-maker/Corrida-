@@ -36,6 +36,14 @@ Abra o `index.html` no navegador (precisa de internet para baixar o Three.js) ou
 - **Desafios da corrida**: cada corrida sorteia 3 metas (mini-turbos, bichos espantados, pulos limpos, ossos, latas de nitro, terminar sem tropeçar, pódio). Cada uma cumprida vale +120 ossos de ouro.
 - **Ossos de ouro**: moedas da oficina. Você ganha pela posição, pelos ossos coletados e pelos pontos de drift.
 
+## Campeonato, loja e missões
+
+- **Campeonato (Copa)**: no menu, troque o *Modo* para COPA. São 3 corridas seguidas (Parque, Praia e Pico) contra os mesmos 5 rivais, com pontos por posição (10, 7, 5, 3, 2, 1). No fim tem troféu de ouro, prata ou bronze e prêmio em ossos de ouro.
+- **Loja de visual**: chapéus (boné, festa, cartola, caubói, capacete, coroa), óculos, capas, cores de colete e rastros (bolhas, corações, estrelas, fogo, arco-íris). Cada bicho guarda o próprio visual.
+- **Missões**: 3 missões diárias que mudam à meia-noite (+250 cada e +300 de bônus) e 15 conquistas com prêmios.
+- **Narrador**: avisa quem assumiu a liderança, quem ultrapassou quem e quem acertou míssil em quem.
+- **Vibração**: o celular vibra com batidas, mísseis, mini-turbos e vitórias (desligue na pausa).
+
 ## Oficina
 
 Cada cachorro tem suas próprias melhorias (5 níveis cada): **Motor** (velocidade), **Músculos** (aceleração), **Garras** (curvas e drift), **Tanque de nitro** e **Molas** (pulo). O progresso fica salvo no navegador.
