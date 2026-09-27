@@ -92,6 +92,40 @@ Cada cachorro tem suas próprias melhorias (5 níveis cada): **Motor** (velocida
 
 Rex (Pastor Alemão), Pingo (Dálmata), Caramelo (Vira-lata), Flecha (Galgo), Nevasca (Husky Siberiano), Bolinha (Pug), Pitiquin (Pinscher) e Princesa (Pitbull, de coroinha), mais quatro corredores que não são cachorros: Emilly (Saruê, de cara branca e orelhas de ponta branca), Linda (Javali, com presas e crina, pesada nas trombadas), Taissa (Lagartixa-leopardo, ótima nas curvas) e Tiffany (Teiú preto e branco, de língua bifurcada). Cada um tem corpo, pelagem e atributos próprios. Cada corrida tem 6 corredores: você e 5 rivais sorteados.
 
+## Habilidades passivas
+
+Cada corredor tem uma habilidade especial que funciona sozinha, mostrada no menu abaixo dos atributos.
+
+| Corredor | Passiva | Efeito |
+|---|---|---|
+| Rex | **GUARDIÃO** | Latido alcança mais longe e recarrega mais rápido |
+| Pingo | **BOMBEIRO** | Lama, água e gelo não atrapalham |
+| Caramelo | **SORTUDO** | Ossos de ouro valem o dobro e latas de nitro às vezes dão um míssil |
+| Flecha | **ARRANCADA** | No vácuo de um rival fica muito mais rápido e enche o nitro |
+| Nevasca | **PATA DE NEVE** | Nunca escorrega na neve nem no gelo |
+| Bolinha | **CABEÇA DURA** | Fica tonto só pela metade do tempo |
+| Pitiquin | **PEQUENO E BRAVO** | Latir dá um mini-turbo |
+| Princesa | **REALEZA** | Trombadas não a atrasam, e quem bate nela é empurrado |
+| Linda | **INVESTIDA** | Com nitro ligado, derruba quem ela atropelar |
+| Faiton | **UIVO DA LUA** | Quando alguém o ultrapassa, uiva e corre mais rápido |
+| Paz | **VOO DA PAZ** | Com o nitro, voa alto: passa por cima da cerca, dos rivais e dos mísseis |
+| Pintado | **MATILHA** | Fica mais rápido quanto mais rivais estiverem por perto |
+| Ruivo | **SELVAGEM** | Correr fora da pista não deixa lento |
+| Ninja | **PULO DUPLO** | Aperte pular de novo no ar para dar um segundo pulo |
+| Sombra | **ESQUIVA** | Metade dos mísseis erram ele |
+| Paçoca | **COMILÃO** | Latas de nitro enchem muito mais |
+| Raio | **RELÂMPAGO** | Nitro mais forte que o de todo mundo |
+| Duque | **ARTILHEIRO** | Começa com 3 mísseis e carrega até 4 |
+| Frufru | **ELEGÂNCIA** | Drift enche o nitro em dobro e o mini-turbo dura mais |
+| Major | **DISCIPLINA** | Os bichos voadores não se atrevem a atacá-lo |
+| Tofu | **ROLINHO** | Tropeçar ou ser atropelado quase não o atrasa |
+| Bidu | **TANQUE** | Bolas rolando não o derrubam |
+| Canela | **FÔLEGO** | O nitro enche sozinho aos poucos |
+| Biscoito | **FARO** | Pega ossos, latas e munição de mais longe |
+| Emilly | **FINGIR DE MORTA** | Depois de ficar tonta, levanta com um mini-turbo |
+| Taissa | **GRUDENTA** | Não escorrega em poças nem no gelo e faz curvas mais fechadas |
+| Tiffany | **RABO-CHICOTE** | O chiado dela derruba quem estiver perto |
+
 ## No celular
 
 ### Android (APK)

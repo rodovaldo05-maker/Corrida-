@@ -150,6 +150,8 @@
   #dogName { font-size:30px; line-height:1; }
   #dogBreed { font-size:14px; letter-spacing:.2em; color:var(--mut); margin-top:4px; }
   .stats { display:grid; gap:7px; margin-top:12px; }
+  #dogPas { margin-top:10px; font-size:13px; line-height:1.35; color:#dbe3f2; }
+  #dogPas b { color:var(--gold); letter-spacing:.08em; margin-right:4px; }
   .stat { display:grid; grid-template-columns:112px 1fr; align-items:center; gap:10px; font-size:13px; letter-spacing:.12em; color:#dbe3f2; }
   .cells { display:grid; grid-template-columns:repeat(10,1fr); gap:3px; }
   .cells span { height:9px; border-radius:2px; background:rgba(255,255,255,.12); }
@@ -293,6 +295,7 @@
         <button class="arrow" id="nextDog" aria-label="Próximo cachorro">▶</button>
       </div>
       <div class="stats" id="stats"></div>
+      <div id="dogPas"></div>
     </div>
     <div class="opts four">
       <button class="opt" id="modeBtn"><span class="lbl">Modo</span><b id="modeName">CORRIDA</b></button>
@@ -845,7 +848,7 @@ const BREEDS = [
     neck: 0.1, neckA: 0.3, skull: [0.11, 0.085, 0.09], muzzle: [0.2, 0.045, 0.045, 0.03], ear: 'erect', earW: 0.042, earL: 0.07,
     tail: [0.2, 0.012, -1.2, 0.1], spd: 4, acc: 4, han: 2, jmp: 3 },
   // modelos 3D enviados (.glb)
-  { id: 'faiton', name: 'FAITON', raca: 'LOBO NEGRO', kind: 'glb', model: 'faiton', gearY: 0.64, gearDz: -0.13, color: '#dc2626', pitch: 0.7, mass: 1.3, spd: 5, acc: 3, han: 3, jmp: 2 },
+  { id: 'faiton', name: 'FAITON', raca: 'LOBO NEGRO', kind: 'glb', model: 'faiton', gearY: 0.64, gearDz: -0.13, scale: 1.4, color: '#dc2626', pitch: 0.7, mass: 1.3, spd: 5, acc: 3, han: 3, jmp: 2 },
   { id: 'paz', name: 'PAZ', raca: 'CACHORRO DA PAZ', kind: 'glb', model: 'paz', fly: true, color: '#38bdf8', pitch: 1.2, mass: 0.9, spd: 3, acc: 3, han: 4, jmp: 2 },
   { id: 'pintado', name: 'PINTADO', raca: 'MABECO', kind: 'glb', model: 'mabeco', color: '#a16207', pitch: 1.1, spd: 4, acc: 4, han: 3, jmp: 2 },
   { id: 'ruivo', name: 'RUIVO', raca: 'DINGO', kind: 'glb', model: 'dingo', color: '#ea580c', pitch: 1.0, spd: 4, acc: 3, han: 3, jmp: 3 },
@@ -856,7 +859,7 @@ const BREEDS = [
   { id: 'duque', name: 'DUQUE', raca: 'PINSCHER ALEMÃO', kind: 'glb', model: 'duque', color: '#b91c1c', pitch: 1.1, spd: 4, acc: 3, han: 3, jmp: 3 },
   { id: 'frufru', name: 'FRUFRU', raca: 'POODLE', kind: 'glb', model: 'poodle', color: '#e879f9', pitch: 1.4, spd: 3, acc: 3, han: 4, jmp: 3 },
   { id: 'major', name: 'MAJOR', raca: 'PASTOR ALEMÃO', kind: 'glb', model: 'major', color: '#1d4ed8', pitch: 0.85, mass: 1.2, spd: 4, acc: 3, han: 3, jmp: 3 },
-  { id: 'tofu', name: 'TOFU', raca: 'PUG', kind: 'glb', model: 'pug2', color: '#65a30d', pitch: 1.35, mass: 0.9, spd: 2, acc: 5, han: 4, jmp: 2 },
+  { id: 'tofu', name: 'TOFU', raca: 'PUG', kind: 'glb', model: 'pug2', gearY: 0.87, color: '#65a30d', pitch: 1.35, mass: 0.9, spd: 2, acc: 5, han: 4, jmp: 2 },
   { id: 'bidu', name: 'BIDU', raca: 'BOIADEIRO BERNÊS', kind: 'glb', model: 'bernes', color: '#0f766e', pitch: 0.8, mass: 1.5, spd: 3, acc: 3, han: 3, jmp: 3 },
   { id: 'canela', name: 'CANELA', raca: 'AKITA', kind: 'glb', model: 'canela', color: '#c2410c', pitch: 0.95, spd: 3, acc: 4, han: 3, jmp: 3 },
   { id: 'biscoito', name: 'BISCOITO', raca: 'BEAGLE', kind: 'glb', model: 'beagle', color: '#0891b2', pitch: 1.15, spd: 3, acc: 4, han: 4, jmp: 2 },
@@ -1291,9 +1294,7 @@ const GLB = {};
         if (y < legTop && y > legTop * 0.75) { pz[g] += z; pn[g]++; }
       }
       for (let g = 0; g < 4; g++) pz[g] = pn[g] ? pz[g] / pn[g] : zc + (g < 2 ? Ln * 0.3 : -Ln * 0.3);
-      const saddleZ = lerp((pz[0] + pz[1]) / 2, (pz[2] + pz[3]) / 2, 0.6);
-      let saddleTop = 0;
-      for (let i = 0; i < m.v; i++) { const x = pos[i * 3], y = pos[i * 3 + 1], z = pos[i * 3 + 2]; if (Math.abs(z - saddleZ) < Ln * 0.05 && Math.abs(x) < W * 0.25 && y > saddleTop) saddleTop = y; }
+      const saddleZ = lerp((pz[0] + pz[1]) / 2, (pz[2] + pz[3]) / 2, 0.55);
       const geo = new THREE.BufferGeometry();
       geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
       geo.setAttribute('color', new THREE.BufferAttribute(col, 3));
@@ -1302,6 +1303,17 @@ const GLB = {};
       geo.setIndex(new THREE.BufferAttribute(m.big ? new Uint32Array(idx) : new Uint16Array(idx), 1));
       geo.computeVertexNormals(); geo.computeBoundingSphere();
       geo.userData.keep = true;
+      // altura das costas no ponto da sela: raios de cima para baixo acertam a superfície real
+      // (ignorando o rabo levantado, que fica bem acima das costas)
+      const tmp = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({ side: THREE.DoubleSide })), rc = new THREE.Raycaster(), tops = [];
+      const lim = legTop + (H - legTop) * 0.55;
+      for (const dx of [-0.12, -0.05, 0, 0.05, 0.12]) for (const dz of [-0.04, 0, 0.04]) {
+        rc.set(new THREE.Vector3(dx * W, H * 2, saddleZ + dz * Ln), new THREE.Vector3(0, -1, 0));
+        const hits = rc.intersectObject(tmp).map(h => h.point.y).filter(y => y > legTop && y < lim);
+        if (hits.length) tops.push(Math.max(...hits));
+      }
+      tops.sort((a, b) => a - b);
+      const saddleTop = tops.length ? tops[tops.length >> 1] : back;
       GLB[m.n] = { geo, W, H, L: Ln, zc, zmin, zmax, belly, back, headTop, legTop, pivots: pz, raw8, idx, saddleZ, saddleTop };
     }
   } catch (e) { console.warn('modelos .glb não carregados', e); }
@@ -1327,6 +1339,7 @@ function buildGlb(b, num, color) {
   const G = GLB[b.model];
   const root = new THREE.Group(), model = new THREE.Group(), body = new THREE.Group();
   root.add(model); model.add(body);
+  model.scale.setScalar(b.scale || 1);
   const mat = glbMaterial();
   mat.userData.u.uTop.value = G.legTop; mat.userData.u.uPiv.value.set(...G.pivots);
   let prop = null;
@@ -1354,7 +1367,7 @@ function buildGlb(b, num, color) {
   const gz = b.fly ? G.zc - G.L * 0.22 : G.saddleZ + (b.gearDz || 0) * G.L;
   // selinha colorida com número + nitro + lança-mísseis
   const padMat = new THREE.MeshStandardMaterial({ color, roughness: 0.45, metalness: 0.15 });
-  const saddleY = b.fly ? G.H * 0.62 : b.gearY ? G.H * b.gearY : G.saddleTop - (b.gearDy || 0.04) * G.H;
+  const saddleY = b.fly ? G.H * 0.62 : b.gearY ? G.H * b.gearY : G.saddleTop - (b.gearDy || 0.015) * G.H;
   const pad = new THREE.Mesh(new THREE.SphereGeometry(1, 20, 8, 0, Math.PI * 2, 0, Math.PI / 2), padMat);
   pad.scale.set(G.W * (b.fly ? 0.3 : 0.55), 0.06 * k, G.L * 0.16); pad.position.set(0, saddleY, gz); pad.castShadow = true; body.add(pad);
   const nm = new THREE.MeshStandardMaterial({ map: numberTex(num, color), transparent: true, roughness: 0.5, side: THREE.DoubleSide });
@@ -1366,7 +1379,7 @@ function buildGlb(b, num, color) {
   const excl = new THREE.Sprite(new THREE.SpriteMaterial({ map: exclTex, depthTest: false }));
   excl.scale.set(0.3, 0.3, 1); excl.position.set(0, 0.55 * k, 0); excl.visible = false; head.add(excl);
   const blob = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), new THREE.MeshBasicMaterial({ map: blobTex, transparent: true, depthWrite: false }));
-  blob.rotation.x = -Math.PI / 2; blob.position.y = 0.04; blob.scale.set(G.W * 2.2, G.L * 1.3, 1); root.add(blob);
+  blob.rotation.x = -Math.PI / 2; blob.position.y = 0.04; blob.scale.set(G.W * 2.2 * (b.scale || 1), G.L * 1.3 * (b.scale || 1), 1); root.add(blob);
   const hi = { hat: [0, 0.1 * k, -0.02], s: 0.17 * k, eye: [0.08, 0, 0.1], er: 0.03, cape: [0, saddleY + 0.02, gz + G.L * 0.22], capeW: G.W * 0.4, capeL: G.L * 0.85, noGlasses: true };
   return { root, model, body, torso: body, neckPiv: head, headPiv: head, head, legs: [], tails: [], ears: [], tongue: new THREE.Group(), flames, stars, excl, blob, b, launcher, anim: animGlb, vestMat: padMat, hi, crown: null, mat, prop, G };
 }
@@ -2502,7 +2515,7 @@ function updateBirds(dt, racing) {
     if (birdTimer <= 0 && busy < 1 + save.diff) {
       birdTimer = 6 + Math.random() * 5 - save.diff;
       const free = birds.find(b => b.state === 'off');
-      const cands = runners.filter(r => !r.finished && r.birdT <= 0);
+      const cands = runners.filter(r => !r.finished && r.birdT <= 0 && !has(r, 'major'));
       if (free && cands.length) {
         const tgt = cands.includes(player) && Math.random() < 0.5 ? player : cands[Math.random() * cands.length | 0];
         const a = sampleAt(tgt.dist + 55 + Math.random() * 20);
@@ -2538,6 +2551,7 @@ function updateBirds(dt, racing) {
           _v.set(_hp.x + fx * 1.3 + Math.cos(a) * 0.9, _hp.y + 0.55 + Math.sin(bd.t * 9) * 0.25, _hp.z + fz * 1.3 + Math.sin(a) * 0.9);
           bd.vel.copy(_v).sub(bd.pos).divideScalar(Math.max(dt, 0.001)).clampLength(0, 80);
           bd.pos.lerp(_v, 1 - Math.exp(-10 * dt));
+          if (tg.flyY > 1.5) { birdFlee(bd, tg); continue; }
           tg.birdT = 0.25;
           if (Math.random() < dt * 1.5) Sfx.squawk(BIRD_KIND().pitch, tg.isPlayer ? 0.6 : 0.2);
           if (bd.t > 6) birdFlee(bd, bd.pos);
@@ -2661,6 +2675,15 @@ const Sfx = {
   launch(vol = 1) { if (!this.ctx || vol < 0.02) return; this.noise(0.5, 0.35 * vol, 1400); this.tone(300, 0.35, 'sawtooth', 0.08 * vol, 900); },
   reload() { const t = this.ctx ? this.ctx.currentTime : 0; this.noise(0.05, 0.3, 3000, t); this.noise(0.06, 0.3, 1800, t + 0.12); this.tone(700, 0.1, 'square', 0.06, 0, t + 0.12); },
   lockon() { this.tone(1760, 0.06, 'square', 0.07); },
+  howl(vol = 1) {
+    if (!this.ctx || vol < 0.03) return;
+    const c = this.ctx, t = c.currentTime, o = c.createOscillator(), g = c.createGain(), v = c.createOscillator(), vg = c.createGain();
+    o.type = 'sawtooth'; o.frequency.setValueAtTime(260, t); o.frequency.linearRampToValueAtTime(520, t + 0.5); o.frequency.linearRampToValueAtTime(470, t + 1.2); o.frequency.linearRampToValueAtTime(300, t + 1.7);
+    v.frequency.value = 6; vg.gain.value = 12; v.connect(vg).connect(o.frequency);
+    const f = c.createBiquadFilter(); f.type = 'lowpass'; f.frequency.value = 1400;
+    g.gain.setValueAtTime(0.001, t); g.gain.linearRampToValueAtTime(0.22 * vol, t + 0.25); g.gain.setValueAtTime(0.22 * vol, t + 1.3); g.gain.exponentialRampToValueAtTime(0.001, t + 1.8);
+    o.connect(f).connect(g).connect(this.sfx); o.start(t); v.start(t); o.stop(t + 1.85); v.stop(t + 1.85);
+  },
   squawk(p = 1, vol = 1) {
     if (!this.ctx || vol < 0.03) return;
     const t = this.ctx.currentTime;
@@ -2722,11 +2745,42 @@ const UPS = [
 const UP_COST = [150, 280, 450, 700, 1000];
 const KMH = 2.6, GRAV = 30, DOG_R = 1.0;
 function getUp(b) { return save.up[b.id] || (save.up[b.id] = { motor: 0, acel: 0, grip: 0, nitro: 0, pulo: 0 }); }
+/* Passivas: uma habilidade especial para cada personagem */
+const PASSIVES = {
+  rex: ['GUARDIÃO', 'Latido alcança mais longe e recarrega mais rápido'],
+  pingo: ['BOMBEIRO', 'Lama, água e gelo não atrapalham'],
+  caramelo: ['SORTUDO', 'Ossos de ouro valem o dobro e latas de nitro às vezes dão um míssil'],
+  flecha: ['ARRANCADA', 'No vácuo de um rival fica muito mais rápido e enche o nitro'],
+  nevasca: ['PATA DE NEVE', 'Nunca escorrega na neve nem no gelo'],
+  bolinha: ['CABEÇA DURA', 'Fica tonto só pela metade do tempo'],
+  pitiquin: ['PEQUENO E BRAVO', 'Latir dá um mini-turbo'],
+  princesa: ['REALEZA', 'Trombadas não a atrasam, e quem bate nela é empurrado'],
+  linda: ['INVESTIDA', 'Com nitro ligado, derruba quem ela atropelar'],
+  faiton: ['UIVO DA LUA', 'Quando alguém o ultrapassa, uiva e corre mais rápido'],
+  paz: ['VOO DA PAZ', 'Com o nitro, voa alto: passa por cima da cerca, dos rivais e dos mísseis'],
+  pintado: ['MATILHA', 'Fica mais rápido quanto mais rivais estiverem por perto'],
+  ruivo: ['SELVAGEM', 'Correr fora da pista não deixa lento'],
+  ninja: ['PULO DUPLO', 'Aperte pular de novo no ar para dar um segundo pulo'],
+  sombra: ['ESQUIVA', 'Metade dos mísseis erram ele'],
+  pacoca: ['COMILÃO', 'Latas de nitro enchem muito mais'],
+  raio: ['RELÂMPAGO', 'Nitro mais forte que o de todo mundo'],
+  duque: ['ARTILHEIRO', 'Começa com 3 mísseis e carrega até 4'],
+  frufru: ['ELEGÂNCIA', 'Drift enche o nitro em dobro e o mini-turbo dura mais'],
+  major: ['DISCIPLINA', 'Os bichos voadores não se atrevem a atacá-lo'],
+  tofu: ['ROLINHO', 'Tropeçar ou ser atropelado quase não o atrasa'],
+  bidu: ['TANQUE', 'Bolas rolando não o derrubam'],
+  canela: ['FÔLEGO', 'O nitro enche sozinho aos poucos'],
+  biscoito: ['FARO', 'Pega ossos, latas e munição de mais longe'],
+  emilly: ['FINGIR DE MORTA', 'Depois de ficar tonta, levanta com um mini-turbo'],
+  taissa: ['GRUDENTA', 'Não escorrega em poças nem no gelo e faz curvas mais fechadas'],
+  tiffany: ['RABO-CHICOTE', 'O chiado dela derruba quem estiver perto'],
+};
+const has = (r, id) => r.b.id === id;
 function statsFor(b, up) {
   return {
     maxV: 30 + b.spd * 1.8 + up.motor * 1.4, accel: 9 + b.acc * 2.4 + up.acel * 1.9,
-    grip: 5.5 + b.han * 0.8 + up.grip * 0.7, turn: 1.5 + b.han * 0.06 + up.grip * 0.05,
-    jumpV: 9.6 + b.jmp * 0.75 + up.pulo * 0.5, nitroDrain: 30 * (1 - up.nitro * 0.09), nitroPow: 1.3 + up.nitro * 0.03,
+    grip: 5.5 + b.han * 0.8 + up.grip * 0.7, turn: 1.5 + b.han * 0.06 + up.grip * 0.05 + (b.id === 'taissa' ? 0.15 : 0),
+    jumpV: 9.6 + b.jmp * 0.75 + up.pulo * 0.5, nitroDrain: 30 * (1 - up.nitro * 0.09), nitroPow: 1.3 + up.nitro * 0.03 + (b.id === 'raio' ? 0.2 : 0),
   };
 }
 const NOINPUT = { throttle: 0, brake: false, steer: 0, drift: false, nitro: false, jump: false, bark: false, fire: false };
@@ -2743,7 +2797,8 @@ class Runner {
     this.nitro = 30; this.nitroOn = false; this.drifting = false; this.driftDir = 0; this.driftT = 0; this.mini = 0; this.pad = 0;
     this.stun = 0; this.spook = 0; this.barkCD = 2; this.slip = 0; this.surf = null; this.phase = Math.random() * 6; this.lastStep = 0;
     this.finished = false; this.finishTime = 0; this.lastLap = 1; this.prevJump = false; this.prevBark = false; this.air = false; this.rampAir = false;
-    this.ammo = 1; this.fireCD = 0; this.prevFire = false; this.missHits = 0; this.flip = 0; this.lockT = 0;
+    this.howl = 0; this.prevAhead = 0; this.flyY = 0; this.dj = false; this.pack = 1;
+    this.ammo = b.id === 'duque' ? 3 : 1; this.fireCD = 0; this.prevFire = false; this.missHits = 0; this.flip = 0; this.lockT = 0;
     this.lane = (Math.random() - 0.5) * 8; this.laneT = 1 + Math.random() * 3; this.aiNitro = false; this.jumpPlan = new Map();
     this.minis = 0; this.scared = 0; this.cleanJumps = 0; this.cans = 0; this.hits = 0; this.birdT = 0; this.hitCD = 0;
     this.driftScore = 0; this.coins = 0; this.lapStart = 0; this.bestLap = 0; this.pressT = null; this.wrongT = 0;
@@ -2779,7 +2834,7 @@ function endDrift(r, crashed) {
   r.driftScore += pts;
   if (lvl) {
     r.minis++; if (r.isPlayer) vib(lvl === 2 ? [25, 30, 25] : 25);
-    r.mini = lvl === 2 ? 1.5 : 0.8; r.nitro = Math.min(100, r.nitro + lvl * 8);
+    r.mini = (lvl === 2 ? 1.5 : 0.8) * (has(r, 'frufru') ? 1.5 : 1); r.nitro = Math.min(100, r.nitro + lvl * 8);
     if (r.isPlayer) { pop(lvl === 2 ? 'SUPER MINI-TURBO!' : 'MINI-TURBO!', lvl === 2 ? 'o' : 'c'); Sfx.boost(); }
   }
   if (r.isPlayer && pts > 60) pop(`DRIFT +${pts}`, 'g');
@@ -2788,14 +2843,18 @@ function endDrift(r, crashed) {
 const voiceWord = b => b.voice === 'hiss' ? 'CHIADO!' : b.voice === 'grunt' ? 'RONCO!' : 'LATIDO!';
 const voiceSound = b => b.voice === 'hiss' ? 'SSSSSS!' : b.voice === 'grunt' ? 'OINC OINC!' : 'AU AU!';
 function doBark(r) {
-  r.barkCD = 6;
+  r.barkCD = has(r, 'rex') ? 4 : 6;
+  if (has(r, 'pitiquin')) { r.mini = Math.max(r.mini, 1); if (r.isPlayer) pop('MINI-TURBO DO PITIQUIN!', 'c'); }
   const fx = Math.sin(r.h), fz = Math.cos(r.h);
   Sfx.voice(r.b, player ? clamp(1 - Math.hypot(r.x - player.x, r.z - player.z) / 60, 0, 1) : 1);
   let hit = 0;
   for (const o of runners) {
     if (o === r || o.stun > 0) continue;
     const dx = o.x - r.x, dz = o.z - r.z, d = Math.hypot(dx, dz);
-    if (d < 12 && (dx * fx + dz * fz > -2)) { o.spook = 1.1; hit++; if (o.isPlayer) pop('ASSUSTADO!', 'r'); }
+    if (d < (has(r, 'rex') ? 18 : 12) && (dx * fx + dz * fz > -2) && o.flyY < 1.5) {
+      o.spook = 1.1; hit++; if (o.isPlayer) pop('ASSUSTADO!', 'r');
+      if (has(r, 'tiffany') && d < 9) { o.stun = Math.max(o.stun, 0.7); o.vx *= 0.5; o.vz *= 0.5; if (o.isPlayer) pop('CHICOTADA DA TIFFANY!', 'r'); }
+    }
   }
   let shooed = 0;
   for (const bd of birds) {
@@ -2813,7 +2872,10 @@ function doBark(r) {
 
 function stepRunner(r, inp, dt) {
   const prevDist = r.dist, air = r.y > 0.02;
-  if (r.stun > 0) { r.stun -= dt; inp = NOINPUT; }
+  if (r.stun > 0) {
+    r.stun -= dt * (has(r, 'bolinha') ? 2 : 1); inp = NOINPUT;
+    if (r.stun <= 0 && has(r, 'emilly')) { r.mini = 1.3; if (r.isPlayer) pop('FINGIU DE MORTA! MINI-TURBO', 'v'); }
+  }
   if (r.spook > 0) { r.spook -= dt; inp = { ...inp, nitro: false, steer: clamp(inp.steer + Math.sin(time * 16 + r.num) * 0.7, -1, 1) }; }
   const jumpPressed = inp.jump && !r.prevJump; r.prevJump = inp.jump;
   const barkPressed = inp.bark && !r.prevBark; r.prevBark = inp.bark;
@@ -2823,9 +2885,11 @@ function stepRunner(r, inp, dt) {
   r.fireCD -= dt; r.flip = Math.max(0, r.flip - dt);
   if (firePressed) fireMissile(r);
 
-  const offroad = Math.abs(r.d) > W / 2 + 0.4;
-  let grip = r.grip * TR.grip * (offroad ? 0.8 : 1), slow = offroad ? 0.62 : 1;
-  if (!air && r.surf === 'mud') { grip *= 0.5; slow *= 0.62; }
+  const offroad = Math.abs(r.d) > W / 2 + 0.4 && !has(r, 'ruivo') && r.flyY < 1.5;
+  const trackGrip = has(r, 'nevasca') || has(r, 'taissa') ? Math.max(1, TR.grip) : TR.grip;
+  let grip = r.grip * trackGrip * (offroad ? 0.8 : 1), slow = offroad ? 0.62 : 1;
+  if (has(r, 'pingo') || (has(r, 'taissa') && r.surf === 'ice') || (has(r, 'nevasca') && r.surf === 'ice')) { /* poça não atrapalha */ }
+  else if (!air && r.surf === 'mud') { grip *= 0.5; slow *= 0.62; }
   else if (!air && r.surf === 'water') { grip *= 0.8; slow *= 0.72; }
   else if (!air && r.surf === 'ice') grip *= 0.22;
 
@@ -2833,11 +2897,15 @@ function stepRunner(r, inp, dt) {
   if (r.birdT > 0) { r.birdT -= dt; inp = { ...inp, steer: clamp(inp.steer + Math.sin(time * 11 + r.num * 2) * 0.45, -1, 1) }; }
   r.nitroOn = inp.nitro && r.nitro > 0.5 && r.stun <= 0;
   if (r.nitroOn) r.nitro = Math.max(0, r.nitro - r.nitroDrain * dt);
+  if (has(r, 'canela')) r.nitro = Math.min(100, r.nitro + 3 * dt);
+  r.howl = Math.max(0, r.howl - dt);
+  // Paz: com nitro, sobe e voa
+  if (has(r, 'paz')) r.flyY = lerp(r.flyY, r.nitroOn ? 4.5 : 0, 1 - Math.exp(-(r.nitroOn ? 2.2 : 1.4) * dt));
   r.mini = Math.max(0, r.mini - dt); r.pad = Math.max(0, r.pad - dt);
   let band = 1;
   if (!r.isPlayer && player && !player.finished) band = 1 + clamp((player.dist - r.dist) / 220, -0.07, 0.07);
   const maxV = r.maxV * r.skill * band * slow * (r.nitroOn ? r.nitroPow : 1) * (r.mini > 0 ? 1.15 : 1) * (r.pad > 0 ? 1.22 : 1)
-    * (r.slip > 0.5 ? 1.06 : 1) * (r.spook > 0 ? 0.72 : 1) * (r.birdT > 0 ? 0.7 : 1) * (r.finished ? 0.5 : 1);
+    * (r.slip > 0.5 ? (has(r, 'flecha') ? 1.14 : 1.06) : 1) * (r.howl > 0 ? 1.15 : 1) * r.pack * (r.spook > 0 ? 0.72 : 1) * (r.birdT > 0 ? 0.7 : 1) * (r.finished ? 0.5 : 1);
 
   // volante
   let vF = r.vx * Math.sin(r.h) + r.vz * Math.cos(r.h);
@@ -2848,7 +2916,7 @@ function stepRunner(r, inp, dt) {
   if (r.drifting) {
     r.driftT += dt;
     yawT = -r.driftDir * r.turn * sf * (0.8 + 0.5 * inp.steer * r.driftDir);
-    r.nitro = Math.min(100, r.nitro + 8 * dt);
+    r.nitro = Math.min(100, r.nitro + (has(r, 'frufru') ? 16 : 8) * dt);
   } else yawT = -inp.steer * r.turn * sf * (vF < -1 ? -1 : 1);
   if (air) yawT *= 0.35;
   r.yawRate = lerp(r.yawRate, yawT, 1 - Math.exp(-(r.drifting ? 6 : 12) * dt));
@@ -2883,7 +2951,12 @@ function stepRunner(r, inp, dt) {
   r.speed = vF; r.slide = vR;
 
   // pulo
-  if (jumpPressed && !air && r.stun <= 0) { r.vy = r.jumpV; if (r.isPlayer) Sfx.jump(); if (r.drifting) endDrift(r, false); }
+  if (jumpPressed && !air && r.stun <= 0) { r.vy = r.jumpV; r.dj = false; if (r.isPlayer) Sfx.jump(); if (r.drifting) endDrift(r, false); }
+  else if (jumpPressed && air && has(r, 'ninja') && !r.dj && r.stun <= 0) {
+    r.dj = true; r.vy = Math.max(r.vy, 0) + r.jumpV * 0.9;
+    if (r.isPlayer) { Sfx.jump(); pop('PULO DUPLO!', 'c'); }
+    for (let i = 0; i < 14; i++) { const a = i / 14 * 6.28; dust.spawn(r.x, r.y + 0.3, r.z, Math.cos(a) * 5, -1, Math.sin(a) * 5, 0.5, 0.5, 1.2, [0.85, 0.85, 0.9], 0.6, 0, 3); }
+  }
   r.vy -= GRAV * dt; r.y += r.vy * dt;
   if (r.y <= 0) {
     if (air) {
@@ -2891,7 +2964,7 @@ function stepRunner(r, inp, dt) {
       if (r.rampAir) { r.rampAir = false; r.nitro = Math.min(100, r.nitro + 12); if (r.isPlayer) pop('SALTO! +NITRO', 'c'); }
       for (let i = 0; i < 10; i++) dustPuff(r, 1.4);
     }
-    r.y = 0; r.vy = 0;
+    r.y = 0; r.vy = 0; r.dj = false;
   }
   r.air = r.y > 0.02;
   const amp = clamp(Math.abs(vF) / 12, 0, 1);
@@ -2900,7 +2973,12 @@ function stepRunner(r, inp, dt) {
   project(r);
   // cerca
   const fence = W / 2 + 2.1;
-  if (Math.abs(r.d) > fence) {
+  if (r.flyY > 1.5 && Math.abs(r.d) < fence + 30) { /* voando por cima da cerca */ }
+  else if (Math.abs(r.d) > fence && r.flyY > 0.05 && Math.abs(r.d) < fence + 30) {
+    // pousando do lado de fora: volta planando para dentro, sem bater
+    const sg = Math.sign(r.d), a = sampleAt(r.s), mv = Math.min(Math.abs(r.d) - fence, 14 * dt);
+    r.x -= a.r.x * sg * mv; r.z -= a.r.z * sg * mv;
+  } else if (Math.abs(r.d) > fence) {
     const sg = Math.sign(r.d), a = sampleAt(r.s), over = Math.abs(r.d) - fence;
     r.x -= a.r.x * sg * over; r.z -= a.r.z * sg * over; r.d = sg * fence;
     const vo = (r.vx * a.r.x + r.vz * a.r.z) * sg;
@@ -2918,7 +2996,8 @@ function stepRunner(r, inp, dt) {
   for (const hd of hurdles) {
     if (Math.floor((prevDist - hd.s) / L) < Math.floor((r.dist - hd.s) / L) && Math.abs(r.d) < W / 2 + 0.6) {
       if (r.y < 0.55 && r.stun <= 0 && !r.b.fly) {
-        r.stun = 1.0; r.vx *= 0.25; r.vz *= 0.25; r.vy = 3; hd.fall = 1; endDrift(r, true); r.nitroOn = false; r.hits++;
+        const roll = has(r, 'tofu');
+        r.stun = roll ? 0.4 : 1.0; r.vx *= roll ? 0.65 : 0.25; r.vz *= roll ? 0.65 : 0.25; r.vy = 3; hd.fall = 1; endDrift(r, true); r.nitroOn = false; r.hits++;
         if (r.isPlayer) { Sfx.trip(); pop('TROPEÇOU!', 'r'); shake(0.4); vib(70); }
       } else if (r.y >= 0.55 || r.b.fly) {
         r.nitro = Math.min(100, r.nitro + 10); r.cleanJumps++;
@@ -2951,9 +3030,10 @@ function stepRunner(r, inp, dt) {
   }
   // bolas rolando pela pista
   for (const bl of balls) {
-    if (!bl.active || r.hitCD > 0 || r.stun > 0 || r.y > bl.r * 1.25 || r.b.fly) continue;
+    if (!bl.active || r.hitCD > 0 || r.stun > 0 || r.y > bl.r * 1.25 || r.b.fly || has(r, 'bidu')) continue;
     if (Math.abs(wrapDelta(s - bl.s)) < bl.r + 0.7 && Math.abs(r.d - bl.d) < bl.r + 0.8) {
-      r.stun = 0.9; r.hitCD = 2; r.vx *= 0.3; r.vz *= 0.3; r.vy = 5; r.hits++; endDrift(r, true);
+      const roll = has(r, 'tofu');
+      r.stun = roll ? 0.4 : 0.9; r.hitCD = 2; r.vx *= roll ? 0.65 : 0.3; r.vz *= roll ? 0.65 : 0.3; r.vy = 5; r.hits++; endDrift(r, true);
       if (r.isPlayer) { Sfx.thud(); Sfx.trip(); shake(0.5); pop(bl.hitMsg, 'r'); vib([80, 40, 80]); }
       else narrate(`BOLADA EM ${r.b.name}!`);
     }
@@ -2962,22 +3042,26 @@ function stepRunner(r, inp, dt) {
   for (const n of nitros) {
     if (n.cd > 0 || r.y > 2.4) continue;
     const ds = wrapDelta(s - n.s), dd = r.d - n.d;
-    if (ds * ds + dd * dd < 3.2) {
-      n.cd = 8; n.g.visible = false; r.nitro = Math.min(100, r.nitro + 35); r.cans++;
+    if (ds * ds + dd * dd < (has(r, 'biscoito') ? 16 : 3.2)) {
+      n.cd = 8; n.g.visible = false; r.nitro = Math.min(100, r.nitro + (has(r, 'pacoca') ? 70 : 35)); r.cans++;
+      if (has(r, 'caramelo') && r.ammo < 3 && Math.random() < 0.35) { r.ammo++; if (r.isPlayer) pop('SORTE! GANHOU UM MÍSSIL', 'g'); }
       if (r.isPlayer) { Sfx.pickup(); pop('NITRO +35', 'c'); vib(15); }
     }
   }
   // caixas de munição
   for (const a of ammos) {
-    if (a.cd > 0 || r.y > 2.4 || r.ammo >= 3) continue;
+    if (a.cd > 0 || r.y > 2.4 || r.ammo >= (has(r, 'duque') ? 4 : 3)) continue;
     const ds = wrapDelta(s - a.s), dd = r.d - a.d;
-    if (ds * ds + dd * dd < 3.4) { a.cd = 9; a.g.visible = false; r.ammo++; if (r.isPlayer) { Sfx.reload(); pop(`MÍSSIL +1 (${r.ammo}/3)`, 'o'); vib(15); } }
+    if (ds * ds + dd * dd < (has(r, 'biscoito') ? 16 : 3.4)) { a.cd = 9; a.g.visible = false; r.ammo++; if (r.isPlayer) { Sfx.reload(); pop(`MÍSSIL +1 (${r.ammo}/3)`, 'o'); vib(15); } }
   }
   // ossos de ouro — só o jogador coleta
   if (r.isPlayer) for (const c of coins) {
     if (c.taken || r.y > 2.6) continue;
     const ds = wrapDelta(s - c.s), dd = r.d - c.d;
-    if (ds * ds + dd * dd < 3.4) { c.taken = true; c.g.visible = false; r.coins++; Sfx.coin(); }
+    if (ds * ds + dd * dd < (has(r, 'biscoito') ? 16 : 3.4)) {
+      c.taken = true; c.g.visible = false; r.coins += has(r, 'caramelo') ? 2 : 1; Sfx.coin();
+      if (has(r, 'pacoca')) r.nitro = Math.min(100, r.nitro + 5);
+    }
   }
   // voltas e chegada
   if (!r.finished && r.dist >= save.laps * L) {
@@ -3075,15 +3159,42 @@ function aiInput(r, dt) {
   return { throttle, brake: false, steer, drift: false, nitro: r.aiNitro, jump, bark, fire };
 }
 
+function passives(dt) {
+  if (state !== 'race' && state !== 'finished') return;
+  for (const r of runners) {
+    if (has(r, 'pintado')) {
+      let n = 0; for (const o of runners) if (o !== r && Math.hypot(o.x - r.x, o.z - r.z) < 12) n++;
+      r.pack = 1 + Math.min(n, 4) * 0.02;
+    }
+    if (has(r, 'faiton') && !r.finished) {
+      let ahead = 0; for (const o of runners) if (o !== r && (o.finished || o.dist > r.dist)) ahead++;
+      if (ahead > r.prevAhead && raceTime > 3) {
+        r.howl = 3.5; Sfx.howl(player ? clamp(1 - Math.hypot(r.x - player.x, r.z - player.z) / 70, 0, 1) : 1);
+        if (r.isPlayer) pop('UIVO DA LUA! +VELOCIDADE', 'o'); else narrate('FAITON UIVOU E ACELEROU!');
+        const hp = r.D.head.getWorldPosition(_v);
+        for (let i = 0; i < 18; i++) { const a = i / 18 * 6.28; glow.spawn(hp.x, hp.y, hp.z, Math.cos(a) * 3, 2, Math.sin(a) * 3, 0.8, 0.6, 1.4, [0.75, 0.85, 1], 0.7, -1, 1.5); }
+      }
+      r.prevAhead = ahead;
+      if (r.howl > 0 && Math.random() < dt * 20) { const p = r.D.body.getWorldPosition(_v); glow.spawn(p.x, p.y + 0.6, p.z, -r.vx * 0.2, 0.8, -r.vz * 0.2, 0.4, 0.6, 0.1, [0.6, 0.75, 1], 0.8, 0, 1); }
+    }
+  }
+}
 function interactions(dt) {
+  passives(dt);
   for (let i = 0; i < runners.length; i++) for (let j = i + 1; j < runners.length; j++) {
     const a = runners[i], b = runners[j], dx = b.x - a.x, dz = b.z - a.z, d2 = dx * dx + dz * dz, m = DOG_R * 2;
-    if (d2 < m * m && Math.abs(a.y - b.y) < 1.2) {
+    if (d2 < m * m && Math.abs(a.y + a.flyY - b.y - b.flyY) < 1.2) {
       const d = Math.sqrt(d2) || 0.01, nx = dx / d, nz = dz / d, ov = (m - d) / 2;
       const wa = (b.b.mass || 1) / ((a.b.mass || 1) + (b.b.mass || 1)) * 2, wb = 2 - wa;
       a.x -= nx * ov * wa; a.z -= nz * ov * wa; b.x += nx * ov * wb; b.z += nz * ov * wb;
       const rv = (b.vx - a.vx) * nx + (b.vz - a.vz) * nz;
-      if (rv < 0) { const ma = a.b.mass || 1, mb = b.b.mass || 1, jv = -1.3 * rv / (1 / ma + 1 / mb); a.vx -= jv / ma * nx; a.vz -= jv / ma * nz; b.vx += jv / mb * nx; b.vz += jv / mb * nz; if ((a.isPlayer || b.isPlayer) && -rv > 5) { Sfx.thud(); shake(0.2); } }
+      if (rv < 0) {
+        const ma = has(a, 'princesa') ? 1e6 : a.b.mass || 1, mb = has(b, 'princesa') ? 1e6 : b.b.mass || 1, jv = -1.3 * rv / (1 / ma + 1 / mb) * (has(a, 'princesa') || has(b, 'princesa') ? 1.4 : 1);
+        a.vx -= jv / ma * nx; a.vz -= jv / ma * nz; b.vx += jv / mb * nx; b.vz += jv / mb * nz;
+        for (const [x, y] of [[a, b], [b, a]]) if (has(x, 'linda') && x.nitroOn && y.stun <= 0) {
+          y.stun = 0.8; y.vx *= 0.4; y.vz *= 0.4; y.vy = 5; y.hits++;
+          if (y.isPlayer) pop('ATROPELADO PELA LINDA!', 'r'); if (x.isPlayer) pop(`INVESTIDA EM ${y.b.name}!`, 'v');
+        } if ((a.isPlayer || b.isPlayer) && -rv > 5) { Sfx.thud(); shake(0.2); } }
     }
   }
   // vácuo
@@ -3096,7 +3207,7 @@ function interactions(dt) {
       if (along > 2.5 && along < 14 && lat < 1.8) { inSlip = true; break; }
     }
     r.slip = inSlip ? r.slip + dt : 0;
-    if (r.slip > 0.5) r.nitro = Math.min(100, r.nitro + 5 * dt);
+    if (r.slip > 0.5) r.nitro = Math.min(100, r.nitro + (has(r, 'flecha') ? 15 : 5) * dt);
   }
 }
 
@@ -3166,6 +3277,11 @@ function updateMissiles(dt) {
     let hit = null;
     for (const o of runners) {
       if (o === m.owner && m.t < 1.5) continue;
+      if (o.flyY > 1.5 || (m.dodge && m.dodge.has(o))) continue;
+      if (has(o, 'sombra') && Math.hypot(o.x - m.pos.x, o.z - m.pos.z) < 1.8) {
+        m.dodge = m.dodge || new Set(); m.dodge.add(o);
+        if (Math.random() < 0.5) { if (o.isPlayer) pop('ESQUIVOU DO MÍSSIL!', 'v'); else if (m.owner.isPlayer) pop('O SOMBRA ESQUIVOU!', 'r'); continue; }
+      }
       if (Math.hypot(o.x - m.pos.x, o.z - m.pos.z) < 1.8 && Math.abs(o.y + 1 - m.pos.y) < 1.8) { hit = o; break; }
     }
     if (hit || m.t > 3.2) { explodeMissile(m, hit); missiles.splice(i, 1); }
@@ -3192,7 +3308,7 @@ function syncVisual(r) {
   r.D.root.rotation.y = r.h;
   r.D.launcher.noses.forEach((n, i) => { n.visible = i < r.ammo; });
   r.D.model.rotation.x = r.flip > 0 ? -(1 - r.flip) * Math.PI * 2 : 0;
-  r.D.model.position.y = r.y;
+  r.D.model.position.y = r.y + r.flyY;
   r.D.anim(r.D, { v: Math.hypot(r.vx, r.vz), y: r.y, vy: r.vy, phase: r.phase, yawRate: r.yawRate, stun: r.stun, spook: r.spook, nitro: r.nitroOn, idle: false }, time + r.num);
 }
 
@@ -3212,12 +3328,12 @@ function updateChaseCam(r, dt, snap = false) {
   if (save.cam === 2) {
     const hp = r.D.head.getWorldPosition(_cv);
     camera.position.set(hp.x - camDir.x * 0.3, hp.y + 0.55, hp.z - camDir.z * 0.3);
-    camLook.set(r.x + camDir.x * 25, 1.2 + r.y * 0.3, r.z + camDir.z * 25);
+    camLook.set(r.x + camDir.x * 25, 1.2 + (r.y + r.flyY) * 0.3, r.z + camDir.z * 25);
   } else {
     const back = (save.cam ? 11.5 : 6.6) + v * 0.025, up = save.cam ? 6 : 2.7;
-    _cv.set(r.x - camDir.x * back, up + r.y * 0.5, r.z - camDir.z * back);
+    _cv.set(r.x - camDir.x * back, up + (r.y + r.flyY) * 0.5, r.z - camDir.z * back);
     camera.position.lerp(_cv, snap ? 1 : 1 - Math.exp(-8 * dt));
-    camLook.set(r.x + camDir.x * 5, 1.3 + r.y * 0.6, r.z + camDir.z * 5);
+    camLook.set(r.x + camDir.x * 5, 1.3 + (r.y + r.flyY) * 0.6, r.z + camDir.z * 5);
   }
   if (shakeAmt > 0.001) { camera.position.x += (Math.random() - 0.5) * shakeAmt; camera.position.y += (Math.random() - 0.5) * shakeAmt; shakeAmt *= Math.exp(-7 * dt); }
   camera.lookAt(camLook);
@@ -3296,6 +3412,7 @@ function placePreview() {
 function refreshMenu() {
   const b = BREEDS[save.dog], up = getUp(b);
   $('dogName').textContent = b.name; $('dogBreed').textContent = b.raca;
+  const pv = PASSIVES[b.id]; $('dogPas').innerHTML = pv ? `<b>★ ${pv[0]}</b> ${pv[1]}` : '';
   const rows = [['VELOCIDADE', b.spd, up.motor], ['ACELERAÇÃO', b.acc, up.acel], ['CURVAS', b.han, up.grip], ['PULO', b.jmp, up.pulo]];
   $('stats').innerHTML = rows.map(([n, base, u]) => `<div class="stat"><span>${n}</span><div class="cells">${Array.from({ length: 10 }, (_, i) => `<span class="${i < base ? 'b' : i < base + u ? 'u' : ''}"></span>`).join('')}</div></div>`).join('');
   $('trackName').textContent = TRACKS[save.track].name.split(' ')[0];
