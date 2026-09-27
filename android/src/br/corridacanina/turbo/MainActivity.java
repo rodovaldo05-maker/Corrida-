@@ -4,6 +4,9 @@ import android.app.Activity;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
+import android.speech.tts.TextToSpeech;
+import android.webkit.JavascriptInterface;
+import java.util.Locale;
 import android.view.View;
 import android.view.WindowManager;
 import android.webkit.ValueCallback;
@@ -15,6 +18,17 @@ import android.webkit.WebViewClient;
 /** Tela única que roda o jogo (pasta assets/www) em tela cheia, sem precisar de internet. */
 public class MainActivity extends Activity {
     private WebView web;
+    private TextToSpeech tts;
+    private boolean ttsOk;
+
+    /** Ponte para o locutor: o WebView do Android não tem voz própria, então usa o TextToSpeech do sistema. */
+    public class Locutor {
+        @JavascriptInterface public void speak(String text) {
+            if (ttsOk) tts.speak(text, TextToSpeech.QUEUE_FLUSH, null, "locutor");
+        }
+        @JavascriptInterface public boolean busy() { return ttsOk && tts.isSpeaking(); }
+        @JavascriptInterface public void stop() { if (ttsOk) tts.stop(); }
+    }
 
     @Override
     protected void onCreate(Bundle state) {
@@ -33,6 +47,16 @@ public class MainActivity extends Activity {
         s.setAllowFileAccessFromFileURLs(true);
         s.setUseWideViewPort(true);
         s.setLoadWithOverviewMode(true);
+        tts = new TextToSpeech(this, new TextToSpeech.OnInitListener() {
+            @Override public void onInit(int status) {
+                if (status != TextToSpeech.SUCCESS) return;
+                int r = tts.setLanguage(new Locale("pt", "BR"));
+                ttsOk = r != TextToSpeech.LANG_MISSING_DATA && r != TextToSpeech.LANG_NOT_SUPPORTED;
+                if (!ttsOk) ttsOk = tts.setLanguage(new Locale("pt")) >= 0;
+                tts.setSpeechRate(1.12f);
+            }
+        });
+        web.addJavascriptInterface(new Locutor(), "AndroidTTS");
         web.setWebChromeClient(new WebChromeClient());
         web.setWebViewClient(new WebViewClient());
         setContentView(web);
@@ -54,7 +78,10 @@ public class MainActivity extends Activity {
     }
 
     @Override
-    protected void onPause() { super.onPause(); web.onPause(); }
+    protected void onPause() { super.onPause(); web.onPause(); if (ttsOk) tts.stop(); }
+
+    @Override
+    protected void onDestroy() { if (tts != null) tts.shutdown(); super.onDestroy(); }
 
     @Override
     protected void onResume() { super.onResume(); web.onResume(); }

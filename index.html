@@ -55,7 +55,9 @@
   #map { position:absolute; left:calc(14px + var(--sal)); bottom:calc(14px + var(--sab)); width:180px; height:180px; }
   #gauge { position:absolute; right:calc(8px + var(--sar)); bottom:calc(6px + var(--sab)); width:220px; height:220px; }
   #goals, #pauseGoals { padding:8px 14px; font-size:14px; width:min(360px, calc(100vw - 32px)); }
-  #goals { position:absolute; left:50%; top:calc(14px + var(--sat)); transform:translateX(-50%); transition:opacity .3s; }
+  #topStack { position:absolute; left:50%; top:calc(12px + var(--sat)); transform:translateX(-50%); width:min(440px, calc(100vw - 440px));
+    display:flex; flex-direction:column; align-items:center; gap:6px; pointer-events:none; }
+  #goals { transition:opacity .3s; max-width:100%; }
   #goals.mini > div:not(.gh) { display:none; }
   #goals.mini { width:auto; padding:5px 12px; }
   .gh { font-size:11px; letter-spacing:.18em; color:var(--mut); }
@@ -67,9 +69,9 @@
   .rewards .goalsRes { display:block; }
   .goalsRes { border-top:1px solid var(--line); margin-top:6px; padding-top:6px; font-size:13px; }
   .goalsRes > div { display:grid !important; }
-  body.touch #goals { top:auto; bottom:calc(200px + var(--sab)); font-size:13px; }
-  body.touch #chips { top:calc(46% + var(--sat)); }
-  #chips { position:absolute; left:50%; top:calc(30% + var(--sat)); transform:translateX(-50%); display:flex; gap:8px; }
+  body.touch #goals { font-size:13px; }
+  #chips { display:flex; gap:8px; flex-wrap:wrap; justify-content:center; }
+  #chips:empty, #narr:not(.on) { display:none; }
   .chip { padding:5px 14px; border-radius:99px; font-size:15px; letter-spacing:.14em; background:var(--glass2); border:1px solid var(--line); }
   #chipSlip { color:var(--acc2); }
   #chipWrong { background:var(--bad); }
@@ -82,13 +84,13 @@
   #lights span { width:34px; height:34px; border-radius:50%; background:#2a1010; border:3px solid #111; box-shadow:inset 0 0 8px #000; }
   #lights span.r { background:#ff2a2a; box-shadow:0 0 24px #ff2a2a, inset 0 0 6px #fff6; }
   #lights span.g { background:#2aff6a; box-shadow:0 0 24px #2aff6a, inset 0 0 6px #fff6; }
-  #big { position:fixed; left:0; right:0; top:32%; text-align:center; z-index:11; pointer-events:none;
-    font-size:clamp(40px,9vw,96px); font-style:italic; color:#fff; text-shadow:0 4px 0 rgba(0,0,0,.35), 0 0 30px rgba(255,122,26,.6); }
+  #big { position:fixed; left:0; right:0; top:calc(15% + var(--sat)); text-align:center; z-index:11; pointer-events:none;
+    font-size:clamp(32px,7vw,80px); font-style:italic; color:#fff; text-shadow:0 4px 0 rgba(0,0,0,.35), 0 0 30px rgba(255,122,26,.6); }
   #big small { display:block; font-family:'Rajdhani',sans-serif; font-weight:700; font-style:normal; font-size:clamp(15px,2.6vw,22px); letter-spacing:.14em; margin-top:6px; }
   #big.pop { animation:bigpop .5s cubic-bezier(.2,1.4,.4,1); }
   @keyframes bigpop { from { transform:scale(1.9); opacity:0; } to { transform:scale(1); opacity:1; } }
-  #pops { position:fixed; left:0; right:0; top:52%; z-index:11; pointer-events:none; display:flex; flex-direction:column; align-items:center; gap:4px; }
-  .pop { font-family:'Russo One',sans-serif; font-size:clamp(18px,3.2vw,28px); font-style:italic; color:#fff;
+  #pops { position:fixed; left:0; right:0; top:14%; z-index:11; pointer-events:none; display:flex; flex-direction:column; align-items:center; gap:4px; }
+  .pop { font-family:'Russo One',sans-serif; font-size:clamp(16px,2.6vw,24px); font-style:italic; color:#fff;
     text-shadow:0 2px 0 rgba(0,0,0,.4), 0 0 16px currentColor; animation:popup 1.25s ease-out forwards; }
   .pop.o { color:var(--acc); } .pop.c { color:var(--acc2); } .pop.g { color:var(--gold); } .pop.r { color:var(--bad); } .pop.v { color:var(--good); }
   @keyframes popup { 0% { transform:translateY(14px) scale(.7); opacity:0; } 15% { transform:none; opacity:1; } 75% { opacity:1; } 100% { transform:translateY(-34px); opacity:0; } }
@@ -118,7 +120,13 @@
   }
   body.touch #map { top:calc(112px + var(--sat)); bottom:auto; width:118px; height:118px; }
   body.touch #board { display:none; }
-  body.touch #pauseBtn { right:auto; left:50%; transform:translateX(-50%); top:calc(58px + var(--sat)); }
+  body.touch #pauseBtn { right:calc(92px + var(--sar)); top:calc(20px + var(--sat)); }
+  /* celular em pé: mensagens numa faixa logo abaixo do placar, minimapa e velocímetro descem um pouco */
+  @media (max-width:520px) {
+    #topStack { top:calc(100px + var(--sat)); width:calc(100vw - 28px); }
+    body.touch #map { top:calc(182px + var(--sat)); width:100px; height:100px; }
+    body.touch #gauge { top:calc(176px + var(--sat)); width:112px; height:112px; }
+  }
 
   /* ---------- telas ---------- */
   .screen { position:fixed; inset:0; z-index:30; }
@@ -173,10 +181,10 @@
   #trophy svg { width:min(170px, 38vw, 22vh); height:auto; filter:drop-shadow(0 8px 20px rgba(0,0,0,.5)); }
   #cupReward { color:var(--gold); font-size:18px; letter-spacing:.08em; text-align:center; }
   #cupTag { font-size:12px; color:var(--gold); letter-spacing:.12em; margin-top:4px; }
-  #narr { position:absolute; left:50%; top:calc(19% + var(--sat)); transform:translateX(-50%); padding:6px 16px; border-radius:99px;
-    background:var(--glass2); border:1px solid var(--line); font-size:17px; letter-spacing:.06em; white-space:nowrap; opacity:0; transition:opacity .3s; max-width:calc(100vw - 32px); overflow:hidden; text-overflow:ellipsis; }
-  #narr.on { opacity:1; }
-  body.touch #narr { top:calc(40% + var(--sat)); font-size:14px; }
+  #narr { padding:5px 14px; border-radius:14px; background:var(--glass2); border:1px solid var(--line); font-size:16px; letter-spacing:.05em;
+    text-align:center; max-width:100%; }
+  #narr::before { content:'🎙 '; }
+  body.touch #narr { font-size:14px; }
   .btn { border:none; border-radius:12px; padding:14px 10px; font-size:18px; letter-spacing:.1em; font-weight:700; }
   .btn.sec { background:rgba(255,255,255,.12); border:1px solid var(--line); }
   .btn.pri { background:linear-gradient(180deg,#ff9a3d,#ff5a14); color:#1a0a00; font-family:'Russo One',sans-serif; font-weight:400; font-size:21px;
@@ -231,6 +239,8 @@
     .up { padding:6px 10px; } .up p { display:none; }
     #pos { font-size:48px; }
     body.touch #gauge { top:calc(6px + var(--sat)); right:calc(96px + var(--sar)); width:104px; height:104px; }
+    #topStack { width:min(300px, calc(100vw - 530px)); top:calc(8px + var(--sat)); }
+    body.touch #pauseBtn { right:calc(212px + var(--sar)); top:calc(14px + var(--sat)); }
     #tM { bottom:calc(122px + var(--sab)); right:calc(206px + var(--sar)); width:60px; height:60px; }
     body.touch #map { top:calc(96px + var(--sat)); width:96px; height:96px; }
   }
@@ -251,9 +261,11 @@
     <div id="cupTag" class="mono"></div>
   </div>
   <ol id="board"></ol>
-  <div id="narr"></div>
-  <div id="goals" class="panel"></div>
-  <div id="chips"><span id="chipSlip" class="chip" hidden>VÁCUO</span><span id="chipWrong" class="chip" hidden>CONTRAMÃO</span><span id="chipMissile" class="chip" hidden>MÍSSIL VINDO!</span></div>
+  <div id="topStack">
+    <div id="goals" class="panel"></div>
+    <div id="narr"></div>
+    <div id="chips"><span id="chipSlip" class="chip" hidden>VÁCUO</span><span id="chipWrong" class="chip" hidden>CONTRAMÃO</span><span id="chipMissile" class="chip" hidden>MÍSSIL VINDO!</span></div>
+  </div>
   <div id="hTR"><div id="pos" class="disp">1<sup>º</sup></div><div id="posOf">DE 6</div></div>
   <button id="pauseBtn" aria-label="Pausar">❚❚</button>
   <canvas id="map"></canvas>
@@ -344,6 +356,7 @@
     <button class="btn sec" id="assistBtn">ASSISTÊNCIA: LIGADA</button>
     <button class="btn sec" id="qualBtn">GRÁFICOS: ALTA</button>
     <button class="btn sec" id="vibBtn">VIBRAÇÃO: LIGADA</button>
+    <button class="btn sec" id="voiceBtn">LOCUTOR: LIGADO</button>
     <button class="btn sec" id="musicBtn">MÚSICA: TODAS</button>
     <button class="btn sec" id="quitBtn">SAIR PARA O MENU</button>
   </div>
@@ -411,7 +424,7 @@ if (isTouch) document.body.classList.add('touch');
    Progresso salvo (ossos de ouro, melhorias, recordes)
    --------------------------------------------------------------------- */
 const SAVE_KEY = 'corridaCaninaTurbo1';
-const save = { musicMode: 0, vib: true, mode: 0, owned: [], looks: {}, stats: {}, ach: [], daily: null, trophies: {}, coins: 400, up: {}, best: {}, dog: 0, track: 0, diff: 1, laps: 3, qual: isTouch ? 1 : 2, music: true, cam: 0, assist: true };
+const save = { musicMode: 0, vib: true, voice: true, mode: 0, owned: [], looks: {}, stats: {}, ach: [], daily: null, trophies: {}, coins: 400, up: {}, best: {}, dog: 0, track: 0, diff: 1, laps: 3, qual: isTouch ? 1 : 2, music: true, cam: 0, assist: true };
 try { Object.assign(save, JSON.parse(localStorage.getItem(SAVE_KEY) || '{}')); } catch (e) { }
 if (save.music === false && save.musicMode === 0 && !('musicMode' in (JSON.parse((() => { try { return localStorage.getItem(SAVE_KEY) || '{}'; } catch (e) { return '{}'; } })())))) save.musicMode = 4;
 function persist() { try { localStorage.setItem(SAVE_KEY, JSON.stringify(save)); } catch (e) { } }
@@ -2815,7 +2828,7 @@ function stepRunner(r, inp, dt) {
   } else if (!r.finished && r.lap > r.lastLap) {
     const lt = raceTime - r.lapStart; if (!r.bestLap || lt < r.bestLap) r.bestLap = lt;
     r.lapStart = raceTime; r.lastLap = r.lap;
-    if (r.isPlayer) { Sfx.lap(); showBig(r.lap === save.laps ? 'ÚLTIMA VOLTA' : `VOLTA ${r.lap}`, 1400, `melhor volta ${fmt(r.bestLap)}`); }
+    if (r.isPlayer) { Sfx.lap(); showBig(r.lap === save.laps ? 'ÚLTIMA VOLTA' : `VOLTA ${r.lap}`, 1400, `melhor volta ${fmt(r.bestLap)}`); speak(r.lap === save.laps ? 'Última volta!' : `Volta ${r.lap}!`, true); }
   }
   if (r.isPlayer && !r.air && amp > 0.1) {
     const st = Math.floor(r.phase / Math.PI);
@@ -3009,9 +3022,9 @@ function explodeMissile(m, hit) {
   hit.stun = 1.4; hit.flip = 1.0; hit.vx *= 0.2; hit.vz *= 0.2; hit.vy = 8; hit.nitroOn = false; hit.hits++;
   endDrift(hit, true);
   if (m.owner !== hit) m.owner.missHits++;
-  if (hit.isPlayer) { pop('ATINGIDO POR UM MÍSSIL!', 'r'); shake(0.8); vib([100, 50, 160]); }
+  if (hit.isPlayer) { pop('ATINGIDO POR UM MÍSSIL!', 'r'); shake(0.8); vib([100, 50, 160]); if (m.owner !== hit) narrate(`${m.owner.b.name} ACERTOU VOCÊ COM UM MÍSSIL!`, true); }
   else if (!m.owner.isPlayer && m.owner !== hit) narrate(`${m.owner.b.name} ACERTOU ${hit.b.name} COM UM MÍSSIL!`);
-  if (m.owner.isPlayer && hit !== m.owner) { pop(`ACERTOU ${hit.b.name}!`, 'v'); m.owner.nitro = Math.min(100, m.owner.nitro + 10); }
+  if (m.owner.isPlayer && hit !== m.owner) { pop(`ACERTOU ${hit.b.name}!`, 'v'); narrate(`VOCÊ ACERTOU ${hit.b.name}!`, true); m.owner.nitro = Math.min(100, m.owner.nitro + 10); }
 }
 
 function syncVisual(r) {
@@ -3068,6 +3081,37 @@ function showBig(text, ms = 1200, small = '') {
   el.classList.remove('pop'); void el.offsetWidth; el.classList.add('pop');
   clearTimeout(bigTimer); if (ms) bigTimer = setTimeout(() => { el.innerHTML = ''; }, ms);
 }
+/* Locutor: voz do sistema (navegador) ou TextToSpeech do Android no app */
+const ORD = ['', 'primeiro', 'segundo', 'terceiro', 'quarto', 'quinto', 'sexto'];
+function speakable(t) {
+  return t.replace(/(\d)º LUGAR/g, (m, d) => ORD[+d] + ' lugar').replace(/(\d)º/g, (m, d) => ORD[+d] || d)
+    .replace(/[+]\d+/g, '').replace(/[^\p{L}\p{N} ,.!?-]/gu, ' ').replace(/\s+/g, ' ').trim().toLowerCase();
+}
+const Voice = {
+  v: null, until: 0,
+  pick() { try { const vs = speechSynthesis.getVoices(); this.v = vs.find(v => /pt[-_]BR/i.test(v.lang)) || vs.find(v => /^pt/i.test(v.lang)) || null; } catch (e) { } },
+  duck(on) { bgm.volume = on ? 0.2 : (state === 'paused' ? 0.25 : 0.6); if (Sfx.music && Sfx.ctx) Sfx.music.gain.setTargetAtTime(on ? 0.07 : (MUSIC_MODES[save.musicMode] === '8-BIT' ? 0.22 : 0), Sfx.ctx.currentTime, 0.1); },
+  say(text, prio) {
+    if (!save.voice) return;
+    const t = speakable(text); if (!t) return;
+    const now = performance.now();
+    if (window.AndroidTTS) {
+      try { if (!prio && AndroidTTS.busy()) return; AndroidTTS.speak(t); } catch (e) { return; }
+      this.duck(true); clearTimeout(this.tm); this.tm = setTimeout(() => this.duck(false), 500 + t.length * 70); return;
+    }
+    if (!('speechSynthesis' in window)) return;
+    if (speechSynthesis.speaking || now < this.until) { if (!prio) return; speechSynthesis.cancel(); }
+    if (!this.v) this.pick();
+    const u = new SpeechSynthesisUtterance(t);
+    u.lang = 'pt-BR'; if (this.v) u.voice = this.v; u.rate = 1.12; u.pitch = 1.05;
+    u.onstart = () => this.duck(true); u.onend = u.onerror = () => { this.until = 0; this.duck(false); };
+    this.until = now + 400 + t.length * 80;
+    try { speechSynthesis.speak(u); } catch (e) { }
+  },
+  stop() { try { if (window.AndroidTTS) AndroidTTS.stop(); else speechSynthesis.cancel(); } catch (e) { } this.duck(false); },
+};
+try { speechSynthesis.onvoiceschanged = () => Voice.pick(); } catch (e) { }
+function speak(text, prio) { Voice.say(text, prio); }
 function vib(p) { if (save.vib && navigator.vibrate) try { navigator.vibrate(p); } catch (e) { } }
 function show(id, on) { $(id).hidden = !on; }
 function setCoins() { document.querySelectorAll('.cval').forEach(e => e.textContent = save.coins.toLocaleString('pt-BR')); }
@@ -3122,7 +3166,7 @@ $('upList').addEventListener('click', e => {
 });
 
 function toMenu() {
-  clearRace();
+  clearRace(); Voice.stop(); $('pops').style.top = '';
   state = 'menu';
   ['hud', 'results', 'pause', 'touch', 'lights', 'garage', 'shop', 'missions', 'cupEnd'].forEach(id => show(id, false));
   show('menu', true); $('big').innerHTML = ''; $('pops').innerHTML = '';
@@ -3259,7 +3303,7 @@ const GOAL_REWARD = 120;
 let raceGoals = [], goalsShowT = 0;
 function pickGoals() {
   raceGoals = GOALS.slice().sort(() => Math.random() - 0.5).slice(0, 3).map(g => ({ g, done: false }));
-  goalsShowT = 9; renderGoals();
+  goalsShowT = 5; renderGoals();
 }
 function goalLine(x, pos) {
   const g = x.g;
@@ -3278,7 +3322,7 @@ function checkGoals(dt) {
   let changed = false;
   for (const x of raceGoals) {
     if (x.done || x.g.final) continue;
-    if (x.g.v(player) >= x.g.n) { x.done = true; changed = true; pop(`DESAFIO CUMPRIDO! +${GOAL_REWARD}`, 'g'); Sfx.lap(); goalsShowT = 4; }
+    if (x.g.v(player) >= x.g.n) { x.done = true; changed = true; pop(`DESAFIO CUMPRIDO! +${GOAL_REWARD}`, 'g'); Sfx.lap(); goalsShowT = 2.5; speak('Desafio cumprido!'); }
   }
   goalsShowT -= dt;
   const want = goalsShowT > 0;
@@ -3425,6 +3469,7 @@ function onPlayerFinish() {
   state = 'finished'; finishTimer = 0;
   Sfx.fanfare(); excitement = 1.3;
   showBig(pos === 1 ? 'VITÓRIA!' : 'CHEGADA!', 3800, `${pos}º LUGAR · ${fmt(player.finishTime)}`);
+  speak(pos === 1 ? `Vitória! ${player.b.name} vence a corrida!` : `${player.b.name} cruza a linha em ${ORD[pos]} lugar!`, true);
   setTimeout(() => player && Sfx.voice(player.b), 700);
 }
 function showResults() {
@@ -3477,6 +3522,7 @@ function refreshPauseBtns() {
   $('assistBtn').textContent = 'ASSISTÊNCIA: ' + (save.assist ? 'LIGADA' : 'DESLIGADA');
   $('qualBtn').textContent = 'GRÁFICOS: ' + QUALS[save.qual].n;
   $('vibBtn').textContent = 'VIBRAÇÃO: ' + (save.vib ? 'LIGADA' : 'DESLIGADA');
+  $('voiceBtn').textContent = 'LOCUTOR: ' + (save.voice ? 'LIGADO' : 'DESLIGADO');
   $('musicBtn').textContent = 'MÚSICA: ' + MUSIC_MODES[save.musicMode];
 }
 
@@ -3533,7 +3579,8 @@ let lastBoard = '', narrT = 0, narrCD = 0, lastLeader = null, lastPos = 0, first
 function narrate(text, prio) {
   if (!player || (narrCD > 0 && !prio)) return;
   const el = $('narr'); el.textContent = text; el.classList.add('on');
-  narrT = 2.6; narrCD = prio ? 1.2 : 2.4;
+  narrT = 3; narrCD = prio ? 1.4 : 2.8;
+  speak(text, prio);
 }
 function narrator(list, dt) {
   narrT -= dt; narrCD -= dt;
@@ -3564,6 +3611,7 @@ function updateHud(dt) {
   if (player.lockT > 0 && Math.random() < dt * 6) Sfx.lockon();
   $('tMn').textContent = player.ammo;
   drawMap(); drawGauge();
+  const sb = $('topStack').getBoundingClientRect(); $('pops').style.top = Math.round(sb.bottom + 6) + 'px';
 }
 const fxEl = $('fx'), vigEl = $('vig');
 function setFx(lines, vig) { fxEl.style.opacity = lines; vigEl.style.opacity = vig; if (lines > 0) fxEl.style.transform = `rotate(${Math.random() * 6}deg)`; }
@@ -3634,6 +3682,7 @@ click('pauseBtn', () => setPaused(true));
 click('resumeBtn', () => setPaused(false));
 click('restartBtn', () => { show('pause', false); startRace(); });
 click('quitBtn', () => { cup = null; toMenu(); });
+click('voiceBtn', () => { save.voice = !save.voice; persist(); refreshPauseBtns(); if (save.voice) speak('Locutor ligado!', true); else Voice.stop(); });
 click('vibBtn', () => { save.vib = !save.vib; persist(); refreshPauseBtns(); vib(40); });
 click('camBtn', () => { save.cam = (save.cam + 1) % CAMS.length; persist(); refreshPauseBtns(); });
 click('assistBtn', () => { save.assist = !save.assist; persist(); refreshPauseBtns(); });
@@ -3720,10 +3769,10 @@ function frame() {
       if (n > 0 && n <= 3) { spans[3 - n].className = 'r'; setLamps(4 - n, false); Sfx.beep(false); }
       if (n <= 0) {
         spans.forEach(s => s.className = 'g'); setLamps(3, true); Sfx.beep(true);
-        showBig('VAI!', 900); state = 'race';
+        showBig('VAI!', 900); state = 'race'; speak('Valendo!', true);
         setTimeout(() => show('lights', false), 900);
         if (player.pressT !== null) {
-          if (player.pressT <= 0.6) { player.mini = 1.2; pop('LARGADA PERFEITA!', 'v'); Sfx.boost(); vib(40); }
+          if (player.pressT <= 0.6) { player.mini = 1.2; pop('LARGADA PERFEITA!', 'v'); Sfx.boost(); vib(40); speak('Largada perfeita!', true); }
           else if (player.pressT > 1.4) { player.stun = 0.7; pop('QUEIMOU A LARGADA!', 'r'); }
         }
         runners.forEach(r => { if (!r.isPlayer && Math.random() < 0.35) r.mini = 0.8; });
