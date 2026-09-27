@@ -119,8 +119,8 @@ A habilidade é usada com **R** (ou o botão HABILIDADE no celular). Você larga
 A Davi muda de forma:
 
 - **Galinha**: começa fraca, com 1 quadrado em cada atributo. Os pássaros não a atacam.
-- **Dinossauro** (T-Rex): ao deixar **Músculos** e **Garras** no máximo na oficina, vira dinossauro de vez e fica com um dos atributos base mais altos do jogo.
-- **Dinossauro robô**: o upgrade mecânico dela só pode ser comprado depois de Músculos e Garras no máximo. Vira um dinossauro robô blindado que lança **4 mísseis de uma vez**, cada um atrás de um rival.
+- **Dinossauro** (T-Rex, 4 vezes a altura da galinha): ao deixar **Músculos** e **Garras** no máximo na oficina, vira dinossauro de vez e fica com um dos atributos base mais altos do jogo.
+- **Dinossauro robô** (2 vezes a altura do dinossauro): o upgrade mecânico dela só pode ser comprado depois de Músculos e Garras no máximo. Vira um dinossauro robô blindado que lança **4 mísseis de uma vez**, cada um atrás de um rival.
 - Ainda galinha, cada **carga especial** (cristal roxo) tem 20% de chance de transformá-la em dinossauro por 12 segundos.
 
 Modelos: Chicken (jeremy, Poly Pizza), T-Rex (Quaternius, CC0) e um dinossauro robô, enviados pelo jogador.

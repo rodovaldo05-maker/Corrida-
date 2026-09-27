@@ -968,8 +968,8 @@ const BREEDS = [
 ];
 const DAVI_FORMS = {
   galinha: {},
-  dino: { kind: 'rig', rig: 'trex', raca: 'DINOSSAURO ANCESTRAL', voice: 'roar', pitch: 0.8, mass: 2, spd: 5, acc: 5, han: 4, jmp: 3 },
-  robo: { model: 'robodino', raca: 'DINOSSAURO ROBÔ', voice: 'roar', pitch: 0.6, mass: 2.2, spd: 5, acc: 5, han: 5, jmp: 3, missiles4: true, gearY: 0, gearDz: 0 },
+  dino: { kind: 'rig', rig: 'trex', scale: 2.5, camK: 1.9, rad: 2.2, raca: 'DINOSSAURO ANCESTRAL', voice: 'roar', pitch: 0.8, mass: 2, spd: 5, acc: 5, han: 4, jmp: 3 },
+  robo: { model: 'robodino', scale: 5.45, camK: 3.4, rad: 4, raca: 'DINOSSAURO ROBÔ', voice: 'roar', pitch: 0.6, mass: 2.2, spd: 5, acc: 5, han: 5, jmp: 3, missiles4: true, gearY: 0, gearDz: 0 },
 };
 const daviReady = up => up.acel >= 5 && up.grip >= 5;
 const daviForm = (up, mech) => mech && daviReady(up) ? 'robo' : daviReady(up) ? 'dino' : 'galinha';
@@ -1593,7 +1593,7 @@ function buildTrexGear(b, num, color, o) {
   const excl = new THREE.Sprite(new THREE.SpriteMaterial({ map: exclTex, depthTest: false }));
   excl.scale.set(0.4, 0.4, 1); excl.position.set(0, 0.8, 0); excl.visible = false; head.add(excl);
   const blob = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), new THREE.MeshBasicMaterial({ map: blobTex, transparent: true, depthWrite: false }));
-  blob.rotation.x = -Math.PI / 2; blob.position.y = 0.04; blob.scale.set(1.6, 4.2, 1); root.add(blob);
+  blob.rotation.x = -Math.PI / 2; blob.position.y = 0.04; blob.scale.set(1.6 * (b.scale || 1), 4.2 * (b.scale || 1), 1); root.add(blob);
   const hi = { hat: [0, 0.34, -0.1], s: 0.22, eye: [0.08, 0, 0.1], er: 0.03, cape: [0, y0 + 0.05, z0 + 0.3], capeW: 0.4, capeL: 1.2, noGlasses: true };
   const D = { root, model, body, torso: body, neckPiv: head, headPiv: head, head, legs: [], tails: [], ears: [], tongue: new THREE.Group(), flames, stars, excl, blob, b, launcher, anim: animRig, vestMat: padMat, hi, crown: null, mixer: null, acts: {}, cur: '', shootT: 0, lastT: null, runK: 17 };
   D.shoot = () => { D.shootT = 0.45; };
@@ -3983,8 +3983,8 @@ function passives(dt) {
 function interactions(dt) {
   passives(dt);
   for (let i = 0; i < runners.length; i++) for (let j = i + 1; j < runners.length; j++) {
-    const a = runners[i], b = runners[j], dx = b.x - a.x, dz = b.z - a.z, d2 = dx * dx + dz * dz, m = DOG_R * 2;
-    if (d2 < m * m && Math.abs(a.y + a.flyY - b.y - b.flyY) < 1.2) {
+    const a = runners[i], b = runners[j], dx = b.x - a.x, dz = b.z - a.z, d2 = dx * dx + dz * dz, m = (a.b.rad || DOG_R) + (b.b.rad || DOG_R);
+    if (d2 < m * m && Math.abs(a.y + a.flyY - b.y - b.flyY) < 1.2 * Math.max(a.b.rad || 1, b.b.rad || 1)) {
       const d = Math.sqrt(d2) || 0.01, nx = dx / d, nz = dz / d, ov = (m - d) / 2;
       const wa = Math.min(massOf(b), 50) / (Math.min(massOf(a), 50) + Math.min(massOf(b), 50)) * 2, wb = 2 - wa;
       a.x -= nx * ov * wa; a.z -= nz * ov * wa; b.x += nx * ov * wb; b.z += nz * ov * wb;
@@ -4100,7 +4100,7 @@ function updateMissiles(dt) {
         m.dodge = m.dodge || new Set(); m.dodge.add(o);
         if (Math.random() < 0.5) { if (o.isPlayer) pop('ESQUIVOU DO MÍSSIL!', 'v'); else if (m.owner.isPlayer) pop('O SOMBRA ESQUIVOU!', 'r'); continue; }
       }
-      if (Math.hypot(o.x - m.pos.x, o.z - m.pos.z) < 1.8 && Math.abs(o.y + 1 - m.pos.y) < 1.8) { hit = o; break; }
+      const rr = o.b.rad || 1; if (Math.hypot(o.x - m.pos.x, o.z - m.pos.z) < 1.8 * rr && Math.abs(o.y + rr - m.pos.y) < 1.8 * rr) { hit = o; break; }
     }
     if (hit || m.t > 3.2) { explodeMissile(m, hit); missiles.splice(i, 1); }
   }
@@ -4169,10 +4169,10 @@ function updateChaseCam(r, dt, snap = false) {
     camera.position.set(hp.x - camDir.x * 0.3, hp.y + 0.55, hp.z - camDir.z * 0.3);
     camLook.set(r.x + camDir.x * 25, 1.2 + (r.y + r.flyY) * 0.3, r.z + camDir.z * 25);
   } else {
-    const back = (save.cam ? 11.5 : 6.6) + v * 0.025, up = save.cam ? 6 : 2.7;
+    const ck = r.b.camK || 1, back = (save.cam ? 11.5 : 6.6) * ck + v * 0.025, up = (save.cam ? 6 : 2.7) * ck;
     _cv.set(r.x - camDir.x * back, up + (r.y + r.flyY) * 0.5, r.z - camDir.z * back);
     camera.position.lerp(_cv, snap ? 1 : 1 - Math.exp(-8 * dt));
-    camLook.set(r.x + camDir.x * 5, 1.3 + (r.y + r.flyY) * 0.6, r.z + camDir.z * 5);
+    camLook.set(r.x + camDir.x * 5 * ck, 1.3 * ck + (r.y + r.flyY) * 0.6, r.z + camDir.z * 5 * ck);
   }
   if (shakeAmt > 0.001) { camera.position.x += (Math.random() - 0.5) * shakeAmt; camera.position.y += (Math.random() - 0.5) * shakeAmt; shakeAmt *= Math.exp(-7 * dt); }
   camera.lookAt(camLook);
@@ -5098,9 +5098,9 @@ function frame() {
       turntable.rotation.y += dt * 0.4;
       preview.root.rotation.y = turntable.rotation.y;
       preview.anim(preview, { v: 0, y: 0, vy: 0, phase: 0, yawRate: 0, stun: 0, spook: 0, nitro: false, idle: true }, time);
-      const p = preview.root.position, w = innerWidth, h = innerHeight, portrait = h > w * 1.05, rad = portrait ? 8.2 : 6.4;
-      camera.position.set(p.x + Math.cos(menuAng * 0.4) * rad, 2.4, p.z + Math.sin(menuAng * 0.4) * rad);
-      camera.lookAt(p.x, 1.1, p.z);
+      const ck = preview.b.camK || 1, p = preview.root.position, w = innerWidth, h = innerHeight, portrait = h > w * 1.05, rad = (portrait ? 8.2 : 6.4) * ck;
+      camera.position.set(p.x + Math.cos(menuAng * 0.4) * rad, 2.4 * ck, p.z + Math.sin(menuAng * 0.4) * rad);
+      camera.lookAt(p.x, 1.1 * ck, p.z);
       camera.fov = 50;
       if (portrait) camera.setViewOffset(w, h, 0, h * 0.14, w, h);
       else if (w > 820) camera.setViewOffset(w, h, Math.min(220, w * 0.18), 0, w, h);
