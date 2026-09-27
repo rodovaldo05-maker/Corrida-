@@ -48,13 +48,12 @@ Se o `modelos.js` não carregar, o jogo usa os modelos feitos por código. O scr
 
 ## Corredores com modelos 3D prontos
 
-16 corredores usam modelos `.glb` (convertidos para `caes.js`). Como esses modelos não têm esqueleto, as patas galopam por deformação no próprio jogo.
+15 corredores usam modelos `.glb` (convertidos para `caes.js`). Como esses modelos não têm esqueleto, as patas galopam por deformação no próprio jogo.
 
 | Corredor | Raça | Modelo e autor |
 |---|---|---|
 | Faiton | Lobo negro | enviado pelo jogador |
 | Paz | Cachorro da paz (voa numa nuvem) | enviado pelo jogador |
-| Pincher Voador | Pinscher aviador (voa de avião) | enviado pelo jogador |
 | Pintado | Mabeco | African wild dog, Poly by Google |
 | Ruivo | Dingo | Dingo, Poly by Google |
 | Ninja | Shiba Inu | Black Shiba Inu, elkiotbear |
@@ -69,7 +68,7 @@ Se o `modelos.js` não carregar, o jogo usa os modelos feitos por código. O scr
 | Canela | Akita | Dog, Poly by Google |
 | Biscoito | Beagle | Beagle, Poly by Google |
 
-Os modelos de terceiros vêm do [Poly Pizza](https://poly.pizza) (Poly by Google e os outros autores: CC-BY 3.0; Quaternius: CC0). Os voadores (Paz e Pincher Voador) passam por cima de barreiras, poças e bolas.
+Os modelos de terceiros vêm do [Poly Pizza](https://poly.pizza) (Poly by Google e os outros autores: CC-BY 3.0; Quaternius: CC0). O Paz voa numa nuvem e passa por cima de barreiras, poças e bolas.
 
 ## Campeonato, loja e missões
 

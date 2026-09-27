@@ -61,7 +61,7 @@
   "len": 1.9,
   "rot": [
    0,
-   90,
+   135,
    0
   ]
  },
@@ -69,17 +69,6 @@
   "id": "major",
   "file": "8f34881f-Dog_by_madtrollstudio_-_H2SkxSJCfI.glb",
   "len": 2.0
- },
- {
-  "id": "voador",
-  "file": "92e7fdf3-pincher_voador.glb",
-  "len": 2.2,
-  "rot": [
-   0,
-   180,
-   0
-  ],
-  "fitH": 1.6
  },
  {
   "id": "pug2",

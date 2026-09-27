@@ -361,7 +361,7 @@
     <button class="btn sec" id="musicBtn">MÚSICA: TODAS</button>
     <button class="btn sec" id="quitBtn">SAIR PARA O MENU</button>
   </div>
-  <p class="credits">Modelos 3D: Poly by Google, madtrollstudio, elkiotbear, Pat Siefring e Quaternius (via Poly Pizza, CC-BY/CC0) · cenários CraftPix · Faiton, Paz e Pincher Voador enviados pelo jogador</p>
+  <p class="credits">Modelos 3D: Poly by Google, madtrollstudio, elkiotbear, Pat Siefring e Quaternius (via Poly Pizza, CC-BY/CC0) · cenários CraftPix · Faiton e Paz enviados pelo jogador</p>
 </div>
 
 <div id="results" class="screen" hidden>
@@ -845,9 +845,8 @@ const BREEDS = [
     neck: 0.1, neckA: 0.3, skull: [0.11, 0.085, 0.09], muzzle: [0.2, 0.045, 0.045, 0.03], ear: 'erect', earW: 0.042, earL: 0.07,
     tail: [0.2, 0.012, -1.2, 0.1], spd: 4, acc: 4, han: 2, jmp: 3 },
   // modelos 3D enviados (.glb)
-  { id: 'faiton', name: 'FAITON', raca: 'LOBO NEGRO', kind: 'glb', model: 'faiton', color: '#dc2626', pitch: 0.7, mass: 1.3, spd: 5, acc: 3, han: 3, jmp: 2 },
+  { id: 'faiton', name: 'FAITON', raca: 'LOBO NEGRO', kind: 'glb', model: 'faiton', gearY: 0.64, gearDz: -0.13, color: '#dc2626', pitch: 0.7, mass: 1.3, spd: 5, acc: 3, han: 3, jmp: 2 },
   { id: 'paz', name: 'PAZ', raca: 'CACHORRO DA PAZ', kind: 'glb', model: 'paz', fly: true, color: '#38bdf8', pitch: 1.2, mass: 0.9, spd: 3, acc: 3, han: 4, jmp: 2 },
-  { id: 'voador', name: 'PINCHER VOADOR', raca: 'PINSCHER AVIADOR', kind: 'glb', model: 'voador', fly: true, prop: true, color: '#f472b6', pitch: 1.6, mass: 1.0, spd: 4, acc: 3, han: 3, jmp: 1 },
   { id: 'pintado', name: 'PINTADO', raca: 'MABECO', kind: 'glb', model: 'mabeco', color: '#a16207', pitch: 1.1, spd: 4, acc: 4, han: 3, jmp: 2 },
   { id: 'ruivo', name: 'RUIVO', raca: 'DINGO', kind: 'glb', model: 'dingo', color: '#ea580c', pitch: 1.0, spd: 4, acc: 3, han: 3, jmp: 3 },
   { id: 'ninja', name: 'NINJA', raca: 'SHIBA INU', kind: 'glb', model: 'shiba', color: '#334155', pitch: 1.3, spd: 3, acc: 4, han: 4, jmp: 2 },
@@ -1292,6 +1291,9 @@ const GLB = {};
         if (y < legTop && y > legTop * 0.75) { pz[g] += z; pn[g]++; }
       }
       for (let g = 0; g < 4; g++) pz[g] = pn[g] ? pz[g] / pn[g] : zc + (g < 2 ? Ln * 0.3 : -Ln * 0.3);
+      const saddleZ = lerp((pz[0] + pz[1]) / 2, (pz[2] + pz[3]) / 2, 0.6);
+      let saddleTop = 0;
+      for (let i = 0; i < m.v; i++) { const x = pos[i * 3], y = pos[i * 3 + 1], z = pos[i * 3 + 2]; if (Math.abs(z - saddleZ) < Ln * 0.05 && Math.abs(x) < W * 0.25 && y > saddleTop) saddleTop = y; }
       const geo = new THREE.BufferGeometry();
       geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
       geo.setAttribute('color', new THREE.BufferAttribute(col, 3));
@@ -1300,7 +1302,7 @@ const GLB = {};
       geo.setIndex(new THREE.BufferAttribute(m.big ? new Uint32Array(idx) : new Uint16Array(idx), 1));
       geo.computeVertexNormals(); geo.computeBoundingSphere();
       geo.userData.keep = true;
-      GLB[m.n] = { geo, W, H, L: Ln, zc, zmin, zmax, belly, back, headTop, legTop, pivots: pz, raw8, idx };
+      GLB[m.n] = { geo, W, H, L: Ln, zc, zmin, zmax, belly, back, headTop, legTop, pivots: pz, raw8, idx, saddleZ, saddleTop };
     }
   } catch (e) { console.warn('modelos .glb não carregados', e); }
 })();
@@ -1349,10 +1351,10 @@ function buildGlb(b, num, color) {
   // cabeça "invisível" para estrelinhas, susto, chapéu e câmera
   const head = new THREE.Group(); head.position.set(0, G.headTop - G.H * 0.08, G.zmax - G.L * 0.1); body.add(head);
   const k = G.L / 1.9;
-  const backY = b.fly ? G.back : G.back, gz = b.fly ? G.zc - G.L * 0.22 : G.zc - G.L * 0.05;
+  const gz = b.fly ? G.zc - G.L * 0.22 : G.saddleZ + (b.gearDz || 0) * G.L;
   // selinha colorida com número + nitro + lança-mísseis
   const padMat = new THREE.MeshStandardMaterial({ color, roughness: 0.45, metalness: 0.15 });
-  const saddleY = b.fly ? G.H * 0.62 : G.belly + (G.back - G.belly) * 0.92;
+  const saddleY = b.fly ? G.H * 0.62 : b.gearY ? G.H * b.gearY : G.saddleTop - (b.gearDy || 0.04) * G.H;
   const pad = new THREE.Mesh(new THREE.SphereGeometry(1, 20, 8, 0, Math.PI * 2, 0, Math.PI / 2), padMat);
   pad.scale.set(G.W * (b.fly ? 0.3 : 0.55), 0.06 * k, G.L * 0.16); pad.position.set(0, saddleY, gz); pad.castShadow = true; body.add(pad);
   const nm = new THREE.MeshStandardMaterial({ map: numberTex(num, color), transparent: true, roughness: 0.5, side: THREE.DoubleSide });
@@ -1365,7 +1367,7 @@ function buildGlb(b, num, color) {
   excl.scale.set(0.3, 0.3, 1); excl.position.set(0, 0.55 * k, 0); excl.visible = false; head.add(excl);
   const blob = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), new THREE.MeshBasicMaterial({ map: blobTex, transparent: true, depthWrite: false }));
   blob.rotation.x = -Math.PI / 2; blob.position.y = 0.04; blob.scale.set(G.W * 2.2, G.L * 1.3, 1); root.add(blob);
-  const hi = { hat: [0, 0.1 * k, -0.02], s: 0.17 * k, eye: [0.08, 0, 0.1], er: 0.03, cape: [0, G.back - 0.02, G.zc + G.L * 0.25], capeW: G.W * 0.4, capeL: G.L * 0.85, noGlasses: true };
+  const hi = { hat: [0, 0.1 * k, -0.02], s: 0.17 * k, eye: [0.08, 0, 0.1], er: 0.03, cape: [0, saddleY + 0.02, gz + G.L * 0.22], capeW: G.W * 0.4, capeL: G.L * 0.85, noGlasses: true };
   return { root, model, body, torso: body, neckPiv: head, headPiv: head, head, legs: [], tails: [], ears: [], tongue: new THREE.Group(), flames, stars, excl, blob, b, launcher, anim: animGlb, vestMat: padMat, hi, crown: null, mat, prop, G };
 }
 function animGlb(D, st, t) {
