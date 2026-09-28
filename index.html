@@ -3052,7 +3052,7 @@ function updateBirds(dt, racing) {
     if (birdTimer <= 0 && busy < 1 + save.diff) {
       birdTimer = 6 + Math.random() * 5 - save.diff;
       const free = birds.find(b => b.state === 'off');
-      const cands = runners.filter(r => !r.finished && r.birdT <= 0 && !has(r, 'major') && !has(r, 'davi') && r.xM !== 'birdProof' && r.nightT <= 0 && r.shield <= 0);
+      const cands = runners.filter(r => !r.finished && r.birdT <= 0 && !has(r, 'major') && !has(r, 'davi') && r.xM !== 'birdProof' && r.nightT <= 0 && r.shield <= 0 && !pk(r, 'guard', 'bird'));
       if (free && cands.length) {
         const tgt = cands.includes(player) && Math.random() < 0.5 ? player : cands[Math.random() * cands.length | 0];
         const a = sampleAt(tgt.dist + 55 + Math.random() * 20);
@@ -3327,85 +3327,85 @@ const has = (r, id) => r.b.id === id;
    A: [nome, texto, gatilho, efeito, valor, cor]   C/J: [nome, texto, tipo]
    M: [nome, texto, passiva, cor da pele, força da pele, cor das latas, tamanho]   H: [nome, texto, tipo, cor] */
 const EXTRA = {
-  davi: {
-    S: ['VÁCUO JURÁSSICO', 'No vácuo de um rival corre ainda mais rápido', 'slip', 1.09, '#65a30d', 'dust'],
-    A: ['FORÇA JURÁSSICA', 'Ao pousar de um pulo ganha um mini-turbo (com as garras, vira dinossauro)', 'land', 'burst', 0.8, '#84cc16'],
-    C: ['GARRAS DE RAPTOR', 'Faz curvas mais fechadas (com os músculos, vira dinossauro)', 'sharp'],
-    J: ['VOO DE GALINHA', 'Bate as asas e cai devagar depois do pulo', 'glide'],
-    M: ['DINOSSAURO ROBÔ', 'Vira um dinossauro robô blindado que lança 4 mísseis de uma vez. Só depois de maximizar Músculos e Garras', 'armor', '#9ca3af', 0, '#dc2626', 1],
+  davi: { // cada passiva muda com a forma: galinha / dinossauro / robô (DAVI_FX)
+    S: ['MÚSCULOS ANCESTRAIS', 'GALINHA: depois de um tombo sai em pânico, 20% mais rápida por 3 s · DINO: os passos fazem a terra tremer e deixam lentos os rivais em até 8 m · ROBÔ: o reator conserta a durabilidade quando passa 4 s sem apanhar', 'perk'],
+    A: ['INSTINTO DE CAÇA', 'GALINHA: bota um ovo na pista a cada 10 s e quem pisar escorrega · DINO: cada ultrapassagem enche 15 de fúria · ROBÔ: cada pulo acende os foguetes dos pés (mini-turbo)', 'perk'],
+    C: ['CAUDA E GARRAS', 'GALINHA: cisca e pega os itens de mais longe · DINO: no drift a cauda varre os lados e derruba quem estiver perto · ROBÔ: giroscópio, o drift não perde velocidade e gruda mais na pista', 'perk'],
+    J: ['PULO ANCESTRAL', 'GALINHA: bate as asas e cai devagar · DINO: pisão ao pousar derruba quem estiver em até 10 m · ROBÔ: escudo defletor rebate um míssil a cada 8 s', 'perk'],
+    M: ['DINOSSAURO ROBÔ', 'Vira um dinossauro robô blindado que lança 4 mísseis de uma vez. Só depois de maximizar Músculos e Garras', 'perk', '#9ca3af', 0, '#dc2626', 1],
     H: ['RUGIDO JURÁSSICO', 'Um rugido que derruba todos que estiverem em volta', 'roar', '#dc2626'],
   },
   rex: {
-    S: ['PATRULHA', 'Com 2 ou mais rivais por perto corre mais rápido, com giroflex azul e vermelho', 'pack', 1.09, '#3b82f6', 'siren'],
-    A: ['CAPTURA', 'Acertar um míssil em alguém enche 30 de nitro', 'hitDealt', 'nitro', 30, '#60a5fa'],
-    C: ['ADESTRADO', 'Sustos e bichos voadores atrapalham só pela metade do tempo', 'steady'],
-    J: ['SALTO DE RESGATE', 'Pula 25% mais alto', 'high'],
-    M: ['K9 BLINDADO', 'Colete azul de polícia, latas azuis, fica maior e mísseis o atordoam menos', 'armor', '#1e3a8a', 0.45, '#1d4ed8', 1.1],
-    H: ['LATIDO DE COMANDO', 'Um latido gigante derruba todos que estiverem em volta', 'roar', '#93c5fd'],
+    S: ['PERSEGUIÇÃO', 'Com o líder até 40 m à frente liga o giroflex e corre 10% mais rápido', 'perk'],
+    A: ['MULTA', 'Quem o ultrapassa leva uma multa e fica 2 s mais lento', 'perk'],
+    C: ['ENCOSTAR', 'Derrapando, joga para o lado quem encostar nele', 'perk'],
+    J: ['ABORDAGEM', 'Pousar em cima de um rival (até 3 m) o derruba', 'perk'],
+    M: ['K9 BLINDADO', 'Colete azul de polícia: os 2 primeiros mísseis da corrida não o derrubam', 'perk', '#1e3a8a', 0.45, '#1d4ed8', 1.1],
+    H: ['BLOQUEIO POLICIAL', 'Monta uma barreira de cones atravessando a pista atrás dele: quem vier atrás capota', 'custom', '#3b82f6'],
   },
   pingo: {
-    S: ['ALARME DE INCÊNDIO', 'Com o nitro ligado corre ainda mais e solta faíscas de fogo', 'nitro', 1.07, '#ef4444', 'flame'],
-    A: ['MANGUEIRA', 'Pegar lata de nitro dá 3 segundos de escudo de água', 'can', 'shield', 3, '#38bdf8'],
-    C: ['BOTAS ANTIDERRAPANTES', 'Faz curvas mais fechadas', 'sharp'],
-    J: ['PULO DO CAMINHÃO', 'Ao pousar de um pulo ganha um mini-turbo', 'landBoost'],
-    M: ['VIATURA VERMELHA', 'Manchas vermelhas, latas amarelas e o nitro dura mais', 'tank', '#dc2626', 0.35, '#facc15', 1.08],
-    H: ['JATO DE ÁGUA', 'Espirra água para trás: quem vem atrás escorrega e perde o rumo', 'smoke', '#7dd3fc'],
+    S: ['MOLHADO', 'Por 4 s depois de passar numa poça corre 10% mais rápido', 'perk'],
+    A: ['HIDRANTE', 'Pulando uma barreira, espirra água: quem vem logo atrás escorrega', 'perk'],
+    C: ['ESGUICHO', 'Derrapando sobre poças, o mini-turbo carrega 2× mais rápido', 'perk'],
+    J: ['ESCADA DE BOMBEIRO', 'Segurando o pulo no ar, fica pairando por até 1 segundo', 'perk'],
+    M: ['TANQUE DE ÁGUA', 'Manchas vermelhas e latas amarelas; cada poça enche 20 de nitro', 'perk', '#dc2626', 0.35, '#facc15', 1.08],
+    H: ['MANGUEIRA DE INCÊNDIO', 'Jato de água para frente por 3 s: tira os rivais da frente do caminho e os deixa escorregando', 'custom', '#7dd3fc'],
   },
   caramelo: {
-    S: ['VIRADA DE SORTE', 'Em último lugar a sorte vira e ele corre muito mais rápido', 'last', 1.15, '#fbbf24', 'star'],
-    A: ['ACHADO', 'Pegar munição dá um mini-turbo', 'ammo', 'burst', 0.9, '#fde047'],
-    C: ['JEITINHO', 'Raspar na cerca não atrasa', 'rail'],
-    J: ['PULO DA SORTE', 'Nunca tropeça nas barreiras', 'spring'],
-    M: ['CARAMELO DOURADO', 'Pelo dourado, latas amarelas e pega itens de longe', 'magnet', '#f59e0b', 0.55, '#fde047', 1.08],
-    H: ['CHUVA DE OSSOS', 'Puxa todos os itens por perto e enche o nitro', 'magnet', '#fbbf24'],
+    S: ['DIA DE SORTE', 'A cada volta sorteia um bônus de velocidade de 0% a 15% para aquela volta', 'perk'],
+    A: ['TROCO', 'Cada osso ou lata tem 25% de chance de vir com um míssil de brinde', 'perk'],
+    C: ['RASPA E GANHA', 'Raspar na cerca dá 8 de nitro', 'perk'],
+    J: ['CAMBALHOTA DA SORTE', 'Cada pouso tem 30% de chance de dar um prêmio: nitro, míssil ou turbo', 'perk'],
+    M: ['COFRE DOURADO', 'Pelo dourado; ossos de ouro valem o triplo', 'perk', '#f59e0b', 0.55, '#fde047', 1.08],
+    H: ['ROLETA', 'Gira a roleta: jackpot (nitro cheio, mísseis e escudo), super turbo, azar para os rivais... ou um tombo (10%)', 'custom', '#fbbf24'],
   },
   flecha: {
-    S: ['RETA FINAL', 'Na última volta corre mais rápido, riscando o ar', 'lastLap', 1.08, '#e5e7eb', 'streak'],
-    A: ['LARGADA DE GALGO', 'Na largada dispara com um turbo longo', 'start', 'burst', 2.2, '#e5e7eb'],
-    C: ['CORPO AERODINÂMICO', 'O drift não gasta velocidade', 'driftSpeed'],
-    J: ['VOO RASANTE', 'Cai devagar depois do pulo, planando', 'glide'],
-    M: ['GALGO DE PRATA', 'Pelo prateado, latas ciano e o nitro enche sozinho', 'regen', '#cbd5e1', 0.6, '#22d3ee', 1.06],
-    H: ['DISPARO', 'Turbo enorme por 3 segundos', 'rocket', '#22d3ee'],
+    S: ['LINHA RETA', 'Quanto mais tempo sem virar, mais rápido fica (até +15%); virar zera', 'perk'],
+    A: ['VÁCUO DUPLO', 'Ao sair do vácuo de um rival, ganha um turbo', 'perk'],
+    C: ['TRAÇADO LIMPO', 'Uma volta inteira sem raspar na cerca dá 30 de nitro e um turbo', 'perk'],
+    J: ['PASSADA BAIXA', 'Pulos curtos e rápidos: volta ao chão 60% mais depressa', 'perk'],
+    M: ['AERODINÂMICA', 'Pelo prateado; o vácuo dos rivais funciona do dobro da distância', 'perk', '#cbd5e1', 0.6, '#22d3ee', 1.06],
+    H: ['ESTILINGUE', 'É lançado até colar atrás do rival da frente, já no vácuo dele', 'custom', '#e5e7eb'],
   },
   nevasca: {
-    S: ['VENTO ÁRTICO', 'Derrapando fica mais rápido e solta neve', 'drift', 1.08, '#e0f2fe', 'snow'],
-    A: ['TRENÓ', 'Cada mini-turbo enche 15 de nitro', 'mini', 'nitro', 15, '#bae6fd'],
-    C: ['DERRAPADA POLAR', 'O mini-turbo do drift carrega mais rápido', 'driftCharge'],
-    J: ['AVALANCHE', 'Ao pousar perto de rivais, a pancada os derruba', 'stomp'],
-    M: ['HUSKY GLACIAL', 'Pelo azul-gelo, latas brancas, fica maior e mais pesado nas trombadas', 'heavy', '#7dd3fc', 0.5, '#f0f9ff', 1.1],
-    H: ['NEVASCA', 'Congela a pista dos rivais à frente: eles escorregam por 4 segundos', 'freeze', '#bae6fd'],
+    S: ['PISTA GELADA', 'No Pico Nevado e na Serra corre 12% mais rápido; nas outras, 4%', 'perk'],
+    A: ['BOLA DE NEVE', 'Terminar um drift joga neve em quem vem atrás e os assusta', 'perk'],
+    C: ['PATINAÇÃO', 'Em pistas lisas e no gelo faz curvas 25% mais fechadas', 'perk'],
+    J: ['TRENÓ VOADOR', 'No ar o nitro não gasta', 'perk'],
+    M: ['MOTOR TÉRMICO', 'Pelo azul-gelo; nunca escorrega: imune a gelo, lama jogada e jatos de água', 'perk', '#7dd3fc', 0.5, '#f0f9ff', 1.1],
+    H: ['TRILHA DE GELO', 'Por 5 s deixa um rastro de gelo atrás: quem passar por cima escorrega', 'custom', '#bae6fd'],
   },
   bolinha: {
-    S: ['PUG BRAVO', 'Depois de levar um tombo volta com raiva e mais rápido', 'hurt', 1.14, '#fb923c', 'flame'],
-    A: ['OLHO NO PRÓXIMO', 'Cada ultrapassagem enche 8 de nitro', 'overtake', 'nitro', 8, '#fdba74'],
-    C: ['CENTRO DE GRAVIDADE', 'Trombadas quase não o empurram', 'anchor'],
-    J: ['QUICA-QUICA', 'Aperte pular de novo no ar para quicar mais uma vez', 'double'],
-    M: ['PUG DE AÇO', 'Corpo de aço, latas laranja, fica maior e levanta mais rápido', 'getUp', '#9ca3af', 0.6, '#f97316', 1.15],
-    H: ['ROLO COMPRESSOR', 'Vira uma bola e derruba quem estiver perto', 'quake', '#fb923c'],
+    S: ['VINGANÇA', 'Cada tombo que leva o deixa 3% mais rápido pelo resto da corrida (até +15%)', 'perk'],
+    A: ['RICOCHETE', 'Quando um míssil o acerta, é arremessado para frente e levanta mais rápido', 'perk'],
+    C: ['STRIKE', 'Batidas durante o drift derrubam o rival como pino de boliche', 'perk'],
+    J: ['QUICA-QUICA', 'Ao pousar, quica sozinho mais uma vez e ganha um mini-turbo', 'perk'],
+    M: ['PUG DE AÇO', 'Corpo de aço: trombadas não o tiram do lugar', 'perk', '#9ca3af', 0.6, '#f97316', 1.15],
+    H: ['BOLA DE BOLICHE', 'Vira uma bola por 4 s: mais rápido, imune e derruba quem encostar', 'custom', '#fb923c'],
   },
   pitiquin: {
-    S: ['NO ÓDIO', 'Com o nitro quase vazio corre mais rápido, soltando faíscas vermelhas', 'lowNitro', 1.1, '#ef4444', 'bolt'],
-    A: ['LATIDO ESTRIDENTE', 'O latido assusta rivais em volta dele, até os de trás', 'bark', 'scare', 12, '#fca5a5'],
-    C: ['PILHA ELÉTRICA', 'O mini-turbo dura mais', 'miniLong'],
-    J: ['PULO DE PULGA', 'No ar ganha velocidade em vez de perder', 'airSpeed'],
-    M: ['PINSCHER ARMADO', 'Pelo vinho, latas vermelhas, fica maior e carrega 1 míssil a mais', 'ammoCap', '#7f1d1d', 0.4, '#ef4444', 1.25],
-    H: ['PINSCHER VOADOR', 'Sai voando por 5 segundos, por cima de tudo', 'fly', '#fca5a5'],
+    S: ['BRAVINHO', 'Perto de um rival maior que ele, fica 12% mais rápido', 'perk'],
+    A: ['MORDIDA NO CALCANHAR', 'Colado atrás de um rival por 1 s, morde: o rival fica lento e ele ganha turbo', 'perk'],
+    C: ['MINI-CURVA', 'Em baixa velocidade faz curvas 30% mais fechadas', 'perk'],
+    J: ['PULO NERVOSO', 'Pode pular mesmo tonto: o pulo acaba com o atordoamento na hora', 'perk'],
+    M: ['PINSCHER ARMADO', 'Carrega até 5 mísseis, e eles voam 25% mais rápido', 'perk', '#7f1d1d', 0.4, '#ef4444', 1.25],
+    H: ['LATIDO SÔNICO', 'Uma onda sonora para frente: joga os rivais para os lados e destrói mísseis no caminho', 'custom', '#fca5a5'],
   },
   princesa: {
-    S: ['REINADO', 'Em 1º lugar corre ainda mais rápido, com brilho de coroa', 'leader', 1.06, '#f9a8d4', 'star'],
-    A: ['DIGNIDADE REAL', 'Ao se levantar de um tombo ganha 3 segundos de escudo', 'stunEnd', 'shield', 3, '#f9a8d4'],
-    C: ['VALSA REAL', 'Derrapar enche o nitro em dobro', 'driftNitro'],
-    J: ['SALTO REAL', 'Pula 25% mais alto', 'high'],
-    M: ['ARMADURA DE RAINHA', 'Pelo rosa, latas douradas e mísseis a atordoam menos', 'armor', '#f472b6', 0.45, '#fbbf24', 1.1],
-    H: ['MANTO REAL', 'Escudo por 7 segundos: nada a derruba', 'shield', '#f9a8d4'],
+    S: ['VAIDADE', 'Chapéu, óculos e capa equipados a deixam mais rápida (até +12%)', 'perk'],
+    A: ['TRIBUTO', 'Ao ultrapassar um rival, rouba até 12 de nitro dele', 'perk'],
+    C: ['CARRUAGEM', 'Correr fora da pista não a deixa mais lenta', 'perk'],
+    J: ['ENTRADA TRIUNFAL', 'Ao pousar, quem está a 8 m fica encantado e lento', 'perk'],
+    M: ['ESCOLTA REAL', 'Um drone de guarda bloqueia um ataque a cada 20 segundos', 'perk', '#f472b6', 0.45, '#fbbf24', 1.1],
+    H: ['TROCA DE COROA', 'Troca de lugar com o rival logo à frente dela', 'custom', '#f9a8d4'],
   },
   linda: {
-    S: ['LAMAÇAL', 'Fora da pista corre mais rápido que dentro', 'offroad', 1.12, '#a16207', 'dust'],
-    A: ['ESTOURO', 'Passar numa faixa de turbo dá um mini-turbo extra', 'pad', 'burst', 1.2, '#f59e0b'],
-    C: ['CASCOS FIRMES', 'Não escorrega em curvas lisas, lama, água ou gelo', 'slipGrip'],
-    J: ['PULO DE JAVALI', 'Pular uma barreira enche 25 de nitro', 'hurdleNitro'],
-    M: ['JAVALI COURAÇADO', 'Couro de bronze, latas verdes, fica maior e mais pesado nas trombadas', 'heavy', '#92400e', 0.45, '#22c55e', 1.12],
-    H: ['ESTOURO DA MANADA', 'Uma pancada no chão derruba quem estiver perto', 'quake', '#a16207'],
+    S: ['EMBALO', 'Depois de 5 s sem frear nem cair, corre 12% mais rápido', 'perk'],
+    A: ['FOCINHADA', 'Batendo em alguém por trás, rouba o embalo: ela ganha turbo, o rival perde velocidade', 'perk'],
+    C: ['LAMA NAS PATAS', 'Derrapando, joga lama para trás e quem vem atrás escorrega', 'perk'],
+    J: ['PANCADA NO CHÃO', 'Pousando de um pulo alto, faz o chão tremer: rivais até 12 m ficam lentos', 'perk'],
+    M: ['COURAÇA', 'Com o nitro ligado nada a derruba', 'perk', '#92400e', 0.45, '#22c55e', 1.12],
+    H: ['ESTOURO', 'Dispara imparável por 2,5 s e atropela todos no caminho', 'custom', '#a16207'],
   },
   faiton: {
     S: ['RELÂMPAGO NEGRO', 'Abaixo do 3º lugar ganha uma aura de raios vermelhos e corre mais rápido', 'behind', 1.12, '#ff1a1a', 'bolt'],
@@ -3424,147 +3424,147 @@ const EXTRA = {
     H: ['NUVEM DE TEMPESTADE', 'Raios caem nos 2 rivais logo à frente', 'storm', '#fde047'],
   },
   pintado: {
-    S: ['PERSEGUIÇÃO', 'No vácuo de um rival corre ainda mais', 'slip', 1.08, '#d6a55f', 'dust'],
-    A: ['MORDIDA', 'Cada ultrapassagem dá um mini-turbo', 'overtake', 'burst', 0.8, '#fbbf24'],
-    C: ['SAVANA', 'Correr fora da pista não deixa lento', 'offroad'],
-    J: ['BOTE', 'O pulo o lança para frente', 'launch'],
-    M: ['ALFA DA MATILHA', 'Pelagem dourada, latas pretas e o nitro enche sozinho', 'regen', '#ca8a04', 0.4, '#1f2937', 1.1],
-    H: ['CAÇADA', 'Dispara 3 mísseis teleguiados de uma vez', 'barrage', '#fbbf24'],
+    S: ['SANGUE NO FARO', 'Com um rival atordoado até 60 m à frente, corre 12% mais rápido', 'perk'],
+    A: ['CERCO', 'Com 2 ou mais rivais por perto, o latido derruba em vez de só assustar', 'perk'],
+    C: ['ENCURRALAR', 'Derrapando colado num rival, ele fica mais lento', 'perk'],
+    J: ['BOTE', 'Pulando com um rival até 14 m à frente, salta em cima dele', 'perk'],
+    M: ['RÁDIO DA MATILHA', 'Mísseis que vêm atrás dela voam 35% mais devagar', 'perk', '#ca8a04', 0.4, '#1f2937', 1.1],
+    H: ['CHAMADO DA MATILHA', 'Três mabecos fantasmas correm na frente e derrubam os rivais que alcançarem', 'custom', '#fbbf24'],
   },
   ruivo: {
-    S: ['DINGO FAMINTO', 'Nos primeiros 8 segundos da corrida corre muito mais rápido', 'start', 1.15, '#f97316', 'dust'],
-    A: ['ATERRISSAGEM', 'Ao pousar de um pulo ganha 10 de nitro', 'land', 'nitro', 10, '#fdba74'],
-    C: ['RASPÃO', 'Raspar na cerca não atrasa', 'rail'],
-    J: ['SALTO DO DESERTO', 'Enquanto está no ar o nitro enche', 'airNitro'],
-    M: ['DINGO DE FERRO', 'Pelo cor de ferrugem, latas laranja e se levanta mais rápido', 'getUp', '#c2410c', 0.5, '#fb923c', 1.1],
-    H: ['TEMPESTADE DE AREIA', 'Levanta uma nuvem de poeira: quem vem atrás perde o rumo', 'smoke', '#d6a55f'],
+    S: ['TERRA VERMELHA', 'Fora da pista corre 10% mais rápido que dentro', 'perk'],
+    A: ['ATALHO', 'Voltar da grama para a pista dá um mini-turbo', 'perk'],
+    C: ['CORTE DE CURVA', 'Derrapando na grama, o mini-turbo carrega 2× mais rápido', 'perk'],
+    J: ['PULO DO ACOSTAMENTO', 'Pulando de fora da pista, é lançado de volta para ela', 'perk'],
+    M: ['PNEUS DE TERRA', 'Poças e bolas rolando não o atrapalham', 'perk', '#c2410c', 0.5, '#fb923c', 1.1],
+    H: ['EMBOSCADA', 'Cava um buraco escondido na pista: o próximo rival que passar cai nele', 'custom', '#d6a55f'],
   },
   ninja: {
-    S: ['CHAKRA', 'Com o tanque de nitro quase cheio corre mais, com aura roxa', 'fullNitro', 1.07, '#a855f7', 'ring'],
-    A: ['KAWARIMI', 'Ao latir se teleporta um pouco para frente', 'bark', 'dash', 7, '#6b21a8'],
-    C: ['PASSO LEVE', 'Faz curvas mais fechadas', 'sharp'],
-    J: ['PIPA NINJA', 'Cai devagar depois do pulo, planando', 'glide'],
-    M: ['SHINOBI', 'Roupa preta e roxa, latas roxas e carrega 1 míssil a mais', 'ammoCap', '#1e1b4b', 0.55, '#a855f7', 1.1],
-    H: ['TELETRANSPORTE NINJA', 'Some numa fumaça e reaparece bem mais à frente', 'blink', '#a855f7'],
+    S: ['PASSO LEVE', 'Por 3 s depois de pousar, corre 10% mais rápido', 'perk'],
+    A: ['SUBSTITUIÇÃO', 'Quando um míssil ia acertá-lo, 40% de chance de deixar um tronco no lugar e aparecer 6 m à frente', 'perk'],
+    C: ['CURVA FANTASMA', 'Derrapando, atravessa os rivais sem bater', 'perk'],
+    J: ['SALTO NA PAREDE', 'Pulando perto da cerca, chuta a parede e é lançado para o meio da pista', 'perk'],
+    M: ['CAMUFLAGEM ÓPTICA', 'Enquanto derrapa, os mísseis não conseguem mirar nele', 'perk', '#1e1b4b', 0.55, '#a855f7', 1.1],
+    H: ['SHURIKENS', 'Lança 3 estrelas ninja em leque, em linha reta, que derrubam quem acertarem', 'custom', '#a855f7'],
   },
   sombra: {
-    S: ['ESPREITA', 'Colado atrás de um rival corre mais rápido', 'close', 1.1, '#4c1d95', 'smoke'],
-    A: ['SUMIÇO', 'Ao se levantar de um tombo se teleporta para frente', 'stunEnd', 'dash', 8, '#1e1b4b'],
-    C: ['DRIFT FANTASMA', 'O drift não gasta velocidade', 'driftSpeed'],
-    J: ['SALTO ESCURO', 'No ar os mísseis erram ele', 'airDodge'],
-    M: ['DOBERMANN DE OBSIDIANA', 'Pelo roxo-escuro, latas roxas e mísseis o atordoam menos', 'armor', '#3b0764', 0.5, '#7c3aed', 1.1],
-    H: ['ECLIPSE', 'O céu escurece, os pássaros fogem dele e os rivais ficam assustados', 'night', '#4c1d95'],
+    S: ['FUGA', 'Com um rival colado atrás (até 8 m), corre 12% mais rápido', 'perk'],
+    A: ['GOLPE PELAS COSTAS', 'Mísseis dele que acertam por trás atordoam mais e roubam um míssil do rival', 'perk'],
+    C: ['SEM RASTRO', 'Quem anda no vácuo dele não ganha nada; o nitro vai para ele', 'perk'],
+    J: ['MERGULHO', 'No ar, apertar pular de novo mergulha até o chão e solta uma onda de medo', 'perk'],
+    M: ['NÃO RASTREÁVEL', 'Mísseis disparados de mais de 30 m não conseguem mirar nele', 'perk', '#3b0764', 0.5, '#7c3aed', 1.1],
+    H: ['APAGÃO', 'Rivais em até 60 m ficam 5 s sem nitro, sem mísseis e sem habilidade', 'custom', '#4c1d95'],
   },
   pacoca: {
-    S: ['AÇÚCAR', 'Por 4 segundos depois de pegar uma lata corre mais rápido', 'fed', 1.12, '#fbbf24', 'star'],
-    A: ['LANCHINHO', 'Pegar uma carga especial dá um turbo', 'charge', 'burst', 1.5, '#fde047'],
-    C: ['PATAS SUJAS', 'Lama, água e gelo não atrapalham', 'puddle'],
-    J: ['PULO GORDINHO', 'Nunca tropeça nas barreiras', 'spring'],
-    M: ['PAÇOCA RECHEADA', 'Pelo cor de amendoim, latas marrons e o nitro dura mais', 'tank', '#b45309', 0.45, '#78350f', 1.12],
-    H: ['AÇÚCAR NO SANGUE', 'Turbo enorme por 3 segundos', 'rocket', '#fbbf24'],
+    S: ['BARRIGA CHEIA', 'Cada lata de nitro que come o deixa 2% mais rápido pelo resto da corrida (até +12%)', 'perk'],
+    A: ['ESTÔMAGO DE FERRO', 'Latas de nitro curam na hora: acaba tontura, susto, lentidão e escorregão', 'perk'],
+    C: ['BARRIGUDO', 'Na Serra do Drift e no gelo vira sem dificuldade', 'perk'],
+    J: ['OSSO NO PULO', 'Cada barreira pulada dá 10 de nitro e um osso de ouro', 'perk'],
+    M: ['LANCHEIRA', 'Começa a corrida com o tanque de nitro cheio', 'perk', '#b45309', 0.45, '#78350f', 1.12],
+    H: ['BANQUETE', 'Joga um banquete na pista atrás dele: quem passar para para comer', 'custom', '#fbbf24'],
   },
   raio: {
-    S: ['RETA ELÉTRICA', 'Nas retas corre mais rápido, soltando faíscas', 'straight', 1.07, '#facc15', 'bolt'],
-    A: ['SOBRECARGA', 'Passar numa faixa de turbo enche 20 de nitro', 'pad', 'nitro', 20, '#fde047'],
-    C: ['CURTO-CIRCUITO', 'O mini-turbo do drift carrega mais rápido', 'driftCharge'],
-    J: ['DESCARGA', 'O pulo o lança para frente', 'launch'],
-    M: ['GREYHOUND ELÉTRICO', 'Pelo amarelo, latas azuis e o nitro enche sozinho', 'regen', '#facc15', 0.5, '#2563eb', 1.08],
-    H: ['TROVOADA', 'Raios caem nos 2 rivais logo à frente', 'storm', '#facc15'],
+    S: ['CORRENTE', 'Acelerando sem parar, ganha 1% de velocidade por segundo (até +12%); frear ou cair zera', 'perk'],
+    A: ['DESCARGA', 'Passando numa faixa de turbo, um raio acerta o rival mais próximo', 'perk'],
+    C: ['ARCO ELÉTRICO', 'O super mini-turbo (rosa) eletrocuta quem estiver a 10 m', 'perk'],
+    J: ['PARA-RAIOS', 'Cada pulo recarrega 12 de nitro', 'perk'],
+    M: ['SUPERCONDUTOR', 'Na velocidade máxima o nitro recarrega sozinho', 'perk', '#facc15', 0.5, '#2563eb', 1.08],
+    H: ['SOBRECARGA', 'Por 6 s solta raios: a cada segundo eletrocuta o rival mais próximo', 'custom', '#facc15'],
   },
   duque: {
-    S: ['PAIOL CHEIO', 'Com 2 ou mais mísseis carregados corre mais rápido', 'armed', 1.07, '#84cc16', 'ring'],
-    A: ['RECARGA', 'Pegar munição enche 15 de nitro', 'ammo', 'nitro', 15, '#bef264'],
-    C: ['TRINCHEIRA', 'Trombadas quase não o empurram', 'anchor'],
-    J: ['PARAQUEDISTA', 'Ao pousar perto de rivais, a pancada os derruba', 'stomp'],
-    M: ['ARSENAL', 'Farda verde-oliva, latas pretas e carrega 1 míssil a mais', 'ammoCap', '#3f6212', 0.45, '#111827', 1.1],
-    H: ['BATERIA DE MÍSSEIS', 'Dispara 3 mísseis teleguiados de uma vez', 'barrage', '#84cc16'],
+    S: ['PESO LEVE', 'Sem munição corre 12% mais rápido', 'perk'],
+    A: ['RECARGA RÁPIDA', 'Atira com metade do tempo de recarga e 1 a cada 3 tiros sai de graça', 'perk'],
+    C: ['TORRE GIRATÓRIA', 'Mira em qualquer direção: acerta até quem está do lado e atrás', 'perk'],
+    J: ['PARAQUEDISTA', 'Atirando no ar, sai um míssil extra', 'perk'],
+    M: ['MIRA LASER', 'Os mísseis dele fazem curvas 2× mais fechadas', 'perk', '#3f6212', 0.45, '#111827', 1.1],
+    H: ['CANHÃO DE RECUO', 'Um tiro de canhão para trás derruba quem vem atrás, e o coice o lança para frente', 'custom', '#84cc16'],
   },
   frufru: {
-    S: ['DESFILE', 'Derrapando fica mais rápido e solta brilhos', 'drift', 1.08, '#f0abfc', 'star'],
-    A: ['POSE', 'Cada mini-turbo dá 2 segundos de escudo', 'mini', 'shield', 2, '#f0abfc'],
-    C: ['PASSO DE BALÉ', 'Derrapar enche o nitro em dobro', 'driftNitro'],
-    J: ['PIRUETA', 'Aperte pular de novo no ar para dar outro pulo', 'double'],
-    M: ['POODLE DE CRISTAL', 'Pelo rosa-cristal, latas lilás e pega itens de longe', 'magnet', '#f5d0fe', 0.55, '#c084fc', 1.1],
-    H: ['BRILHO DE DIVA', 'Escudo por 7 segundos: nada a derruba', 'shield', '#f0abfc'],
+    S: ['PASSARELA', 'Nos primeiros 150 m de cada volta, passando pela torcida, corre 12% mais rápido', 'perk'],
+    A: ['SALTO QUEBRADO', 'Quando um míssil a acerta, quem atirou fica encantado e lento', 'perk'],
+    C: ['PIRUETA', 'Terminar um drift faz uma pirueta que a deixa 1,5 s imune', 'perk'],
+    J: ['BALÉ NO AR', 'No ar, os mísseis que chegam nela voltam para quem atirou', 'perk'],
+    M: ['GLAMOUR', 'Quem vem até 12 m atrás dela se distrai de tempos em tempos', 'perk', '#f5d0fe', 0.55, '#c084fc', 1.1],
+    H: ['PERFUME ENCANTADOR', 'Encanta os rivais em até 30 m: ficam 30% mais lentos por 4 s', 'custom', '#f0abfc'],
   },
   major: {
-    S: ['MARCHA FINAL', 'Na última volta corre mais rápido', 'lastLap', 1.08, '#65a30d', 'ring'],
-    A: ['FORMAÇÃO', 'Na largada ganha 4 segundos de escudo', 'start', 'shield', 4, '#84cc16'],
-    C: ['SANGUE-FRIO', 'Sustos e bichos voadores atrapalham só pela metade do tempo', 'steady'],
-    J: ['TREINO DE OBSTÁCULOS', 'Pular uma barreira enche 25 de nitro', 'hurdleNitro'],
-    M: ['BLINDADO', 'Camuflagem militar, latas verdes e mísseis o atordoam menos', 'armor', '#4d7c0f', 0.45, '#365314', 1.12],
-    H: ['ATAQUE AÉREO', 'Bombas caem nos 2 rivais logo à frente', 'storm', '#f97316', 'bomb'],
+    S: ['FORMAÇÃO DE COMBATE', 'Em 2º ou 3º lugar corre 8% mais rápido', 'perk'],
+    A: ['ORDEM DE COMANDO', 'Latindo, os rivais à frente abrem caminho para os lados', 'perk'],
+    C: ['MANOBRA MILITAR', 'Começa o drift em qualquer velocidade, sem perder embalo', 'perk'],
+    J: ['PARAQUEDAS', 'Cai devagar e controla a direção no ar', 'perk'],
+    M: ['CONTRAMEDIDAS', 'Solta sinalizadores: 50% de chance de derrubar cada míssil que vem nele', 'perk', '#4d7c0f', 0.45, '#365314', 1.12],
+    H: ['BOMBARDEIO DE ZONA', 'Marca uma área 45 m à frente: 2 s depois chovem bombas nela', 'custom', '#f97316'],
   },
   tofu: {
-    S: ['LANTERNINHA', 'Em último lugar corre muito mais rápido', 'last', 1.15, '#fef3c7', 'dust'],
-    A: ['ROLINHO', 'Ao se levantar de um tombo ganha um mini-turbo', 'stunEnd', 'burst', 1.0, '#fde68a'],
-    C: ['BOLA DE PELO', 'Trombadas quase não o empurram', 'anchor'],
-    J: ['CAMBALHOTA', 'Ao pousar de um pulo ganha um mini-turbo', 'landBoost'],
-    M: ['TOFU BLINDADO', 'Pelo branco, latas pretas, fica maior e se levanta mais rápido', 'getUp', '#fafaf9', 0.6, '#1c1917', 1.18],
-    H: ['BOLA DE BOLICHE', 'Rola como uma bola e derruba quem estiver perto', 'quake', '#fde68a'],
+    S: ['PREGUIÇA CONTAGIANTE', 'Quem vem até 10 m atrás dele fica mais lento', 'perk'],
+    A: ['COCHILO', 'Parado ou tonto, recupera 20 de nitro por segundo', 'perk'],
+    C: ['CURVA PREGUIÇOSA', 'Sem apertar para os lados, faz as curvas sozinho no traçado', 'perk'],
+    J: ['BARRIGADA', 'Pousando, a barriga derruba quem estiver a 4 m', 'perk'],
+    M: ['COLCHÃO', 'Pelo branco; tombos duram metade e ele levanta com um mini-turbo', 'perk', '#fafaf9', 0.6, '#1c1917', 1.18],
+    H: ['SONECA TURBO', 'Tira uma soneca de 1,5 s e acorda descansado: 6 s mais rápido e imune', 'custom', '#fde68a'],
   },
   bidu: {
-    S: ['BARRIL CHEIO', 'Com o nitro quase cheio corre mais rápido', 'fullNitro', 1.07, '#fbbf24', 'ring'],
-    A: ['ÁGUA DOS ALPES', 'Pular uma barreira enche 20 de nitro', 'hurdle', 'nitro', 20, '#93c5fd'],
-    C: ['PATAS DE MONTANHA', 'Raspar na cerca não atrasa', 'rail'],
-    J: ['ESTRONDO', 'Ao pousar perto de rivais, a pancada os derruba', 'stomp'],
-    M: ['SÃO BERNARDO DE AÇO', 'Pelo cinza-aço, latas vermelhas, fica maior e mais pesado', 'heavy', '#6b7280', 0.45, '#dc2626', 1.12],
-    H: ['MURALHA', 'Escudo por 7 segundos: nada o derruba', 'shield', '#fbbf24'],
+    S: ['EMPURRÃO', 'Cada trombada o deixa 8% mais rápido por 3 s', 'perk'],
+    A: ['BARRIL DE RESGATE', 'Uma vez por volta, se cair, levanta na hora e ganha 30 de nitro', 'perk'],
+    C: ['ÂNCORA', 'Nas curvas ninguém o empurra', 'perk'],
+    J: ['IMPACTO DA MONTANHA', 'Pousando de um pulo alto, quem está a 15 m perde o equilíbrio', 'perk'],
+    M: ['GUINCHO', 'Com um rival até 12 m à frente, acelera 30% mais', 'perk', '#6b7280', 0.45, '#dc2626', 1.12],
+    H: ['AVALANCHE', 'Solta uma bola de neve que rola na frente, crescendo e derrubando todos no caminho', 'custom', '#fbbf24'],
   },
   canela: {
-    S: ['ESPÍRITO LIVRE', 'Sem rivais por perto fica mais rápido', 'alone', 1.08, '#fb923c', 'flame'],
-    A: ['PASSO DO AKITA', 'Ao pousar de um pulo se teleporta um pouco para frente', 'land', 'dash', 5, '#9a3412'],
-    C: ['PATA CERTEIRA', 'Não escorrega em curvas lisas, lama, água ou gelo', 'slipGrip'],
-    J: ['SALTO ALTO', 'Pula 25% mais alto', 'high'],
-    M: ['AKITA DE FOGO', 'Pelo vermelho-fogo, latas laranja e o nitro enche sozinho', 'regen', '#dc2626', 0.4, '#f97316', 1.1],
-    H: ['PASSO DO VENTO', 'Some e reaparece bem mais à frente', 'blink', '#fb923c'],
+    S: ['FINAL DE VOLTA', 'Nos últimos 30% de cada volta corre 10% mais rápido', 'perk'],
+    A: ['CAUDA DE FOGO', 'Mini-turbos deixam fogo na pista: quem passar fica lento', 'perk'],
+    C: ['ESPÍRITO DO VENTO', 'A cada 6 s de drift ganha uma carga de habilidade (sem upgrade, 25 de nitro)', 'perk'],
+    J: ['SALTO DE AKITA', 'Pula mais alto e mais longe', 'perk'],
+    M: ['ESCAPAMENTO', 'Pelo vermelho-fogo; o nitro solta chamas que atrasam quem vem colado', 'perk', '#dc2626', 0.4, '#f97316', 1.1],
+    H: ['ESPÍRITO GUARDIÃO', 'Uma raposa espiritual a protege por 8 s: o próximo ataque volta para quem atacou', 'custom', '#fb923c'],
   },
   biscoito: {
-    S: ['RASTREADOR', 'Colado atrás de um rival corre mais rápido', 'close', 1.1, '#d97706', 'dust'],
-    A: ['FARO DE OURO', 'Cada osso de ouro dá um mini-turbo', 'coin', 'burst', 0.5, '#fbbf24'],
-    C: ['PATAS CURTAS', 'Lama, água e gelo não atrapalham', 'puddle'],
-    J: ['ORELHAS DE PLANADOR', 'Enquanto está no ar o nitro enche', 'airNitro'],
-    M: ['BEAGLE DETETIVE', 'Pelo caramelo-escuro, latas verdes e pega itens de muito longe', 'magnet', '#92400e', 0.4, '#16a34a', 1.1],
-    H: ['FARO ABSOLUTO', 'Puxa todos os itens por perto e enche o nitro', 'magnet', '#fbbf24'],
+    S: ['RECOMPENSA', 'Por 3 s depois de pegar qualquer item corre 10% mais rápido', 'perk'],
+    A: ['FAREJADOR', 'Caixas de munição dão 2 mísseis', 'perk'],
+    C: ['NARIZ NO CHÃO', 'Derrapando, pega itens de 3× mais longe', 'perk'],
+    J: ['ORELHAS PLANADORAS', 'Plana depois do pulo, caindo devagar', 'perk'],
+    M: ['MOCHILA EXTRA', 'Carrega 1 míssil a mais e começa a corrida com 2', 'perk', '#92400e', 0.4, '#16a34a', 1.1],
+    H: ['FARO DE TESOURO', 'Fareja e pega na hora todos os itens nos próximos 150 m da pista', 'custom', '#fbbf24'],
   },
   emilly: {
-    S: ['SOBREVIVENTE', 'Depois de levar um tombo volta mais rápida', 'hurt', 1.14, '#fda4af', 'smoke'],
-    A: ['VINGANÇA', 'Acertar um míssil em alguém dá um mini-turbo', 'hitDealt', 'burst', 1.0, '#fda4af'],
-    C: ['VIRA-LIXO', 'Correr fora da pista não deixa lenta', 'offroad'],
-    J: ['RABO DE PARAQUEDAS', 'Cai devagar depois do pulo, planando', 'glide'],
-    M: ['SARUÊ NOTURNA', 'Pelo cinza-noite, latas rosa e se levanta mais rápido', 'getUp', '#374151', 0.45, '#ec4899', 1.12],
-    H: ['FEDOR DE SARUÊ', 'Solta um cheiro horrível: quem vem atrás perde o rumo', 'smoke', '#a3e635'],
+    S: ['RABEIRA', 'Em último ou penúltimo lugar corre 14% mais rápido', 'perk'],
+    A: ['CONTRA-ATAQUE', 'Por 6 s depois de levantar de um tombo, cada míssil sai em dobro', 'perk'],
+    C: ['RABO PREÊNSIL', 'Raspar na cerca vira estilingue: ganha um mini-turbo', 'perk'],
+    J: ['PENDURADA', 'No ar o nitro enche', 'perk'],
+    M: ['AIRBAG', 'A cada 15 s, o primeiro tombo dura só um instante', 'perk', '#374151', 0.45, '#ec4899', 1.12],
+    H: ['NUVEM DE FEDOR', 'Deixa uma nuvem fedida na pista: quem passar fica com os controles invertidos', 'custom', '#a3e635'],
   },
   taissa: {
-    S: ['CAUDA ÁGIL', 'Derrapando fica mais rápida', 'drift', 1.08, '#facc15', 'dust'],
-    A: ['RABO SOLTO', 'Cada mini-turbo a teleporta um pouco para frente', 'mini', 'dash', 6, '#ca8a04'],
-    C: ['VENTOSAS', 'Faz curvas mais fechadas', 'sharp'],
-    J: ['PULO DE PAREDE', 'No ar ganha velocidade em vez de perder', 'airSpeed'],
-    M: ['LAGARTIXA NEON', 'Escamas verde-neon, latas amarelas e os pássaros não a atacam', 'birdProof', '#84cc16', 0.5, '#facc15', 1.15],
-    H: ['CAMUFLAGEM', 'Some e reaparece bem mais à frente', 'blink', '#84cc16'],
+    S: ['PAREDÃO', 'Correndo colada na cerca fica 10% mais rápida', 'perk'],
+    A: ['TROCA DE PELE', 'O primeiro tombo da corrida não pega: ela troca de pele e segue', 'perk'],
+    C: ['VENTOSAS NA CERCA', 'Bater na cerca não freia: ela gruda e é impulsionada para frente', 'perk'],
+    J: ['SALTO GRUDENTO', 'Por 2 s depois de pousar tem aderência máxima', 'perk'],
+    M: ['CAMALEOA', 'Escamas neon; 30% dos mísseis e bichos voadores simplesmente não a veem', 'perk', '#84cc16', 0.5, '#facc15', 1.15],
+    H: ['RABO SOLTO', 'Solta o rabo como isca: os mísseis e pássaros atrás dela se perdem, e ela ganha turbo', 'custom', '#84cc16'],
   },
   tiffany: {
-    S: ['CAÇADORA', 'Colada atrás de um rival corre mais rápido', 'close', 1.1, '#f97316', 'flame'],
-    A: ['LÍNGUA RÁPIDA', 'Cada chiado enche 10 de nitro', 'bark', 'nitro', 10, '#fdba74'],
-    C: ['GARRAS DE TEIÚ', 'Não escorrega em curvas lisas, lama, água ou gelo', 'slipGrip'],
-    J: ['RABADA', 'Ao pousar perto de rivais, a pancada os derruba', 'stomp'],
-    M: ['TEIÚ DE LAVA', 'Escamas cor de lava, latas pretas e mísseis a atordoam menos', 'armor', '#9a3412', 0.45, '#1c1917', 1.12],
-    H: ['CHIADO DA SELVA', 'Um chiado gigante derruba todos que estiverem em volta', 'roar', '#fdba74'],
+    S: ['SANGUE QUENTE', 'Esquenta durante a corrida: +1% de velocidade a cada 10 s (até +12%)', 'perk'],
+    A: ['LÍNGUA SENSORIAL', 'Sente mísseis chegando e pula sozinha para desviar', 'perk'],
+    C: ['CAUDA LEME', 'Em alta velocidade faz curvas 20% mais fechadas', 'perk'],
+    J: ['RABADA NO POUSO', 'Ao pousar, a cauda varre para os lados quem estiver a 5 m', 'perk'],
+    M: ['SOL NAS ESCAMAS', 'No Parque e na Praia, o sol enche o nitro sozinho', 'perk', '#9a3412', 0.45, '#1c1917', 1.12],
+    H: ['CHICOTADA GIRATÓRIA', 'Gira a cauda por 2 s: derruba e arremessa quem chegar a 7 m', 'custom', '#fdba74'],
   },
   kemilly: {
-    S: ['SALTITANTE', 'No ar corre mais rápido', 'air', 1.1, '#e9d5ff', 'star'],
-    A: ['PULO DE COELHO', 'Pular uma barreira dá um mini-turbo', 'hurdle', 'burst', 1.0, '#f97316'],
-    C: ['HORTA', 'Derrapar enche o nitro em dobro', 'driftNitro'],
-    J: ['PERNAS DE COELHO', 'Pula 25% mais alto', 'high'],
-    M: ['COELHO DE CHOCOLATE', 'Pelo de chocolate, latas laranja e carrega 1 cenoura a mais', 'ammoCap', '#78350f', 0.5, '#f97316', 1.1],
-    H: ['CHUVA DE CENOURAS', 'Joga 3 cenouras teleguiadas de uma vez', 'barrage', '#f97316'],
+    S: ['HOP HOP', 'Cada pulo dá +4% de velocidade por 5 s (acumula até 3 vezes)', 'perk'],
+    A: ['CENOURA NO BOLSO', 'Acertar uma cenoura tem 50% de chance de devolver a munição', 'perk'],
+    C: ['ZIGUE-ZAGUE', 'Trocar de lado no drift em menos de 1 s dá um mini-turbo na hora', 'perk'],
+    J: ['SUPER COELHO', 'Pula mais alto e as barreiras viram trampolim', 'perk'],
+    M: ['CENOURAS EXPLOSIVAS', 'Pelo de chocolate; as cenouras explodem e acertam todos a 5 m', 'perk', '#78350f', 0.5, '#f97316', 1.1],
+    H: ['TOCA DE COELHO', 'Cava um túnel e sai 35 m à frente, derrubando quem estiver na saída', 'custom', '#f97316'],
   },
 };
 const X_SLOT = { motor: 'S', acel: 'A', grip: 'C', pulo: 'J' };
 const hexRgb = h => { const c = new THREE.Color(h); return [c.r, c.g, c.b]; };
-const ammoCap = r => (has(r, 'duque') ? 4 : 3) + (r.xM === 'ammoCap' ? 1 : 0);
-const pickR = (r, base) => r.magT > 0 ? 500 : (has(r, 'biscoito') || r.xM === 'magnet') ? 16 : base;
-const massOf = r => (has(r, 'princesa') ? 1e6 : r.b.mass || 1) * (r.xC === 'anchor' ? 3 : 1) * (r.xM === 'heavy' ? 1.8 : 1);
+const ammoCap = r => (has(r, 'duque') ? 4 : 3) + (r.xM === 'ammoCap' ? 1 : 0) + (pk(r, 'ammoCap') || 0);
+const pickR = (r, base) => (r.magT > 0 ? 500 : (has(r, 'biscoito') || r.xM === 'magnet') ? 16 : base) * pkMul(r, 'pickup');
+const massOf = r => (has(r, 'princesa') ? 1e6 : r.b.mass || 1) * (r.xC === 'anchor' ? 3 : 1) * (r.xM === 'heavy' ? 1.8 : 1) * pkMul(r, 'mass');
 // liga as passivas extras no corredor conforme as melhorias e o upgrade mecânico
 function setupExtras(r, b, up, mech) {
   const X = EXTRA[b.id] || {};
@@ -3580,6 +3580,16 @@ function setupExtras(r, b, up, mech) {
   if (r.xJ === 'high') r.jumpV *= 1.12;
   if (r.xM === 'tank') r.nitroDrain *= 0.75;
   if (r.xM === 'ammoCap') r.ammo++;
+  r.dragT = 0; r.charmT = 0; r.silenceT = 0; r.confT = 0; r.boostT = 0; r.boostK = 1; r.perks = null;
+  if (X.S && X.S[2] === 'perk') { // passivas próprias (ganchos em PERK_FX)
+    r.xS = r.xA = null; r.xC = r.xJ = r.xM = null; r.xScol = r.xAcol = null;
+    if (b.id === 'davi') daviPerks(r); else {
+      const F = PERK_FX[b.id] || {}; r.perks = [];
+      for (const [u, sl] of Object.entries(X_SLOT)) if (up[u] >= 5 && F[sl]) r.perks.push(F[sl]);
+      if (mech && F.M) r.perks.push(F.M);
+      pk(r, 'stats');
+    }
+  }
 }
 function extrasUnlocked(b) {
   const X = EXTRA[b.id] || {}, up = getUp(b), out = [];
@@ -3665,13 +3675,15 @@ function dash(r, m, col) {
   if (r.isPlayer) shake(0.15);
 }
 // derruba um rival (respeita escudo e armadura; o cachorro de um amigo é derrubado no aparelho dele)
-function knock(o, t, vy, keep) {
+function knock(o, t, vy, keep, from) {
   if (o.remote || o.finished) return false;
   if (o.shield > 0) { if (o.isPlayer) pop('ESCUDO!', 'c'); return false; }
+  if (guardHit(o, 'knock', from)) return false;
   if (isRobo(o)) { roboHit(o, 15, 'PANCADA'); return true; }
   if (isDino(o)) { dinoSlow(o, 1.5); return true; }
   o.stun = Math.max(o.stun, t * (o.xM === 'armor' ? 0.6 : 1)); o.vy = Math.max(o.vy, vy); o.vx *= keep; o.vz *= keep; o.nitroOn = false; endDrift(o, true); o.hits++;
   if (o.isPlayer) { shake(0.4); vib(60); }
+  trig(o, 'hurt', 'knock', from);
   return true;
 }
 // A: gatilhos da passiva de aceleração
@@ -3682,7 +3694,7 @@ function setForm(r, form, secs = 0) {
   const old = r.D; scene.remove(old.root); disposeTree(old.root);
   r.b = fb; r.form = form; r.formT = secs;
   r.D = buildCreature(fb, r.num, fb.color); if (r.mech && form === 'robo') applyMech(r.D, fb); applyLook(r.D, r.look); scene.add(r.D.root);
-  Object.assign(r, statsFor(fb, r.up));
+  Object.assign(r, statsFor(fb, r.up)); if (r.perks) daviPerks(r);
   if (r.xC === 'sharp') r.turn *= 1.15; if (r.xJ === 'high') r.jumpV *= 1.12; if (r.xM === 'tank') r.nitroDrain *= 0.75;
   for (let i = 0; i < 40; i++) { const a = Math.random() * 6.28, u = 2 + Math.random() * 5; dust.spawn(r.x, r.y + 0.8, r.z, Math.cos(a) * u, Math.random() * 4, Math.sin(a) * u, 1, 0.8, 2.2, form === 'dino' ? [0.45, 0.6, 0.3] : [0.95, 0.95, 0.95], 0.8, 0, 2); }
   const vol = player ? clamp(1 - Math.hypot(r.x - player.x, r.z - player.z) / 80, 0, 1) : 1;
@@ -3707,7 +3719,8 @@ function roboHit(r, dmg, what) {
   }
 }
 function dinoSlow(r, t) { if (r.remote) return; r.slowT = Math.max(r.slowT || 0, t); if (r.isPlayer) pop('DINOSSAURO FICOU LENTO', 'r'); }
-function trig(r, ev) {
+function trig(r, ev, x, y) {
+  if (!r.remote) pk(r, 'on', ev, x, y);
   const a = r.xA; if (!a || a[2] !== ev || r.aCD > 0 || r.remote) return;
   r.aCD = ev === 'coin' ? 0.3 : 1.2;
   const v = a[4], col = r.xAcol;
@@ -3742,6 +3755,377 @@ function applyDark(dt) {
 }
 function resetDark() { darkT = 0; darkK = 0.5; applyDark(10); }
 // H: habilidade do upgrade mecânico
+/* ---------------------------------------------------------------------
+   Passivas e habilidades próprias de cada personagem (menos Faiton, Paz e Davi,
+   que usam o sistema de EXTRA acima). Cada passiva é um conjunto de ganchos:
+   speed/accel/grip/turn/recover/grav/airTurn/mass/pickup (multiplicadores),
+   tick (todo quadro), on (eventos da corrida) e guard (bloquear um ataque).
+   --------------------------------------------------------------------- */
+function pk(r, fn, a, b, c) { let out; if (r.perks) for (const p of r.perks) if (p[fn]) { const v = p[fn](r, a, b, c); if (v !== undefined && v !== false) out = v; } return out; }
+function pkMul(r, fn, a) { let m = 1; if (r.perks) for (const p of r.perks) if (p[fn]) m *= p[fn](r, a); return m; }
+const rivalsOf = r => runners.filter(o => o !== r && !o.finished);
+const nearR = (r, R, x = r.x, z = r.z) => rivalsOf(r).filter(o => Math.hypot(o.x - x, o.z - z) < R);
+const aheadOf = (r, max, n = 9) => rivalsOf(r).filter(o => { const ds = wrapDelta(o.dist - r.dist); return ds > 0 && ds < max; }).sort((a, b) => wrapDelta(a.dist - r.dist) - wrapDelta(b.dist - r.dist)).slice(0, n);
+const behindOf = (r, max, n = 9) => rivalsOf(r).filter(o => { const ds = wrapDelta(r.dist - o.dist); return ds > 0 && ds < max; }).sort((a, b) => wrapDelta(r.dist - a.dist) - wrapDelta(r.dist - b.dist)).slice(0, n);
+const say = (r, t, c = 'v') => { if (r.isPlayer) pop(t, c); };
+const hurtSay = (o, t) => { if (o.isPlayer) pop(t, 'r'); };
+function boost(r, k, t) { if (r.boostT > 0 && r.boostK > k) { r.boostT = Math.max(r.boostT, t); return; } r.boostK = k; r.boostT = Math.max(r.boostT || 0, t); }
+function drag(o, t) { if (o.remote || o.shield > 0) return; o.dragT = Math.max(o.dragT || 0, t); }
+function charm(o, t) { if (o.remote || o.shield > 0) return; o.charmT = Math.max(o.charmT || 0, t); hurtSay(o, 'ENCANTADO!'); }
+function silence(o, t) { if (o.remote || o.shield > 0) return; o.silenceT = Math.max(o.silenceT || 0, t); o.nitroOn = false; hurtSay(o, 'APAGÃO! SEM NITRO NEM MÍSSIL'); }
+function confuse(o, t) { if (o.remote || o.shield > 0) return; o.confT = Math.max(o.confT || 0, t); hurtSay(o, 'QUE FEDOR! CONTROLES INVERTIDOS'); }
+function shove(o, sx, sz, k) { if (o.remote || o.shield > 0) return; o.vx += sx * k; o.vz += sz * k; }
+// empurra para o lado da pista (longe de quem empurra)
+function shoveSide(o, from, k) { const a = sampleAt(o.s), sg = o.d >= from.d ? 1 : -1; shove(o, a.r.x * sg, a.r.z * sg, k); }
+function burst(x, y, z, col, n = 14, sp = 5, sys = glow) { for (let i = 0; i < n; i++) sys.spawn(x, y, z, (Math.random() - 0.5) * sp * 2, Math.random() * sp, (Math.random() - 0.5) * sp * 2, 0.6, 0.5, 0.15, col, 1, 4, 1.5); }
+const cd = (r, key, secs) => { if ((r[key] || 0) > raceTime) return false; r[key] = raceTime + secs; return true; };
+
+// armadilhas na pista, projéteis no chão, tiros retos e bombardeio de área
+let TRAPS = [], RUNS = [], SHOTS = [], LOBS = [];
+const trapMat = {
+  cone: std(0xff6a13, 0.5), stripe: std(0xffffff, 0.5), ice: new THREE.MeshStandardMaterial({ color: 0xbfe9ff, roughness: 0.05, metalness: 0.2, transparent: true, opacity: 0.75 }),
+  egg: std(0xfbf6ea, 0.4), yolk: std(0xfacc15, 0.3), food: std(0x8b5a2b, 0.8), bone: std(0xf3ead7, 0.6), pit: new THREE.MeshBasicMaterial({ color: 0x1a120b, transparent: true, opacity: 0.55, depthWrite: false }),
+  snow: std(0xf4f8ff, 0.7), ghost: new THREE.MeshBasicMaterial({ color: 0xffd27a, transparent: true, opacity: 0.45, blending: THREE.AdditiveBlending, depthWrite: false }),
+  star: std(0xcfd6e0, 0.25, 0.9), mark: new THREE.MeshBasicMaterial({ color: 0xff2a1a, transparent: true, opacity: 0.45, side: THREE.DoubleSide, depthWrite: false }),
+};
+Object.values(trapMat).forEach(m => SHARED.add(m));
+function trapMesh(type, w) {
+  const g = new THREE.Group();
+  if (type === 'cones') {
+    for (let i = 0; i < 6; i++) { const c = new THREE.Mesh(new THREE.ConeGeometry(0.35, 1, 10), trapMat.cone); c.position.set((i / 5 - 0.5) * w, 0.5, 0); c.castShadow = true; g.add(c); const s = new THREE.Mesh(new THREE.CylinderGeometry(0.25, 0.3, 0.14, 10), trapMat.stripe); s.position.set(c.position.x, 0.55, 0); g.add(s); }
+    const bar = new THREE.Mesh(new THREE.BoxGeometry(w, 0.12, 0.12), trapMat.stripe); bar.position.y = 0.9; g.add(bar);
+  } else if (type === 'ice') { const m = new THREE.Mesh(new THREE.CircleGeometry(w / 2, 20), trapMat.ice); m.rotation.x = -Math.PI / 2; m.position.y = 0.05; g.add(m); }
+  else if (type === 'egg') {
+    const m = new THREE.Mesh(new THREE.CircleGeometry(w / 2, 16), trapMat.yolk); m.rotation.x = -Math.PI / 2; m.position.y = 0.05; g.add(m);
+    for (let i = 0; i < 3; i++) { const e = new THREE.Mesh(new THREE.SphereGeometry(0.3, 10, 8), trapMat.egg); e.scale.y = 1.3; e.position.set((i - 1) * 0.6, 0.35, (Math.random() - 0.5) * 0.5); e.castShadow = true; g.add(e); }
+  }
+  else if (type === 'pit') { const m = new THREE.Mesh(new THREE.CircleGeometry(w / 2, 20), trapMat.pit); m.rotation.x = -Math.PI / 2; m.position.y = 0.04; g.add(m); }
+  else if (type === 'food') {
+    const m = new THREE.Mesh(new THREE.CylinderGeometry(w / 2, w / 2 + 0.2, 0.25, 20), trapMat.food); m.position.y = 0.12; g.add(m);
+    for (let i = 0; i < 8; i++) { const bn = new THREE.Mesh(new THREE.CapsuleGeometry(0.1, 0.5, 3, 6), trapMat.bone); bn.position.set((Math.random() - 0.5) * w * 0.7, 0.35, (Math.random() - 0.5) * w * 0.5); bn.rotation.set(Math.PI / 2, 0, Math.random() * 3); g.add(bn); }
+  }
+  return g;
+}
+// armadilha: faixa da pista (s = posição, d = centro, w = largura, len = comprimento)
+function addTrap(owner, type, s, d, w, len, life, once) {
+  const g = trapMesh(type, w);
+  if (g.children.length) { g.position.copy(trackPoint(s, d, 0)); g.rotation.y = yawAlong(s); world.add(g); DYN.push(g); }
+  TRAPS.push({ owner, type, s: wrapS(s), d, w, len, t: life, g, hit: new Set(), once });
+}
+function trapHit(tp, o) {
+  const T = tp.type;
+  if (T === 'cones') { if (knock(o, 0.9, 5, 0.3)) hurtSay(o, 'BATEU NO BLOQUEIO POLICIAL!'); }
+  else if (T === 'ice') { if (!pk(o, 'guard', 'ice')) { o.icy = Math.max(o.icy, 1.3); hurtSay(o, 'GELO!'); } }
+  else if (T === 'food') { drag(o, 1.6); o.slowT = Math.max(o.slowT || 0, 1.2); hurtSay(o, 'PAROU PARA COMER!'); }
+  else if (T === 'fire') { drag(o, 1.4); hurtSay(o, 'PISOU NO FOGO!'); }
+  else if (T === 'stink') confuse(o, 2.5);
+  else if (T === 'egg') { if (!pk(o, 'guard', 'ice')) { o.icy = Math.max(o.icy, 1.1); hurtSay(o, 'ESCORREGOU NO OVO DA GALINHA!'); say(tp.owner, `${o.b.name} PISOU NO OVO!`); } }
+  else if (T === 'pit') { if (knock(o, 1.3, 2, 0.1)) { hurtSay(o, 'CAIU NO BURACO!'); say(tp.owner, `${o.b.name} CAIU NA EMBOSCADA!`); } }
+}
+function updateTraps(dt) {
+  for (let i = TRAPS.length - 1; i >= 0; i--) {
+    const tp = TRAPS[i]; tp.t -= dt;
+    if (tp.type === 'fire' && Math.random() < dt * 40) { const p = trackPoint(tp.s + (Math.random() - 0.5) * tp.len, tp.d + (Math.random() - 0.5) * tp.w, 0.2); glow.spawn(p.x, 0.2, p.z, 0, 2.5, 0, 0.5, 0.7, 0.2, Math.random() < 0.5 ? [1, 0.4, 0.05] : [1, 0.8, 0.2], 1, -2, 1); }
+    if (tp.type === 'stink' && Math.random() < dt * 30) { const p = trackPoint(tp.s + (Math.random() - 0.5) * tp.len, tp.d + (Math.random() - 0.5) * tp.w, 0.2); dust.spawn(p.x, 0.6, p.z, (Math.random() - 0.5), 0.8, (Math.random() - 0.5), 2.2, 1.6, 3.5, [0.55, 0.75, 0.2], 0.5, -0.2, 0.6); }
+    for (const o of runners) {
+      if (o === tp.owner || o.finished || tp.hit.has(o) || o.y + o.flyY > 1.5) continue;
+      if (Math.abs(wrapDelta(o.s - tp.s)) < tp.len / 2 && Math.abs(o.d - tp.d) < tp.w / 2) { tp.hit.add(o); trapHit(tp, o); if (tp.once) tp.t = 0; }
+    }
+    if (tp.t <= 0) { if (tp.g.parent) { world.remove(tp.g); disposeTree(tp.g); } const k = DYN.indexOf(tp.g); if (k >= 0) DYN.splice(k, 1); TRAPS.splice(i, 1); }
+  }
+  for (let i = RUNS.length - 1; i >= 0; i--) { // corredores fantasmas e bola de neve: seguem a pista
+    const u = RUNS[i]; u.t -= dt; u.s += u.v * dt; u.r = Math.min(u.rMax, u.r + u.grow * dt);
+    const p = trackPoint(u.s, u.d, u.r); u.g.position.copy(p); u.g.scale.setScalar(u.r); u.g.rotation.x += dt * u.v / Math.max(0.5, u.r);
+    glow.spawn(p.x, u.r * 0.6, p.z, 0, 0.5, 0, 0.5, u.r * 0.8, 0.1, u.col, 0.8, 0, 1);
+    for (const o of runners) {
+      if (o === u.owner || o.finished || u.hit.has(o)) continue;
+      if (Math.hypot(o.x - p.x, o.z - p.z) < u.r + 1.2 && o.y < u.r * 1.4) { u.hit.add(o); if (knock(o, u.stun, 6, 0.3)) hurtSay(o, u.msg); if (u.single) u.t = 0; }
+    }
+    if (u.t <= 0) { world.remove(u.g); disposeTree(u.g); const k = DYN.indexOf(u.g); if (k >= 0) DYN.splice(k, 1); RUNS.splice(i, 1); burst(u.g.position.x, 1, u.g.position.z, u.col, 12); }
+  }
+  for (let i = SHOTS.length - 1; i >= 0; i--) { // shurikens: voam reto
+    const b = SHOTS[i]; b.t -= dt; b.x += b.vx * dt; b.z += b.vz * dt; b.g.position.set(b.x, 1.1, b.z); b.g.rotation.y += dt * 25;
+    for (const o of runners) { if (o === b.owner || o.finished || Math.hypot(o.x - b.x, o.z - b.z) > 1.6 || o.y > 2.2) continue; if (knock(o, 0.8, 4, 0.4)) { hurtSay(o, 'ATINGIDO POR UMA SHURIKEN!'); say(b.owner, `SHURIKEN NO ${o.b.name}!`); } b.t = 0; break; }
+    if (b.t <= 0) { world.remove(b.g); disposeTree(b.g); const k = DYN.indexOf(b.g); if (k >= 0) DYN.splice(k, 1); SHOTS.splice(i, 1); }
+  }
+  for (let i = LOBS.length - 1; i >= 0; i--) { // bombardeio: marca vermelha no chão e depois as bombas
+    const b = LOBS[i]; b.t -= dt; b.g.material.opacity = 0.3 + Math.abs(Math.sin(raceTime * 10)) * 0.4;
+    if (b.t > 0) continue;
+    for (let k = 0; k < 6; k++) { const x = b.x + (Math.random() - 0.5) * b.rad * 1.6, z = b.z + (Math.random() - 0.5) * b.rad * 1.6; burst(x, 0.5, z, [1, 0.55, 0.15], 16, 7); }
+    for (const o of runners) if (o !== b.owner && Math.hypot(o.x - b.x, o.z - b.z) < b.rad && knock(o, 1.1, 8, 0.3)) hurtSay(o, 'BOMBARDEADO!');
+    const dPl = player ? Math.hypot(b.x - player.x, b.z - player.z) : 0; Sfx.boom(clamp(1 - dPl / 90, 0, 1)); if (dPl < 30) shake(0.5);
+    world.remove(b.g); disposeTree(b.g); const k = DYN.indexOf(b.g); if (k >= 0) DYN.splice(k, 1); LOBS.splice(i, 1);
+  }
+}
+function clearTraps() {
+  for (const tp of TRAPS) if (tp.g.parent) { world.remove(tp.g); disposeTree(tp.g); }
+  for (const u of [...RUNS, ...SHOTS, ...LOBS]) if (u.g.parent) world.remove(u.g);
+  const all = new Set([...TRAPS, ...RUNS, ...SHOTS, ...LOBS].map(u => u.g)); DYN = DYN.filter(g => !all.has(g));
+  TRAPS = []; RUNS = []; SHOTS = []; LOBS = [];
+}
+function addRunner(owner, s, d, v, life, col, opt = {}) {
+  const g = new THREE.Mesh(opt.geo || new THREE.SphereGeometry(1, 14, 10), opt.mat || trapMat.ghost); world.add(g); DYN.push(g);
+  RUNS.push({ owner, s, d, v, t: life, col, g, hit: new Set(), r: opt.r || 0.8, rMax: opt.rMax || opt.r || 0.8, grow: opt.grow || 0, stun: opt.stun || 0.9, single: !!opt.single, msg: opt.msg || 'DERRUBADO!' });
+}
+// cada personagem: S (Motor no máx.), A (Músculos), C (Garras), J (Molas), M (upgrade mecânico)
+const PERK_FX = {
+  rex: {
+    S: { tick: r => { r._chase = aheadOf(r, 40).some(o => o.rank === 1); if (r._chase && Math.random() < 0.3) auraFx(r, 1, [0.2, 0.4, 1], 'siren'); }, speed: r => r._chase ? 1.1 : 1 },
+    A: { on: (r, ev, o) => { if (ev === 'overtaken' && o) { drag(o, 2); hurtSay(o, 'MULTADO PELO REX!'); say(r, `MULTA NO ${o.b.name}!`); } } },
+    C: { on: (r, ev, o) => { if (ev === 'bump' && r.drifting && o) { shoveSide(o, r, 14); say(r, 'ENCOSTA!'); } } },
+    J: { on: (r, ev) => { if (ev === 'land') for (const o of nearR(r, 3)) if (knock(o, 0.8, 4, 0.5)) { hurtSay(o, 'ABORDADO PELO REX!'); say(r, 'ABORDAGEM!'); } } },
+    M: { guard: (r, k) => { if (k === 'missile' && (r._k9 || 0) < 2) { r._k9 = (r._k9 || 0) + 1; say(r, `COLETE SEGUROU O MÍSSIL (${2 - r._k9} RESTANTE)`, 'c'); return true; } } },
+  },
+  pingo: {
+    S: { on: (r, ev) => { if (ev === 'splash') { boost(r, 1.1, 4); say(r, 'MOLHADO E VELOZ!'); } } },
+    A: { on: (r, ev) => { if (ev === 'hurdle') { for (const o of behindOf(r, 15)) o.icy = Math.max(o.icy, 1.2); burst(r.x, 0.6, r.z, [0.6, 0.85, 1], 18, 6, dust); } } },
+    C: { tick: (r, dt) => { if (r.drifting && r.surf) r.driftT += dt; } },
+    J: { tick: (r, dt, inp) => { if (!r.air) { r._hov = 0; return; } if (inp.jump && r.vy < 0 && (r._hov || 0) < 1) { r._hov += dt; r.vy = Math.max(r.vy, -0.6); if (Math.random() < 0.5) dust.spawn(r.x, r.y, r.z, 0, -3, 0, 0.4, 0.3, 0.6, [0.7, 0.9, 1], 0.6, 0, 1); } } },
+    M: { on: (r, ev) => { if (ev === 'splash') r.nitro = Math.min(100, r.nitro + 20); } },
+  },
+  caramelo: {
+    S: { on: (r, ev) => { if (ev === 'start' || ev === 'lap') { r._luck = 1 + Math.random() * 0.15; say(r, `DIA DE SORTE: +${Math.round((r._luck - 1) * 100)}% NESTA VOLTA`, 'g'); } }, speed: r => r._luck || 1 },
+    A: { on: (r, ev) => { if ((ev === 'coin' || ev === 'can') && Math.random() < 0.25 && r.ammo < ammoCap(r)) { r.ammo++; say(r, 'TROCO: GANHOU UM MÍSSIL!', 'g'); } } },
+    C: { on: (r, ev) => { if (ev === 'scrape' && cd(r, '_raspa', 1)) { r.nitro = Math.min(100, r.nitro + 8); say(r, 'RASPA E GANHA! +8', 'g'); } } },
+    J: { on: (r, ev) => { if (ev !== 'land' || Math.random() > 0.3) return; const k = Math.random(); if (k < 0.34) { r.nitro = Math.min(100, r.nitro + 25); say(r, 'CAMBALHOTA: +25 NITRO', 'g'); } else if (k < 0.67 && r.ammo < ammoCap(r)) { r.ammo++; say(r, 'CAMBALHOTA: +1 MÍSSIL', 'g'); } else { r.mini = Math.max(r.mini, 1); say(r, 'CAMBALHOTA: TURBO!', 'g'); } } },
+    M: { on: (r, ev) => { if (ev === 'coin') r.coins++; } },
+  },
+  flecha: {
+    S: { tick: (r, dt, inp) => { r._reta = Math.abs(inp.steer) < 0.1 && !r.drifting && r.stun <= 0 ? (r._reta || 0) + dt : 0; }, speed: r => 1 + Math.min(0.15, (r._reta || 0) * 0.03) },
+    A: { tick: r => { if (r.slip > 1) r._hadSlip = true; else if (r.slip === 0 && r._hadSlip) { r._hadSlip = false; r.mini = Math.max(r.mini, 1.2); say(r, 'SAIU DO VÁCUO: TURBO!', 'c'); } } },
+    C: { on: (r, ev) => { if (ev === 'scrape') r._suja = true; else if (ev === 'lap') { if (!r._suja) { r.nitro = Math.min(100, r.nitro + 30); r.mini = Math.max(r.mini, 1); say(r, 'VOLTA LIMPA! +30 NITRO', 'c'); } r._suja = false; } } },
+    J: { grav: r => r.air ? 1.6 : 1 },
+    M: { slipRange: () => 2 },
+  },
+  nevasca: {
+    S: { speed: () => TR.id === 'neve' || TR.id === 'serra' ? 1.12 : 1.04 },
+    A: { on: (r, ev, lvl) => { if (ev === 'driftEnd' && lvl) { for (const o of behindOf(r, 14)) if (o.shield <= 0) o.spook = Math.max(o.spook, 1); burst(r.x, 0.6, r.z, [0.95, 0.97, 1], 20, 7, dust); } } },
+    C: { turn: r => TR.grip < 0.9 || r.surf === 'ice' ? 1.25 : 1 },
+    J: { tick: (r, dt) => { if (r.air && r.nitroOn) r.nitro = Math.min(100, r.nitro + r.nitroDrain * dt); } },
+    M: { tick: r => { r.icy = 0; }, guard: (r, k) => k === 'ice' },
+  },
+  bolinha: {
+    S: { on: (r, ev) => { if (ev === 'stunEnd') r._rev = Math.min(5, (r._rev || 0) + 1); }, speed: r => 1 + 0.03 * (r._rev || 0) },
+    A: { on: (r, ev, k) => { if (ev === 'hurt' && k === 'missile') { r.stun *= 0.5; dash(r, 7, [0.9, 0.7, 0.4]); say(r, 'RICOCHETE!'); } } },
+    C: { on: (r, ev, o) => { if (ev === 'bump' && r.drifting && o && knock(o, 0.6, 4, 0.5)) { shoveSide(o, r, 10); say(r, 'STRIKE!'); } } },
+    J: { on: (r, ev) => { if (ev === 'jump') r._quique = false; if (ev === 'land' && !r._quique) { r._quique = true; r.vy = r.jumpV * 0.5; r.y = 0.05; r.mini = Math.max(r.mini, 0.6); } } },
+    M: { mass: () => 6 },
+  },
+  pitiquin: {
+    S: { speed: r => nearR(r, 20).some(o => (o.b.mass || 1) > 1) ? 1.12 : 1 },
+    A: { tick: (r, dt) => { const t = aheadOf(r, 3.5, 1)[0]; if (t && Math.abs(t.d - r.d) < 2) { r._bite = (r._bite || 0) + dt; if (r._bite > 1 && cd(r, '_biteCD', 3)) { r._bite = 0; drag(t, 1.5); r.mini = Math.max(r.mini, 0.8); hurtSay(t, 'O PITIQUIN MORDEU SEU CALCANHAR!'); say(r, 'MORDIDA!'); } } else r._bite = 0; } },
+    C: { turn: r => r.speed < r.maxV * 0.6 ? 1.3 : 1 },
+    J: { tick: (r, dt, inp) => { const pr = inp.jump && !r._pjPrev; r._pjPrev = inp.jump; if (pr && r.stun > 0.2) { r.stun = 0; r.vy = r.jumpV; say(r, 'PULO NERVOSO!', 'c'); } } },
+    M: { ammoCap: () => 2, missileSpeed: () => 1.25 },
+  },
+  princesa: {
+    S: { speed: r => { const l = r.look || {}; const n = ['hat', 'glasses', 'cape'].filter(k => l[k] && l[k] !== 'none').length; return n ? 1.04 + n * 0.027 : 1; } },
+    A: { on: (r, ev, o) => { if (ev === 'overtake' && o && !o.remote) { const t = Math.min(12, o.nitro); o.nitro -= t; r.nitro = Math.min(100, r.nitro + t); say(r, `TRIBUTO: +${Math.round(t)} NITRO DE ${o.b.name}`, 'g'); } } },
+    C: { noOffroad: () => true },
+    J: { on: (r, ev) => { if (ev === 'land') for (const o of nearR(r, 8)) { charm(o, 1.5); } } },
+    M: { guard: r => { if (raceTime > (r._escolta || 0)) { r._escolta = raceTime + 20; burst(r.x, 2, r.z, [1, 0.8, 0.3], 16); say(r, 'A ESCOLTA REAL BLOQUEOU!', 'c'); return true; } } },
+  },
+  linda: {
+    S: { tick: (r, dt, inp) => { r._roll = inp.brake || r.stun > 0 ? 0 : (r._roll || 0) + dt; }, speed: r => (r._roll || 0) > 5 ? 1.12 : 1 },
+    A: { on: (r, ev, o) => { if (ev === 'bump' && o && wrapDelta(o.dist - r.dist) > 0 && cd(r, '_foc', 1.5)) { r.mini = Math.max(r.mini, 0.8); if (!o.remote) { o.vx *= 0.6; o.vz *= 0.6; } hurtSay(o, 'FOCINHADA DA LINDA!'); say(r, 'FOCINHADA!'); } } },
+    C: { tick: (r, dt) => { if (!r.drifting) return; if (Math.random() < 0.5) dust.spawn(r.x - Math.sin(r.h) * 1.4, 0.3, r.z - Math.cos(r.h) * 1.4, -r.vx * 0.2, 2, -r.vz * 0.2, 0.7, 0.4, 0.8, [0.3, 0.18, 0.08], 0.9, 10, 1); if (cd(r, '_lama', 0.5)) for (const o of behindOf(r, 10)) o.icy = Math.max(o.icy, 0.8); } },
+    J: { on: (r, ev) => { if (ev === 'land' && r.vy < -9) { for (const o of nearR(r, 12)) drag(o, 1.5); ring(r, [0.5, 0.35, 0.2], 12, 24, dust); if (r.isPlayer) shake(0.4); } } },
+    M: { guard: r => r.nitroOn || undefined },
+  },
+  pintado: {
+    S: { speed: r => aheadOf(r, 60).some(o => o.stun > 0) ? 1.12 : 1 },
+    A: { on: (r, ev) => { if (ev === 'bark' && nearR(r, 12).length >= 2) for (const o of aheadOf(r, 12)) if (knock(o, 0.7, 3, 0.5)) hurtSay(o, 'A MATILHA TE CERCOU!'); } },
+    C: { tick: r => { if (r.drifting) for (const o of nearR(r, 5)) drag(o, 0.3); } },
+    J: { on: (r, ev) => { if (ev !== 'jump') return; const t = aheadOf(r, 14, 1)[0]; if (t) { dash(r, Math.max(0, wrapDelta(t.dist - r.dist) - 2), [0.8, 0.6, 0.3]); drag(t, 1); say(r, `BOTE NO ${t.b.name}!`); } } },
+    M: { incoming: () => 0.65 },
+  },
+  ruivo: {
+    S: { speed: r => r.offroad ? 1.1 : 1 },
+    A: { tick: r => { if (r._wasOff && !r.offroad && cd(r, '_atalho', 2)) { r.mini = Math.max(r.mini, 1); say(r, 'ATALHO!', 'c'); } r._wasOff = r.offroad; } },
+    C: { tick: (r, dt) => { if (r.drifting && r.offroad) r.driftT += dt; } },
+    J: { on: (r, ev) => { if (ev === 'jump' && r.offroad) { const a = sampleAt(r.s), sg = -Math.sign(r.d); r.vx += a.r.x * sg * 10; r.vz += a.r.z * sg * 10; r.mini = Math.max(r.mini, 0.5); } } },
+    M: { guard: (r, k) => k === 'ball' || undefined, noPuddle: () => true },
+  },
+  ninja: {
+    S: { on: (r, ev) => { if (ev === 'land') boost(r, 1.1, 3); } },
+    A: { guard: (r, k) => { if (k === 'missile' && Math.random() < 0.4) { burst(r.x, 1, r.z, [0.55, 0.4, 0.25], 16, 4, dust); dash(r, 6, [0.4, 0.3, 0.6]); say(r, 'SUBSTITUIÇÃO! O MÍSSIL ACERTOU UM TRONCO', 'c'); return true; } } },
+    C: { ghost: r => r.drifting || undefined },
+    J: { on: (r, ev) => { if (ev === 'jump' && Math.abs(r.d) > W / 2 - 2.5) { const a = sampleAt(r.s), sg = -Math.sign(r.d); r.vx += a.r.x * sg * 9 + a.t.x * 6; r.vz += a.r.z * sg * 9 + a.t.z * 6; say(r, 'SALTO NA PAREDE!', 'c'); } } },
+    M: { guard: (r, k) => (k === 'target' && r.drifting) || undefined },
+  },
+  sombra: {
+    S: { speed: r => behindOf(r, 8).length ? 1.12 : 1 },
+    A: { on: (r, ev, o) => { if (ev === 'dealt' && o && wrapDelta(o.dist - r.dist) > 0) { o.stun *= 1.5; if (o.ammo > 0 && !o.remote) { o.ammo--; r.ammo = Math.min(ammoCap(r), r.ammo + 1); } say(r, 'GOLPE PELAS COSTAS! ROUBOU UM MÍSSIL'); } } },
+    C: { noDraft: () => true },
+    J: { tick: (r, dt, inp) => { const pr = inp.jump && !r._mgPrev; r._mgPrev = inp.jump; if (pr && r.air && r.y > 0.8 && !r._dive) { r._dive = true; r.vy = -26; } }, on: (r, ev) => { if (ev === 'land' && r._dive) { r._dive = false; for (const o of nearR(r, 8)) if (o.shield <= 0) o.spook = Math.max(o.spook, 1); ring(r, [0.3, 0.1, 0.5], 9, 24); } } },
+    M: { guard: (r, k, from) => (k === 'target' && from && Math.hypot(from.x - r.x, from.z - r.z) > 30) || undefined },
+  },
+  pacoca: {
+    S: { on: (r, ev) => { if (ev === 'can') r._cans = (r._cans || 0) + 1; }, speed: r => 1 + Math.min(0.12, 0.02 * (r._cans || 0)) },
+    A: { on: (r, ev) => { if (ev === 'can') { r.stun = Math.min(r.stun, 0.05); r.spook = 0; r.slowT = 0; r.dragT = 0; r.birdT = 0; r.icy = 0; } } },
+    C: { turn: r => TR.drift && !r.drifting ? 1.55 : r.surf === 'ice' ? 1.3 : 1 },
+    J: { on: (r, ev) => { if (ev === 'hurdle') { r.nitro = Math.min(100, r.nitro + 10); if (r.isPlayer) { r.coins++; pop('+1 OSSO NO PULO', 'g'); } } } },
+    M: { on: (r, ev) => { if (ev === 'start') { r.nitro = 100; say(r, 'LANCHEIRA: NITRO CHEIO', 'c'); } } },
+  },
+  raio: {
+    S: { tick: (r, dt, inp) => { r._cur = inp.throttle && !inp.brake && r.stun <= 0 ? (r._cur || 0) + dt : 0; }, speed: r => 1 + Math.min(0.12, (r._cur || 0) * 0.01) },
+    A: { on: (r, ev) => { if (ev === 'pad') { const o = nearR(r, 20).sort((a, b) => Math.hypot(a.x - r.x, a.z - r.z) - Math.hypot(b.x - r.x, b.z - r.z))[0]; if (o) { zap(r, o, 0.5); } } } },
+    C: { on: (r, ev, lvl) => { if (ev === 'driftEnd' && lvl === 2) for (const o of nearR(r, 10)) zap(r, o, 0.5); } },
+    J: { on: (r, ev) => { if (ev === 'jump') r.nitro = Math.min(100, r.nitro + 12); } },
+    M: { tick: (r, dt) => { if (r.speed > r.maxV * 0.9) r.nitro = Math.min(100, r.nitro + 4 * dt); } },
+  },
+  duque: {
+    S: { speed: r => r.ammo === 0 ? 1.12 : 1 },
+    A: { on: (r, ev) => { if (ev === 'fire') { r.fireCD = 0.35; r._tiros = (r._tiros || 0) + 1; if (r._tiros % 3 === 0) { r.ammo = Math.min(ammoCap(r), r.ammo + 1); say(r, 'TIRO DE GRAÇA!', 'o'); } } } },
+    C: { aimAll: () => true },
+    J: { on: (r, ev) => { if (ev === 'fire' && r.air && !r._paraq) { r._paraq = true; r.ammo++; r.fireCD = 0; fireMissile(r); r._paraq = false; } } },
+    M: { homing: () => 2 },
+  },
+  frufru: {
+    S: { speed: r => r.s < 150 ? 1.12 : 1 },
+    A: { on: (r, ev, k, from) => { if (ev === 'hurt' && k === 'missile' && from && from !== r) charm(from, 2); } },
+    C: { on: (r, ev, lvl) => { if (ev === 'driftEnd' && lvl) { r.shield = Math.max(r.shield, 1.5); say(r, 'PIRUETA!', 'c'); } } },
+    J: { reflect: r => r.air || undefined },
+    M: { tick: r => { if (cd(r, '_glam', 5)) for (const o of behindOf(r, 12)) if (o.shield <= 0) { o.spook = Math.max(o.spook, 0.8); hurtSay(o, 'DISTRAÍDO PELO GLAMOUR!'); } } },
+  },
+  major: {
+    S: { speed: r => r.rank === 2 || r.rank === 3 ? 1.08 : 1 },
+    A: { on: (r, ev) => { if (ev === 'bark') for (const o of aheadOf(r, 15)) shoveSide(o, r, 12); } },
+    C: { quickDrift: () => true },
+    J: { grav: r => r.vy < 0 ? 0.5 : 1, airTurn: () => 2.8 },
+    M: { guard: (r, k) => { if (k === 'missile' && Math.random() < 0.5) { burst(r.x, 3, r.z, [1, 0.9, 0.4], 18, 6); say(r, 'SINALIZADORES DERRUBARAM O MÍSSIL!', 'c'); return true; } } },
+  },
+  tofu: {
+    S: { tick: r => { for (const o of behindOf(r, 10)) o.dragT = Math.max(o.dragT || 0, 0.2); } },
+    A: { tick: (r, dt) => { if (Math.abs(r.speed) < 3 || r.stun > 0) r.nitro = Math.min(100, r.nitro + 20 * dt); } },
+    C: { tick: (r, dt, inp) => { if (!inp.steer && !r.drifting && !r.air && r.speed > 3) { const tp = trackPoint(r.dist + 10 + r.speed * 0.35, clamp(r.d * 0.9, -W / 2 + 2, W / 2 - 2)); r.h += clamp(wrapAng(Math.atan2(tp.x - r.x, tp.z - r.z) - r.h), -1, 1) * 2.4 * dt; } } },
+    J: { on: (r, ev) => { if (ev === 'land') for (const o of nearR(r, 4)) if (knock(o, 0.8, 5, 0.4)) { hurtSay(o, 'BARRIGADA DO TOFU!'); say(r, 'BARRIGADA!'); } } },
+    M: { recover: () => 2, on: (r, ev) => { if (ev === 'stunEnd') r.mini = Math.max(r.mini, 0.6); } },
+  },
+  bidu: {
+    S: { on: (r, ev) => { if (ev === 'bump') boost(r, 1.08, 3); } },
+    A: { tick: r => { if (r.stun > 0.3 && r._barril !== r.lap) { r._barril = r.lap; r.stun = 0.05; r.nitro = Math.min(100, r.nitro + 30); say(r, 'BARRIL DE RESGATE! +30 NITRO', 'c'); } } },
+    C: { mass: r => Math.abs(r.yawRate) > 0.4 ? 4 : 1 },
+    J: { on: (r, ev) => { if (ev === 'land' && r.vy < -9) { for (const o of nearR(r, 15)) if (o.shield <= 0) o.spook = Math.max(o.spook, 1); ring(r, [0.9, 0.9, 0.9], 15, 28, dust); } } },
+    M: { accel: r => aheadOf(r, 12).length ? 1.3 : 1 },
+  },
+  canela: {
+    S: { speed: r => r.s > L * 0.7 ? 1.1 : 1 },
+    A: { on: (r, ev, lvl) => { if (ev === 'driftEnd' && lvl) addTrap(r, 'fire', r.s - 6, r.d, 4, 10, 5); } },
+    C: { tick: (r, dt) => { if (!r.drifting) return; r._vento = (r._vento || 0) + dt; if (r._vento >= 6) { r._vento = 0; if (r.xH) { r.ab = Math.min(3, r.ab + 1); say(r, 'ESPÍRITO DO VENTO: +1 CARGA', 'o'); } else { r.nitro = Math.min(100, r.nitro + 25); say(r, 'ESPÍRITO DO VENTO: +25 NITRO', 'c'); } } } },
+    J: { stats: r => { r.jumpV *= 1.14; }, on: (r, ev) => { if (ev === 'jump') { r.vx += Math.sin(r.h) * 4; r.vz += Math.cos(r.h) * 4; } } },
+    M: { tick: r => { if (!r.nitroOn) return; for (const o of behindOf(r, 8)) drag(o, 0.3); glow.spawn(r.x - Math.sin(r.h) * 2, 0.5, r.z - Math.cos(r.h) * 2, -r.vx * 0.2, 1, -r.vz * 0.2, 0.4, 0.8, 0.2, [1, 0.45, 0.1], 1, 0, 1); } },
+  },
+  biscoito: {
+    S: { on: (r, ev) => { if (ev === 'can' || ev === 'ammo' || ev === 'coin' || ev === 'charge') boost(r, 1.1, 3); } },
+    A: { on: (r, ev) => { if (ev === 'ammo' && r.ammo < ammoCap(r)) { r.ammo++; say(r, 'FAREJADOR: +1 MÍSSIL EXTRA', 'o'); } } },
+    C: { pickup: r => r.drifting ? 9 : 1 },
+    J: { grav: r => r.vy < 0 ? 0.45 : 1 },
+    M: { ammoCap: () => 1, on: (r, ev) => { if (ev === 'start') r.ammo = Math.max(r.ammo, 2); } },
+  },
+  emilly: {
+    S: { speed: r => r.rank >= runners.length - 1 && runners.length > 2 ? 1.14 : 1 },
+    A: { on: (r, ev) => { if (ev === 'stunEnd') r._ca = raceTime + 6; if (ev === 'fire' && (r._ca || 0) > raceTime && !r._dobro) { r._dobro = true; r.ammo++; r.fireCD = 0; fireMissile(r); r._dobro = false; say(r, 'CONTRA-ATAQUE EM DOBRO!'); } } },
+    C: { on: (r, ev) => { if (ev === 'scrape' && cd(r, '_rabo', 1.5)) { r.mini = Math.max(r.mini, 0.7); say(r, 'RABO PREÊNSIL!', 'c'); } } },
+    J: { tick: (r, dt) => { if (r.air) r.nitro = Math.min(100, r.nitro + 15 * dt); } },
+    M: { tick: r => { if (r.stun > 0.3 && raceTime > (r._airbag || 0)) { r._airbag = raceTime + 15; r.stun = 0.15; say(r, 'AIRBAG!', 'c'); } } },
+  },
+  taissa: {
+    S: { speed: r => Math.abs(r.d) > W / 2 - 2.5 ? 1.1 : 1 },
+    A: { guard: (r, k) => { if ((k === 'missile' || k === 'knock' || k === 'trip') && !r._pele) { r._pele = true; burst(r.x, 0.6, r.z, [0.95, 0.85, 0.5], 18, 3, dust); say(r, 'TROCOU DE PELE!', 'c'); return true; } } },
+    C: { on: (r, ev) => { if (ev === 'scrape' && cd(r, '_ventosa', 1.2)) { r.mini = Math.max(r.mini, 0.6); say(r, 'VENTOSA!', 'c'); } }, rail: () => true },
+    J: { on: (r, ev) => { if (ev === 'land') r._grude = raceTime + 2; }, grip: r => (r._grude || 0) > raceTime ? 2 : 1 },
+    M: { guard: (r, k) => ((k === 'target' || k === 'bird') && Math.random() < 0.3) || undefined },
+  },
+  tiffany: {
+    S: { speed: () => 1 + Math.min(0.12, raceTime / 1000) },
+    A: { tick: r => { if (r.air || r.stun > 0) return; for (const m of missiles) if (m.target === r && Math.hypot(m.pos.x - r.x, m.pos.z - r.z) < 9) { r.vy = r.jumpV; say(r, 'SENTIU O MÍSSIL E PULOU!', 'c'); break; } } },
+    C: { turn: r => r.speed > r.maxV * 0.8 ? 1.2 : 1 },
+    J: { on: (r, ev) => { if (ev === 'land') for (const o of nearR(r, 5)) { shoveSide(o, r, 16); drag(o, 0.8); } } },
+    M: { tick: (r, dt) => { if (TR.id === 'parque' || TR.id === 'praia') r.nitro = Math.min(100, r.nitro + 3 * dt); } },
+  },
+  kemilly: {
+    S: { on: (r, ev) => { if (ev === 'jump') { r._hop = Math.min(3, ((r._hopT || 0) > raceTime ? r._hop || 0 : 0) + 1); r._hopT = raceTime + 5; } }, speed: r => (r._hopT || 0) > raceTime ? 1 + 0.04 * (r._hop || 0) : 1 },
+    A: { on: (r, ev) => { if (ev === 'dealt' && Math.random() < 0.5 && r.ammo < ammoCap(r)) { r.ammo++; say(r, 'CENOURA DE VOLTA NO BOLSO!', 'o'); } } },
+    C: { on: (r, ev, lvl) => { if (ev === 'driftEnd') { r._zzT = raceTime; r._zzDir = r.driftDir; } if (ev === 'driftStart' && raceTime - (r._zzT || -9) < 1 && r.driftDir !== r._zzDir) { r.mini = Math.max(r.mini, 0.8); say(r, 'ZIGUE-ZAGUE!', 'c'); } } },
+    J: { stats: r => { r.jumpV *= 1.18; }, on: (r, ev) => { if (ev === 'hurdle') { r.vy = r.jumpV * 0.8; r.y = Math.max(r.y, 0.1); say(r, 'TRAMPOLIM!', 'c'); } } },
+    M: { splash: () => true },
+  },
+};
+// raio que sai de um e acerta outro
+function zap(r, o, t) { const a = r.D.body.getWorldPosition(new THREE.Vector3()); for (let i = 0; i <= 10; i++) { const k = i / 10; glow.spawn(lerp(r.x, o.x, k) + (Math.random() - 0.5), lerp(r.y + 1, o.y + 1, k) + (Math.random() - 0.5), lerp(r.z, o.z, k) + (Math.random() - 0.5), 0, 0, 0, 0.25, 0.6, 0.2, [1, 0.95, 0.3], 1, 0, 1); } if (knock(o, t, 3, 0.6)) hurtSay(o, 'ELETROCUTADO!'); }
+// habilidades (upgrade mecânico) de cada personagem
+const ABIL_FX = {
+  rex: r => { addTrap(r, 'cones', r.s - 7, 0, W + 2, 3, 10); ring(r, [0.2, 0.4, 1], 8); },
+  pingo: r => { r._hose = 3; },
+  caramelo: r => { const k = Math.random(); if (k < 0.1) { if (knock(r, 1.2, 5, 0.4)) say(r, 'ROLETA: AZAR! TROPEÇOU', 'r'); } else if (k < 0.45) { r.nitro = 100; r.ammo = ammoCap(r); r.shield = Math.max(r.shield, 5); say(r, 'ROLETA: JACKPOT!', 'g'); burst(r.x, 2, r.z, [1, 0.85, 0.2], 30, 8); } else if (k < 0.75) { boost(r, 1.3, 4); r.mini = 1.5; say(r, 'ROLETA: SUPER TURBO!', 'g'); } else { for (const o of aheadOf(r, 80, 3)) drag(o, 3); say(r, 'ROLETA: AZAR PARA OS RIVAIS!', 'g'); } },
+  flecha: r => { const t = aheadOf(r, 150, 1)[0]; if (!t) return say(r, 'NINGUÉM À FRENTE', 'r'); dash(r, Math.max(0, wrapDelta(t.dist - r.dist) - 3), [0.9, 0.9, 1]); r.slip = 1; r.mini = Math.max(r.mini, 1.2); say(r, `ESTILINGUE ATÉ O ${t.b.name}!`); },
+  nevasca: r => { r._iceT = 5; },
+  bolinha: r => { r._ballT = 4; r.shield = Math.max(r.shield, 4); boost(r, 1.25, 4); },
+  pitiquin: r => { for (const o of aheadOf(r, 32)) if (Math.abs(o.d - r.d) < 9) { shoveSide(o, r, 22); if (o.shield <= 0) o.spook = Math.max(o.spook, 0.8); } for (let i = missiles.length - 1; i >= 0; i--) { const m = missiles[i]; if (m.owner !== r && Math.hypot(m.pos.x - r.x, m.pos.z - r.z) < 32) { explodeMissile(m, null); missiles.splice(i, 1); } } ring(r, [1, 0.6, 0.6], 20, 36); },
+  princesa: r => { const t = aheadOf(r, 90, 1)[0]; if (!t) return say(r, 'JÁ É A RAINHA DA PISTA', 'g'); if (t.remote || t.shield > 0) return say(r, 'NÃO DEU PARA TROCAR', 'r'); for (const k of ['x', 'z', 'h', 'dist', 's', 'idx', 'd']) { const v = r[k]; r[k] = t[k]; t[k] = v; } burst(r.x, 1.5, r.z, [1, 0.5, 0.8], 20); burst(t.x, 1.5, t.z, [1, 0.5, 0.8], 20); hurtSay(t, 'A PRINCESA TROCOU DE LUGAR COM VOCÊ!'); say(r, `TROCA DE COROA COM ${t.b.name}!`, 'g'); },
+  linda: r => { r._charge = 2.5; },
+  pintado: r => { for (const dd of [-4, 0, 4]) addRunner(r, r.dist + 3, clamp(r.d + dd, -W / 2 + 1.5, W / 2 - 1.5), Math.max(55, r.speed + 18), 6, [1, 0.8, 0.4], { r: 0.9, single: true, stun: 0.9, msg: 'DERRUBADO PELA MATILHA FANTASMA!' }); },
+  ruivo: r => { addTrap(r, 'pit', r.s - 3, r.d, 5, 4, 25, true); say(r, 'BURACO ESCONDIDO!', 'c'); },
+  ninja: r => { for (const a of [-0.18, 0, 0.18]) { const h = r.h + a, g = new THREE.Group(); for (const rot of [0, Math.PI / 4]) { const m = new THREE.Mesh(new THREE.BoxGeometry(0.9, 0.05, 0.18), trapMat.star); m.rotation.y = rot; g.add(m); const m2 = m.clone(); m2.rotation.y = rot + Math.PI / 2; g.add(m2); } world.add(g); DYN.push(g); SHOTS.push({ owner: r, x: r.x, z: r.z, vx: Math.sin(h) * (70 + r.speed), vz: Math.cos(h) * (70 + r.speed), t: 1.2, g }); } },
+  sombra: r => { for (const o of nearR(r, 60)) silence(o, 5); darkT = Math.max(darkT, 1.5); darkCol.set(0x2e1065); ring(r, [0.4, 0.1, 0.7], 30, 40); },
+  pacoca: r => { addTrap(r, 'food', r.s - 6, r.d, 6, 5, 12); say(r, 'BANQUETE SERVIDO!', 'g'); },
+  raio: r => { r._surge = 6; },
+  duque: r => { let n = 0; for (const o of behindOf(r, 30, 2)) if (knock(o, 1, 6, 0.3)) { n++; hurtSay(o, 'TIRO DE CANHÃO DO DUQUE!'); } burst(r.x - Math.sin(r.h) * 3, 1.2, r.z - Math.cos(r.h) * 3, [1, 0.6, 0.2], 30, 9); dash(r, 12, [0.5, 0.5, 0.5]); r.mini = Math.max(r.mini, 1.5); Sfx.boom(1); say(r, n ? `CANHÃO! ${n} NO CHÃO` : 'COICE DO CANHÃO!'); },
+  frufru: r => { for (const o of nearR(r, 30)) charm(o, 4); ring(r, [1, 0.4, 0.8], 26, 40); },
+  major: r => { const p = trackPoint(r.dist + 45, 0); const g = new THREE.Mesh(new THREE.RingGeometry(W / 2 + 0.5, W / 2 + 2, 40), trapMat.mark.clone()); g.rotation.x = -Math.PI / 2; g.position.set(p.x, 0.1, p.z); world.add(g); DYN.push(g); LOBS.push({ owner: r, x: p.x, z: p.z, rad: W / 2 + 2, t: 2, g }); },
+  tofu: r => { r.stun = 1.5; r._nap = true; say(r, 'ZZZ... SONECA', 'c'); },
+  bidu: r => { addRunner(r, r.dist + 3, r.d, Math.max(50, r.speed + 12), 5, [0.95, 0.97, 1], { r: 1.2, rMax: 3.8, grow: 0.8, stun: 1, mat: trapMat.snow, msg: 'ATROPELADO PELA AVALANCHE!' }); },
+  canela: r => { r._fox = 8; },
+  biscoito: r => { let n = 0; const got = (list, fn) => { for (const it of list) { const ds = wrapDelta(it.s - r.s); if (ds > 0 && ds < 150 && !it.cd && !it.taken) { fn(it); n++; } } }; got(nitros, it => { it.cd = 8; it.g.visible = false; r.nitro = Math.min(100, r.nitro + 35); }); got(ammos, it => { it.cd = 9; it.g.visible = false; r.ammo = Math.min(ammoCap(r), r.ammo + 1); }); if (r.isPlayer) got(coins, it => { it.taken = true; it.g.visible = false; r.coins++; }); got(charges, it => { it.cd = 14; it.g.visible = false; r.nitro = Math.min(100, r.nitro + 20); }); say(r, `FAREJOU ${n} ITENS!`, 'g'); },
+  emilly: r => { addTrap(r, 'stink', r.s - 5, r.d, W + 2, 12, 6); },
+  taissa: r => { for (const m of missiles) if (m.target === r) m.target = null; for (const bd of birds) if (bd.state !== 'off') birdFlee(bd, r); r.mini = Math.max(r.mini, 1.5); burst(r.x - Math.sin(r.h) * 2, 0.4, r.z - Math.cos(r.h) * 2, [0.9, 0.8, 0.2], 20); say(r, 'O RABO FICOU DE ISCA!'); },
+  tiffany: r => { r._spin = 2; },
+  kemilly: r => { burst(r.x, 0.4, r.z, [0.45, 0.3, 0.15], 24, 5, dust); dash(r, 35, [0.4, 0.28, 0.14]); burst(r.x, 0.4, r.z, [0.45, 0.3, 0.15], 24, 6, dust); for (const o of nearR(r, 4)) if (knock(o, 0.9, 6, 0.3)) hurtSay(o, 'O COELHO SAIU DA TOCA EMBAIXO DE VOCÊ!'); },
+};
+// efeitos contínuos das habilidades acima
+function abilTick(r, dt) {
+  if (r._hose > 0) { r._hose -= dt; for (const o of aheadOf(r, 28)) if (Math.abs(o.d - r.d) < 6) { shoveSide(o, r, 18 * dt); o.icy = Math.max(o.icy, 0.4); } for (let i = 0; i < 3; i++) glow.spawn(r.x + Math.sin(r.h) * 1.5, 1.2, r.z + Math.cos(r.h) * 1.5, Math.sin(r.h + (Math.random() - 0.5) * 0.4) * 40, 1, Math.cos(r.h + (Math.random() - 0.5) * 0.4) * 40, 0.6, 0.4, 0.2, [0.6, 0.85, 1], 0.8, 8, 0.2); }
+  if (r._iceT > 0) { r._iceT -= dt; if (cd(r, '_iceDrop', 0.35)) addTrap(r, 'ice', r.s - 3, r.d, 4, 4, 8); }
+  if (r._ballT > 0) { r._ballT -= dt; r.D.model.rotation.x += dt * 12; if (r._ballT <= 0) r.D.model.rotation.x = 0; for (const o of nearR(r, 2.6)) if (knock(o, 0.8, 5, 0.4)) hurtSay(o, 'STRIKE DO BOLINHA!'); }
+  if (r._charge > 0) { r._charge -= dt; boost(r, 1.35, 0.2); r.shield = Math.max(r.shield, 0.2); for (const o of nearR(r, 2.8)) if (knock(o, 1, 6, 0.3)) hurtSay(o, 'ATROPELADO PELO ESTOURO!'); dust.spawn(r.x, 0.4, r.z, -r.vx * 0.2, 2, -r.vz * 0.2, 0.8, 0.8, 1.6, [0.45, 0.32, 0.2], 0.8, 0, 1); }
+  if (r._surge > 0) { r._surge -= dt; if (cd(r, '_surgeCD', 1)) { const o = nearR(r, 25).sort((a, b) => Math.hypot(a.x - r.x, a.z - r.z) - Math.hypot(b.x - r.x, b.z - r.z))[0]; if (o) zap(r, o, 0.6); } auraFx(r, 1, [1, 0.95, 0.3], 'bolt'); }
+  if (r._fox > 0) { r._fox -= dt; const a = raceTime * 5; glow.spawn(r.x + Math.cos(a) * 1.8, 1.2, r.z + Math.sin(a) * 1.8, 0, 0.3, 0, 0.5, 0.6, 0.2, [1, 0.55, 0.15], 1, 0, 1); }
+  if (r._spin > 0) { r._spin -= dt; r.D.model.rotation.y += dt * 18; if (r._spin <= 0) r.D.model.rotation.y = 0; for (const o of nearR(r, 7)) if (cd(o, '_spinHit', 1)) { shoveSide(o, r, 20); if (knock(o, 0.7, 4, 0.5)) hurtSay(o, 'CHICOTADA GIRATÓRIA!'); } }
+  if (r.charmT > 0 && Math.random() < 0.2) glow.spawn(r.x, r.y + 2, r.z, 0, 1.2, 0, 0.8, 0.45, 0.25, [1, 0.3, 0.6], 0.9, -0.5, 1);
+  if (r.silenceT > 0 && Math.random() < 0.15) dust.spawn(r.x, r.y + 2.2, r.z, 0, 0.5, 0, 0.8, 0.4, 0.6, [0.3, 0.1, 0.5], 0.7, 0, 1);
+}
+// ataque que pode ser bloqueado (espírito guardião devolve; passivas podem bloquear)
+// Davi: as passivas trocam junto com a forma (galinha, dinossauro, robô)
+const DAVI_FX = {
+  galinha: {
+    S: { on: (r, ev) => { if (ev === 'stunEnd') { boost(r, 1.2, 3); burst(r.x, r.y + 0.8, r.z, [1, 1, 1], 20, 4, dust); say(r, 'PÂNICO NO GALINHEIRO!', 'o'); } } },
+    A: { tick: r => { if (state !== 'race' || r.stun > 0 || r.finished || raceTime < 4 || !cd(r, '_ovo', 10)) return; addTrap(r, 'egg', r.s - 3, r.d, 2.2, 2.5, 20, true); say(r, 'BOTOU UM OVO!', 'c'); } },
+    C: { pickup: () => 1.7 },
+    J: { grav: r => r.vy < 0 ? 0.4 : 1, tick: r => { if (r.air && r.vy < 0 && Math.random() < 0.3) dust.spawn(r.x, r.y + 0.8, r.z, (Math.random() - 0.5) * 3, -1, (Math.random() - 0.5) * 3, 0.3, 0.5, 0.2, [1, 1, 1], 0.9, 1, 1); } },
+  },
+  dino: {
+    S: { tick: r => { if (r.air || r.stun > 0 || Math.hypot(r.vx, r.vz) < 12 || !cd(r, '_tremor', 1.5)) return; const R = 8 + (r.b.rad || 1); for (const o of nearR(r, R)) { drag(o, 0.9); hurtSay(o, 'A TERRA TREMEU!'); } ring(r, [0.5, 0.38, 0.25], 7, 18, dust); if (player && player !== r && Math.hypot(player.x - r.x, player.z - r.z) < 25) shake(0.15); } },
+    A: { on: (r, ev) => { if (ev === 'overtake') { r.nitro = Math.min(100, r.nitro + 15); say(r, 'PRESA ABATIDA! +15 FÚRIA', 'o'); } } },
+    C: { tick: r => { if (!r.drifting || !cd(r, '_cauda', 2)) return; let n = 0; for (const o of nearR(r, 4.5 + (r.b.rad || 1))) if (knock(o, 0.8, 5, 0.4, r)) { n++; hurtSay(o, 'RABADA DO DINOSSAURO!'); } if (n) say(r, `RABADA! ${n} NO CHÃO`, 'v'); } },
+    J: { on: (r, ev) => { if (ev !== 'land' || !cd(r, '_pisao', 1.2)) return; let n = 0; for (const o of nearR(r, 10 + (r.b.rad || 1))) if (!o.air && knock(o, 0.7, 6, 0.5, r)) { n++; hurtSay(o, 'PISÃO DO DINOSSAURO!'); } ring(r, [0.55, 0.4, 0.25], 10, 24, dust); if (r.isPlayer) shake(0.5); if (n) say(r, `PISÃO! ${n} NO CHÃO`, 'v'); } },
+  },
+  robo: {
+    S: { tick: (r, dt) => { if (!isRobo(r)) return; if (r.dura < (r._pd || 100) - 1) r._calm = raceTime + 4; if (raceTime > (r._calm || 0) && r.dura < 100) { r.dura = Math.min(100, r.dura + 2 * dt); if (Math.random() < dt * 6) glow.spawn(r.x, r.y + 3, r.z, 0, 2, 0, 0.4, 0.6, 0.1, [0.3, 1, 0.5], 1, 0, 1); } r._pd = r.dura; } },
+    A: { on: (r, ev) => { if (ev !== 'jump') return; r.mini = Math.max(r.mini, 0.8); burst(r.x, r.y + 0.3, r.z, [1, 0.55, 0.15], 18, 3); if (cd(r, '_foguete', 3)) say(r, 'FOGUETES DOS PÉS!', 'o'); } },
+    C: { quickDrift: () => true, grip: () => 1.2 },
+    J: { reflect: r => { if (!cd(r, '_defl', 8)) return false; ring(r, [0.4, 0.8, 1], 6); return true; } },
+  },
+};
+function daviPerks(r) {
+  const F = DAVI_FX[r.form || r.b.form] || DAVI_FX.galinha; r.perks = [];
+  for (const [u, sl] of Object.entries(X_SLOT)) if (r.up[u] >= 5 && F[sl]) r.perks.push(F[sl]);
+  if (r.mech && F.M) r.perks.push(F.M);
+}
+function guardHit(o, kind, from) {
+  if (kind !== 'target' && o._fox > 0 && from && from !== o) { o._fox = 0; if (knock(from, 1, 5, 0.3)) hurtSay(from, 'A RAPOSA DEVOLVEU O ATAQUE!'); say(o, 'O ESPÍRITO GUARDIÃO DEVOLVEU O ATAQUE!', 'c'); return true; }
+  return !!pk(o, 'guard', kind, from);
+}
 function useAbility(r, fromNet) {
   const h = r.xH; if (!h) return;
   if (!fromNet) {
@@ -3752,6 +4136,7 @@ function useAbility(r, fromNet) {
   const col = hexRgb(h[3]), kind = h[2], vol = player ? clamp(1 - Math.hypot(r.x - player.x, r.z - player.z) / 90, 0, 1) : 1;
   if (r.isPlayer) { pop(h[0] + '!', 'o'); narrate(`${h[0]}!`, true); vib([30, 30, 60]); netEvent('ab'); }
   else narrate(`${r.b.name} USOU ${h[0]}!`);
+  if (kind === 'custom') { if (ABIL_FX[r.b.id]) ABIL_FX[r.b.id](r); return; }
   const ahead = (max, n) => runners.filter(o => o !== r && !o.finished && wrapDelta(o.dist - r.dist) > 0 && wrapDelta(o.dist - r.dist) < max).sort((a, b) => wrapDelta(a.dist - r.dist) - wrapDelta(b.dist - r.dist)).slice(0, n);
   if (kind === 'night') {
     darkT = 6; darkCol.set(h[3]).multiplyScalar(0.5); r.nightT = 6;
@@ -3865,6 +4250,7 @@ function endDrift(r, crashed) {
   if (crashed) return;
   const lvl = r.driftT > 2.0 ? 2 : r.driftT > 0.9 ? 1 : 0;
   const pts = Math.round(r.driftT * 140);
+  trig(r, 'driftEnd', lvl);
   r.driftScore += pts;
   if (lvl) {
     r.minis++; if (r.isPlayer) vib(lvl === 2 ? [25, 30, 25] : 25);
@@ -3908,15 +4294,19 @@ function doBark(r) {
 function stepRunner(r, inp, dt) {
   const prevDist = r.dist, air = r.y > 0.02;
   if (r.shield > 0 && (r.stun > 0 || r.spook > 0 || r.birdT > 0)) { r.stun = 0; r.spook = 0; r.birdT = 0; }
-  for (const k of ['shield', 'rocket', 'flyT', 'icy', 'smokeT', 'magT', 'nightT', 'hurtT', 'fedT', 'aCD', 'abCD', 'slowT']) if (r[k] > 0) r[k] -= dt;
+  for (const k of ['shield', 'rocket', 'flyT', 'icy', 'smokeT', 'magT', 'nightT', 'hurtT', 'fedT', 'aCD', 'abCD', 'slowT', 'dragT', 'charmT', 'silenceT', 'confT', 'boostT']) if (r[k] > 0) r[k] -= dt;
+  pk(r, 'tick', dt, inp); abilTick(r, dt);
   if (r.formT > 0) { r.formT -= dt; if (r.formT <= 0) setForm(r, 'galinha'); }
   if (r.xC === 'steady') { if (r.spook > 0) r.spook -= dt; if (r.birdT > 0) r.birdT -= dt; }
-  if (r.stun > 0) r.wasStun = true; else if (r.wasStun) { r.wasStun = false; r.hurtT = 5; trig(r, 'stunEnd'); }
+  if (r.stun > 0) r.wasStun = true; else if (r.wasStun) { r.wasStun = false; r.hurtT = 5; if (r._nap) { r._nap = false; boost(r, 1.25, 6); r.shield = Math.max(r.shield, 6); say(r, 'ACORDOU DESCANSADO!', 'c'); } else trig(r, 'stunEnd'); }
   if (r.stun > 0) {
-    r.stun -= dt * (has(r, 'bolinha') ? 2 : 1) * (r.xM === 'getUp' ? 1.7 : 1); inp = NOINPUT;
+    r.stun -= dt * (has(r, 'bolinha') ? 2 : 1) * (r.xM === 'getUp' ? 1.7 : 1) * pkMul(r, 'recover'); inp = NOINPUT;
+    if (r._nap && Math.random() < dt * 4) glow.spawn(r.x, r.y + 2.2, r.z, 0.5, 1, 0, 1, 0.4, 0.5, [0.8, 0.85, 1], 0.9, -0.5, 1);
     if (r.stun <= 0 && has(r, 'emilly')) { r.mini = 1.3; if (r.isPlayer) pop('FINGIU DE MORTA! MINI-TURBO', 'v'); }
   }
   if (r.spook > 0) { r.spook -= dt; inp = { ...inp, nitro: false, steer: clamp(inp.steer + Math.sin(time * 16 + r.num) * 0.7, -1, 1) }; }
+  if (r.silenceT > 0) inp = { ...inp, nitro: false, fire: false, ab: false, bark: false };
+  if (r.confT > 0) inp = { ...inp, steer: -inp.steer };
   const jumpPressed = inp.jump && !r.prevJump; r.prevJump = inp.jump;
   const barkPressed = inp.bark && !r.prevBark; r.prevBark = inp.bark;
   r.barkCD -= dt;
@@ -3928,15 +4318,16 @@ function stepRunner(r, inp, dt) {
   if (abPressed) useAbility(r);
 
   r.offroad = Math.abs(r.d) > W / 2 + 0.4 && r.flyY < 1.5;
-  const offroad = r.offroad && !has(r, 'ruivo') && r.xC !== 'offroad' && !(r.xS && r.xS[2] === 'offroad');
+  const offroad = r.offroad && !has(r, 'ruivo') && r.xC !== 'offroad' && !(r.xS && r.xS[2] === 'offroad') && !pk(r, 'noOffroad');
   const firm = r.xC === 'slipGrip';
   const trackGrip = has(r, 'nevasca') || has(r, 'taissa') || firm ? Math.max(1, TR.grip) : TR.grip;
   let grip = r.grip * trackGrip * (offroad ? 0.8 : 1) * (firm ? 1.4 : 1), slow = offroad ? 0.62 : 1;
-  if (has(r, 'pingo') || r.xC === 'puddle' || (has(r, 'taissa') && r.surf === 'ice') || (has(r, 'nevasca') && r.surf === 'ice')) { /* poça não atrapalha */ }
+  if (has(r, 'pingo') || r.xC === 'puddle' || pk(r, 'noPuddle') || (has(r, 'taissa') && r.surf === 'ice') || (has(r, 'nevasca') && r.surf === 'ice')) { /* poça não atrapalha */ }
   else if (!air && r.surf === 'mud') { grip *= firm ? 1 : 0.5; slow *= 0.62; }
   else if (!air && r.surf === 'water') { grip *= firm ? 1 : 0.8; slow *= 0.72; }
   else if (!air && r.surf === 'ice') grip *= firm ? 0.8 : 0.22;
   if (r.icy > 0) grip *= 0.2;
+  grip *= pkMul(r, 'grip');
 
   r.hitCD = Math.max(0, r.hitCD - dt);
   if (r.birdT > 0) { r.birdT -= dt; inp = { ...inp, steer: clamp(inp.steer + Math.sin(time * 11 + r.num * 2) * 0.45, -1, 1) }; }
@@ -3958,12 +4349,12 @@ function stepRunner(r, inp, dt) {
   if (!r.isPlayer && player && !player.finished) band = 1 + clamp((player.dist - r.dist) / 220, -0.07, 0.07);
   const fury = r.nitroOn && isDino(r); // tiranossauro: a barra vira FÚRIA
   const maxV = (fury ? 3.6 * r.skill : 0) + r.maxV * r.skill * band * slow * (r.nitroOn && !fury ? r.nitroPow : 1) * (r.mini > 0 ? 1.15 : 1) * (r.pad > 0 ? 1.22 : 1)
-    * (r.slip > 0.5 ? (has(r, 'flecha') ? 1.14 : 1.06) : 1) * (r.howl > 0 ? 1.15 : 1) * (r.slowT > 0 ? 0.55 : 1) * (r.sOn ? r.xS[3] : 1) * (r.rocket > 0 ? 1.35 : 1) * (r.xC === 'driftSpeed' && r.drifting ? 1.04 : 1) * r.pack * (r.spook > 0 ? 0.72 : 1) * (r.birdT > 0 ? 0.7 : 1) * (r.finished ? 0.5 : 1);
+    * (r.slip > 0.5 ? (has(r, 'flecha') ? 1.14 : 1.06) : 1) * (r.howl > 0 ? 1.15 : 1) * (r.slowT > 0 ? 0.55 : 1) * (r.sOn ? r.xS[3] : 1) * (r.rocket > 0 ? 1.35 : 1) * (r.xC === 'driftSpeed' && r.drifting ? 1.04 : 1) * r.pack * pkMul(r, 'speed') * (r.boostT > 0 ? r.boostK : 1) * (r.dragT > 0 ? 0.8 : 1) * (r.charmT > 0 ? 0.7 : 1) * (r.spook > 0 ? 0.72 : 1) * (r.birdT > 0 ? 0.7 : 1) * (r.finished ? 0.5 : 1);
 
   // volante
   let vF = r.vx * Math.sin(r.h) + r.vz * Math.cos(r.h);
   const sf = Math.max(0.45, clamp(Math.abs(vF) / 7, 0, 1)) * (1 - 0.3 * clamp(Math.abs(vF) / 70, 0, 1)); // cachorro gira até parado
-  if (!r.drifting && inp.drift && inp.steer !== 0 && vF > 16 && !air && r.stun <= 0) { r.drifting = true; r.driftDir = Math.sign(inp.steer); r.driftT = 0; }
+  if (!r.drifting && inp.drift && inp.steer !== 0 && vF > (pk(r, 'quickDrift') ? 6 : 16) && !air && r.stun <= 0) { r.drifting = true; r.driftDir = Math.sign(inp.steer); r.driftT = 0; trig(r, 'driftStart'); }
   if (r.drifting && (!inp.drift || vF < 10)) endDrift(r, false);
   let yawT;
   if (r.drifting) {
@@ -3973,6 +4364,7 @@ function stepRunner(r, inp, dt) {
   } else yawT = -inp.steer * r.turn * sf * (vF < -1 ? -1 : 1);
   if (TR.drift) yawT *= r.drifting ? 1.15 : (r.isPlayer ? 0.62 : 0.8); // pista de drift: sem derrapar o cachorro não faz a curva
   if (air) yawT *= 0.35;
+  yawT *= pkMul(r, 'turn') * (air ? pkMul(r, 'airTurn') : 1);
   r.yawRate = lerp(r.yawRate, yawT, 1 - Math.exp(-(r.drifting ? 6 : 12) * dt));
   r.h += r.yawRate * dt;
   // assistência de direção: sem o dedo no volante, o cachorro segue a pista sozinho
@@ -3988,10 +4380,10 @@ function stepRunner(r, inp, dt) {
   vF = r.vx * fx + r.vz * fz;
   let vR = r.vx * rx + r.vz * rz;
   if (!air) {
-    if (inp.throttle > 0 && vF < maxV) vF += (r.accel * (r.nitroOn ? (fury ? 1.25 : 1.7) : 1) * inp.throttle * (1 - 0.55 * clamp(vF / maxV, 0, 1)) + (r.mini > 0 ? 14 : 0) + (r.pad > 0.6 ? 30 : 0) + (r.rocket > 0 ? 22 : 0)) * dt;
+    if (inp.throttle > 0 && vF < maxV) vF += (r.accel * pkMul(r, 'accel') * (r.nitroOn ? (fury ? 1.25 : 1.7) : 1) * inp.throttle * (1 - 0.55 * clamp(vF / maxV, 0, 1)) + (r.mini > 0 ? 14 : 0) + (r.pad > 0.6 ? 30 : 0) + (r.rocket > 0 ? 22 : 0)) * dt;
     if (!inp.throttle) vF -= Math.sign(vF) * Math.min(Math.abs(vF), 7 * dt);
     if (inp.brake) vF = vF > 0 ? Math.max(0, vF - 38 * dt) : Math.max(-9, vF - 12 * dt);
-    if (inp.drift && !r.drifting && vF > 4 && r.xC !== 'driftSpeed') vF -= 10 * dt;
+    if (inp.drift && !r.drifting && vF > 4 && r.xC !== 'driftSpeed' && !pk(r, 'quickDrift')) vF -= 10 * dt;
     if (TR.elev && r.flyY < 1.5) vF -= 22 * slopeAlong(r.x, r.z, fx, fz) * dt; // ladeira: descida embala, subida segura
     if (vF > maxV) vF = Math.max(maxV, vF - (vF - maxV) * 2.2 * dt - 2 * dt);
     if (r.drifting) {
@@ -4008,6 +4400,7 @@ function stepRunner(r, inp, dt) {
   // pulo
   if (jumpPressed && !air && r.stun <= 0) {
     r.vy = r.jumpV; r.dj = false; if (r.isPlayer) Sfx.jump(); if (r.drifting) endDrift(r, false);
+    trig(r, 'jump');
     if (r.xJ === 'launch') { r.vx += fx * 11; r.vz += fz * 11; for (let i = 0; i < 10; i++) dust.spawn(r.x, 0.3, r.z, -fx * 6 + (Math.random() - 0.5) * 3, 1.5, -fz * 6 + (Math.random() - 0.5) * 3, 0.5, 0.5, 1.3, [0.8, 0.75, 0.7], 0.7, 0, 2); }
   }
   else if (jumpPressed && air && (has(r, 'ninja') || r.xJ === 'double') && !r.dj && r.stun <= 0) {
@@ -4015,7 +4408,7 @@ function stepRunner(r, inp, dt) {
     if (r.isPlayer) { Sfx.jump(); pop('PULO DUPLO!', 'c'); }
     for (let i = 0; i < 14; i++) { const a = i / 14 * 6.28; dust.spawn(r.x, r.y + 0.3, r.z, Math.cos(a) * 5, -1, Math.sin(a) * 5, 0.5, 0.5, 1.2, [0.85, 0.85, 0.9], 0.6, 0, 3); }
   }
-  r.vy -= GRAV * dt * (r.xJ === 'glide' && r.vy < 0 ? 0.45 : 1); r.y += r.vy * dt;
+  r.vy -= GRAV * dt * (r.xJ === 'glide' && r.vy < 0 ? 0.45 : 1) * pkMul(r, 'grav'); r.y += r.vy * dt;
   if (r.y <= 0) {
     if (air) {
       trig(r, 'land');
@@ -4044,7 +4437,8 @@ function stepRunner(r, inp, dt) {
     r.x -= a.r.x * sg * over; r.z -= a.r.z * sg * over; r.d = sg * fence;
     const vo = (r.vx * a.r.x + r.vz * a.r.z) * sg;
     if (vo > 0) {
-      const rail = r.xC === 'rail';
+      trig(r, 'scrape', vo);
+      const rail = r.xC === 'rail' || !!pk(r, 'rail');
       r.vx -= a.r.x * sg * vo * (rail ? 1 : 1.3); r.vz -= a.r.z * sg * vo * (rail ? 1 : 1.3); if (!rail) { r.vx *= 0.95; r.vz *= 0.95; }
       // raspou na cerca: o cachorro se endireita ao longo dela em vez de parar
       const fwd = Math.sin(r.h) * a.t.x + Math.cos(r.h) * a.t.z >= 0 ? 1 : -1;
@@ -4060,6 +4454,7 @@ function stepRunner(r, inp, dt) {
       if (isBig(r) && r.y < 0.55) { // grande demais para pular: passa por cima e derruba a barreira
         hd.fall = 1; if (isRobo(r)) roboHit(r, 6, 'BARREIRA'); else if (r.isPlayer) pop('ATROPELOU A BARREIRA!', 'v');
       } else if (r.y < 0.55 && r.stun <= 0 && !r.b.fly && r.xJ !== 'spring' && r.flyY < 1) {
+        if (guardHit(r, 'trip')) { hd.fall = 1; continue; }
         const roll = has(r, 'tofu');
         r.stun = roll ? 0.4 : 1.0; r.vx *= roll ? 0.65 : 0.25; r.vz *= roll ? 0.65 : 0.25; r.vy = 3; hd.fall = 1; endDrift(r, true); r.nitroOn = false; r.hits++;
         if (r.isPlayer) { Sfx.trip(); pop('TROPEÇOU!', 'r'); shake(0.4); vib(70); }
@@ -4087,6 +4482,7 @@ function stepRunner(r, inp, dt) {
     const ds = wrapDelta(s - p.s) / 1.4, dd = (r.d - p.d) / 0.8;
     if (ds * ds + dd * dd < p.r * p.r) r.surf = p.type;
   }
+  if (r.surf && r.surf !== wasSurf) trig(r, 'splash');
   if (r.isPlayer && r.surf && r.surf !== wasSurf) { if (r.surf === 'ice') pop('GELO!', 'c'); else { Sfx.splash(); pop(r.surf === 'mud' ? 'LAMA!' : 'SPLASH!', 'r'); } }
   if (r.surf && r.surf !== 'ice' && Math.abs(vF) > 6 && Math.random() < 0.6) {
     const col = r.surf === 'mud' ? [0.25, 0.15, 0.07] : [0.75, 0.88, 1];
@@ -4094,7 +4490,7 @@ function stepRunner(r, inp, dt) {
   }
   // bolas rolando pela pista
   for (const bl of balls) {
-    if (!bl.active || r.hitCD > 0 || r.stun > 0 || r.y > bl.r * 1.25 || r.b.fly || has(r, 'bidu')) continue;
+    if (!bl.active || r.hitCD > 0 || r.stun > 0 || r.y > bl.r * 1.25 || r.b.fly || has(r, 'bidu') || pk(r, 'guard', 'ball')) continue;
     if (isBig(r) && Math.abs(wrapDelta(s - bl.s)) < bl.r + 2 && Math.abs(r.d - bl.d) < bl.r + (r.b.rad || 1)) { r.hitCD = 2; if (isRobo(r)) roboHit(r, 10, 'BOLADA'); else if (r.isPlayer) pop('CHUTOU A BOLA!', 'v'); continue; }
     if (Math.abs(wrapDelta(s - bl.s)) < bl.r + 0.7 && Math.abs(r.d - bl.d) < bl.r + 0.8) {
       const roll = has(r, 'tofu');
@@ -4147,7 +4543,7 @@ function stepRunner(r, inp, dt) {
     if (r.isPlayer) onPlayerFinish();
   } else if (!r.finished && r.lap > r.lastLap) {
     const lt = raceTime - r.lapStart; if (!r.bestLap || lt < r.bestLap) r.bestLap = lt;
-    r.lapStart = raceTime; r.lastLap = r.lap;
+    r.lapStart = raceTime; r.lastLap = r.lap; trig(r, 'lap');
     if (r.isPlayer) { Sfx.lap(); showBig(r.lap === save.laps ? 'ÚLTIMA VOLTA' : `VOLTA ${r.lap}`, 1400, `melhor volta ${fmt(r.bestLap)}`); speak(r.lap === save.laps ? 'Última volta!' : `Volta ${r.lap}!`, true); }
   }
   if (r.isPlayer && !r.air && amp > 0.1) {
@@ -4238,7 +4634,8 @@ function aiInput(r, dt) {
 
 function passives(dt) {
   if (state !== 'race' && state !== 'finished') return;
-  standings().forEach((r, i) => { if (r.rank && i + 1 < r.rank && raceTime > 2) trig(r, 'overtake'); r.rank = i + 1; });
+  const st = standings(); st.forEach((r, i) => { if (r.rank && raceTime > 2) { if (i + 1 < r.rank) trig(r, 'overtake', st[i + 1]); else if (i + 1 > r.rank) trig(r, 'overtaken', st[i - 1]); } r.rank = i + 1; });
+  updateTraps(dt);
   extrasFrame(dt);
   for (const r of runners) {
     if (has(r, 'pintado')) {
@@ -4262,12 +4659,14 @@ function interactions(dt) {
   passives(dt);
   for (let i = 0; i < runners.length; i++) for (let j = i + 1; j < runners.length; j++) {
     const a = runners[i], b = runners[j], dx = b.x - a.x, dz = b.z - a.z, d2 = dx * dx + dz * dz, m = (a.b.rad || DOG_R) + (b.b.rad || DOG_R);
+    if (pk(a, 'ghost') || pk(b, 'ghost')) continue; // curva fantasma do Ninja
     if (d2 < m * m && Math.abs(a.y + a.flyY - b.y - b.flyY) < 1.2 * Math.max(a.b.rad || 1, b.b.rad || 1)) {
       const d = Math.sqrt(d2) || 0.01, nx = dx / d, nz = dz / d, ov = (m - d) / 2;
       const wa = Math.min(massOf(b), 50) / (Math.min(massOf(a), 50) + Math.min(massOf(b), 50)) * 2, wb = 2 - wa;
       a.x -= nx * ov * wa; a.z -= nz * ov * wa; b.x += nx * ov * wb; b.z += nz * ov * wb;
       const rv = (b.vx - a.vx) * nx + (b.vz - a.vz) * nz;
       if (rv < 0) {
+        if (-rv > 3) { trig(a, 'bump', b, -rv); trig(b, 'bump', a, -rv); }
         const ma = massOf(a), mb = massOf(b), jv = -1.3 * rv / (1 / ma + 1 / mb) * (has(a, 'princesa') || has(b, 'princesa') ? 1.4 : 1);
         a.vx -= jv / ma * nx; a.vz -= jv / ma * nz; b.vx += jv / mb * nx; b.vz += jv / mb * nz;
         for (const [x, y] of [[a, b], [b, a]]) if (has(x, 'linda') && x.nitroOn && y.stun <= 0 && !isBig(y)) {
@@ -4283,7 +4682,7 @@ function interactions(dt) {
     for (const o of runners) {
       if (o === r || o.speed < 15) continue;
       const dx = o.x - r.x, dz = o.z - r.z, along = dx * fx + dz * fz, lat = Math.abs(dx * fz - dz * fx);
-      if (along > 2.5 && along < 14 && lat < 1.8) { inSlip = true; break; }
+      if (along > 2.5 && along < 14 * pkMul(r, 'slipRange') && lat < 1.8) { if (pk(o, 'noDraft')) { o.nitro = Math.min(100, o.nitro + 5 * dt); continue; } inSlip = true; break; }
     }
     r.slip = inSlip ? r.slip + dt : 0;
     if (r.slip > 0.5) r.nitro = Math.min(100, r.nitro + (has(r, 'flecha') ? 15 : 5) * dt);
@@ -4321,7 +4720,7 @@ function missileTarget(r) {
   for (const o of runners) {
     if (o === r || o.finished) continue;
     const dx = o.x - r.x, dz = o.z - r.z, d = Math.hypot(dx, dz);
-    if (d < bd && d > 2 && (dx * fx + dz * fz) / d > 0.55) { bd = d; best = o; }
+    if (d < bd && d > 2 && (pk(r, 'aimAll') || (dx * fx + dz * fz) / d > 0.55) && !guardHit(o, 'target', r)) { bd = d; best = o; }
   }
   return best;
 }
@@ -4350,6 +4749,7 @@ function fireMissile(r, forceTg) {
   for (let i = 0; i < 12; i++) dust.spawn(p.x, p.y, p.z, (Math.random() - 0.5) * 4 - fx * 6, Math.random() * 2, (Math.random() - 0.5) * 4 - fz * 6, 0.8, 0.5, 1.6, [0.8, 0.8, 0.8], 0.6, -1, 2);
   if (r.isPlayer) pop(carrot ? (tg ? `CENOURA NO ${tg.b.name}!` : 'CENOURA!') : (tg ? `MÍSSIL NO ${tg.b.name}!` : 'MÍSSIL!'), 'o');
   if (tg && tg.isPlayer) { pop(`${r.b.name} ${carrot ? 'JOGOU UMA CENOURA' : 'ATIROU'} EM VOCÊ!`, 'r'); Sfx.lockon(); }
+  trig(r, 'fire');
 }
 const _mt = new THREE.Vector3();
 function updateMissiles(dt) {
@@ -4360,10 +4760,10 @@ function updateMissiles(dt) {
     const sp = Math.max(62, m.vel.length());
     if (tg) {
       _mt.set(tg.x, 1.1 + tg.y, tg.z).sub(m.pos).normalize().multiplyScalar(sp);
-      m.vel.lerp(_mt, 1 - Math.exp(-(m.t < 0.25 ? 1 : 3.4) * dt));
+      m.vel.lerp(_mt, 1 - Math.exp(-(m.t < 0.25 ? 1 : 3.4 * pkMul(m.owner, 'homing')) * dt));
       if (tg.isPlayer) tg.lockT = 0.3;
     } else { m.vel.y += (1.2 - m.pos.y) * dt * 4; }
-    m.vel.setLength(Math.min(sp + 25 * dt, m.carrot ? 92 : 80));
+    m.vel.setLength(Math.min(sp + 25 * dt, (m.carrot ? 92 : 80) * pkMul(m.owner, 'missileSpeed') * (tg ? pkMul(tg, 'incoming') : 1)));
     m.pos.addScaledVector(m.vel, dt);
     if (m.pos.y < 0.5) { m.pos.y = 0.5; m.vel.y = Math.abs(m.vel.y) * 0.3; }
     m.mesh.position.copy(m.pos); m.mesh.lookAt(_mt.copy(m.pos).add(m.vel));
@@ -4380,6 +4780,7 @@ function updateMissiles(dt) {
       }
       const rr = o.b.rad || 1; if (Math.hypot(o.x - m.pos.x, o.z - m.pos.z) < 1.8 * rr && Math.abs(o.y + rr - m.pos.y) < 1.8 * rr) { hit = o; break; }
     }
+    if (hit && hit !== m.owner && pk(hit, 'reflect')) { m.target = m.owner; m.owner = hit; m.t = 0; m.vel.multiplyScalar(-1); say(hit, 'REBATEU O MÍSSIL!', 'c'); continue; }
     if (hit || m.t > 3.2) { explodeMissile(m, hit); missiles.splice(i, 1); }
   }
 }
@@ -4394,7 +4795,9 @@ function explodeMissile(m, hit) {
   if (!hit) return;
   if (hit.remote) { if (m.owner.isPlayer) { m.owner.missHits++; pop(`ACERTOU ${hit.b.name}!`, 'v'); } return; }
   if (hit.shield > 0) { if (hit.isPlayer) pop('O ESCUDO SEGUROU O MÍSSIL!', 'c'); return; }
-  if (m.owner !== hit) trig(m.owner, 'hitDealt');
+  if (guardHit(hit, 'missile', m.owner)) return;
+  if (m.owner !== hit) { trig(m.owner, 'hitDealt'); trig(m.owner, 'dealt', hit); }
+  trig(hit, 'hurt', 'missile', m.owner);
   if (isRobo(hit)) { roboHit(hit, 25, 'MÍSSIL'); return; }
   if (isDino(hit)) { dinoSlow(hit, 2.5); return; }
   hit.stun = 1.4 * (hit.xM === 'armor' ? 0.6 : 1); hit.flip = 1.0; hit.vx *= 0.2; hit.vz *= 0.2; hit.vy = 8; hit.nitroOn = false; hit.hits++;
@@ -4409,10 +4812,13 @@ function splatCarrot(m, hit) {
   for (let i = 0; i < 30; i++) { const a = Math.random() * 6.28, u = Math.random() * 7; glow.spawn(p.x, p.y, p.z, Math.cos(a) * u, Math.random() * 7, Math.sin(a) * u, 0.4 + Math.random() * 0.3, 1.1, 0.2, Math.random() < 0.7 ? [1, 0.5, 0.1] : [0.4, 0.8, 0.2], 1, 9, 2); }
   const dPl = player ? Math.hypot(p.x - player.x, p.z - player.z) : 0;
   if (Sfx.ctx) Sfx.noise(0.18, 0.4 * clamp(1 - dPl / 70, 0, 1), 900);
+  if (pk(m.owner, 'splash')) { for (const o of runners) if (o !== m.owner && o !== hit && !o.finished && Math.hypot(o.x - p.x, o.z - p.z) < 5) knock(o, 0.8, 5, 0.4, m.owner); }
   if (!hit) return;
   if (hit.remote) { if (m.owner.isPlayer) { m.owner.missHits++; pop(`CENOURADA NO ${hit.b.name}!`, 'v'); } return; }
   if (hit.shield > 0) { if (hit.isPlayer) pop('O ESCUDO SEGUROU A CENOURA!', 'c'); return; }
-  if (m.owner !== hit) trig(m.owner, 'hitDealt');
+  if (guardHit(hit, 'missile', m.owner)) return;
+  if (m.owner !== hit) { trig(m.owner, 'hitDealt'); trig(m.owner, 'dealt', hit); }
+  trig(hit, 'hurt', 'missile', m.owner);
   if (isRobo(hit)) { roboHit(hit, 15, 'CENOURA'); return; }
   if (isDino(hit)) { dinoSlow(hit, 1.8); return; }
   const arm = hit.xM === 'armor';
@@ -4665,7 +5071,7 @@ function toGarage() {
   ['menu', 'results'].forEach(id => show(id, false)); show('garage', true);
   renderGarage();
 }
-function clearRace() { if (typeof resetDark === 'function' && world) resetDark(); clearMissiles(); runners.forEach(r => r.dispose()); runners = []; player = null; clearBirds(); }
+function clearRace() { if (typeof resetDark === 'function' && world) resetDark(); clearMissiles(); if (typeof clearTraps === 'function') clearTraps(); runners.forEach(r => r.dispose()); runners = []; player = null; clearBirds(); }
 
 function changeTrack(i) {
   save.track = i; persist();
