@@ -131,6 +131,8 @@ Modelos: Chicken (jeremy, Poly Pizza) e T-Rex (Quaternius, CC0), enviados pelo j
 
 - **Campeonato (Copa)**: no menu, troque o *Modo* para COPA. São 4 corridas seguidas (Parque, Praia, Pico e Serra) contra os mesmos 5 rivais, com pontos por posição (10, 7, 5, 3, 2, 1). No fim tem troféu de ouro, prata ou bronze e prêmio em ossos de ouro.
 - **Loja de visual**: chapéus (boné, festa, cartola, caubói, capacete, coroa), óculos, capas, cores de colete e rastros (bolhas, corações, estrelas, fogo, arco-íris). Cada bicho guarda o próprio visual.
+- **Pinturas de pele**: aba PINTURAS da loja, com padrões inspirados nos personagens (Manchas do Pingo, Listras da Tiffany, Pelagem do Faiton, Máscara da Nevasca, Pintinhas da Taissa, Rosa da Princesa, Camuflagem do Major, Retalhos do Pintado) e extras (Tigre, Chamas, Galáxia, Arco-íris, Ouro Puro). Funcionam em todos os bichos, inclusive nas formas da Davi.
+- **Equipar e desequipar**: o upgrade mecânico comprado pode ser desequipado e equipado de novo na aba MECÂNICO da loja.
 - **Missões**: 3 missões diárias que mudam à meia-noite (+250 cada e +300 de bônus) e 15 conquistas com prêmios.
 - **Narrador**: avisa quem assumiu a liderança, quem ultrapassou quem e quem acertou míssil em quem.
 - **Vibração**: o celular vibra com batidas, mísseis, mini-turbos e vitórias (desligue na pausa).

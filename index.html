@@ -975,7 +975,9 @@ const daviReady = up => up.acel >= 5 && up.grip >= 5;
 const daviForm = (up, mech) => mech && daviReady(up) ? 'robo' : daviReady(up) ? 'dino' : 'galinha';
 function formBreed(b, form) { return b.id === 'davi' ? { ...b, ...DAVI_FORMS[form], form } : b; }
 // o bicho como ele aparece agora (a Davi muda de forma conforme a oficina e a loja)
-function viewBreed(b) { return b.id === 'davi' ? formBreed(b, daviForm(getUp(b), save.mech && save.mech[b.id])) : b; }
+// upgrade mecânico comprado e equipado (dá para desequipar na loja)
+const mechOn = id => !!(save.mech && save.mech[id]) && !(save.mechOff && save.mechOff[id]);
+function viewBreed(b) { return b.id === 'davi' ? formBreed(b, daviForm(getUp(b), mechOn(b.id))) : b; }
 
 function numberTex(num, color) {
   const t = new THREE.CanvasTexture(drawCanvas(64, 64, (x) => {
@@ -1242,18 +1244,19 @@ const SHOP = {
   cape: { n: 'CAPAS', items: [['none', 'NENHUMA', 0], ['vermelha', 'CAPA VERMELHA', 300], ['azul', 'CAPA AZUL', 300], ['roxa', 'CAPA ROXA', 350], ['dourada', 'CAPA DOURADA', 600]] },
   vest: { n: 'COLETES', items: [['padrao', 'COR ORIGINAL', 0], ['preto', 'PRETO', 100], ['branco', 'BRANCO', 100], ['vermelho', 'VERMELHO', 100], ['azul', 'AZUL', 100], ['verde', 'VERDE', 100], ['roxo', 'ROXO', 100], ['rosa', 'ROSA', 100], ['dourado', 'DOURADO', 300]] },
   trail: { n: 'RASTROS', items: [['none', 'NENHUM', 0], ['bolhas', 'BOLHAS', 350], ['coracoes', 'CORAÇÕES', 450], ['estrelas', 'ESTRELAS', 500], ['fogo', 'FOGO', 550], ['arcoiris', 'ARCO-ÍRIS', 700]] },
+  paint: { n: 'PINTURAS', items: [['none', 'ORIGINAL', 0], ['pingo', 'MANCHAS DO PINGO', 400], ['tiffany', 'LISTRAS DA TIFFANY', 450], ['faiton', 'PELAGEM DO FAITON', 450], ['nevasca', 'MÁSCARA DA NEVASCA', 450], ['taissa', 'PINTINHAS DA TAISSA', 450], ['princesa', 'ROSA DA PRINCESA', 450], ['major', 'CAMUFLAGEM DO MAJOR', 500], ['pintado', 'RETALHOS DO PINTADO', 500], ['tigre', 'TIGRE', 550], ['chamas', 'CHAMAS', 600], ['galaxia', 'GALÁXIA', 700], ['arcoiris', 'ARCO-ÍRIS', 700], ['ouro', 'OURO PURO', 800]] },
 };
 const VEST_COLORS = { preto: 0x1c1c1f, branco: 0xf2f2f2, vermelho: 0xd81f2a, azul: 0x1f5fff, verde: 0x16a34a, roxo: 0x7c3aed, rosa: 0xff4fa3, dourado: 0xffc53d };
 const CAPE_COLORS = { vermelha: '#d81f2a', azul: '#1f5fff', roxa: '#7c3aed', dourada: '#ffc53d' };
 const TRAIL_SW = { bolhas: '#9fdcff', coracoes: '#ff5f9e', estrelas: '#ffe14d', fogo: '#ff7a1a', arcoiris: 'linear-gradient(90deg,#f33,#fc3,#3c6,#39f,#c3f)' };
 const HAT_SW = { bone: '#d81f2a', festa: '#ff4fa3', cartola: '#1a1a1a', cowboy: '#8a5a2b', capacete: '#f4f4f4', coroa: '#ffc53d' };
 const GL_SW = { escuro: '#111', nerd: '#333', aviador: '#c9a24a', coracao: '#ff5f9e' };
-const DEFAULT_LOOK = { hat: 'none', glasses: 'none', cape: 'none', vest: 'padrao', trail: 'none' };
+const DEFAULT_LOOK = { hat: 'none', glasses: 'none', cape: 'none', vest: 'padrao', trail: 'none', paint: 'none' };
 const owns = (cat, id) => SHOP[cat].items.find(i => i[0] === id)[2] === 0 || save.owned.includes(cat + ':' + id);
 function getLook(b) { return Object.assign({}, DEFAULT_LOOK, save.looks[b.id] || {}); }
 function randomLook() {
   const pick = (cat, p) => Math.random() < p ? SHOP[cat].items[1 + (Math.random() * (SHOP[cat].items.length - 1) | 0)][0] : SHOP[cat].items[0][0];
-  return { hat: pick('hat', 0.35), glasses: pick('glasses', 0.25), cape: pick('cape', 0.12), vest: 'padrao', trail: pick('trail', 0.15) };
+  return { hat: pick('hat', 0.35), glasses: pick('glasses', 0.25), cape: pick('cape', 0.12), vest: 'padrao', trail: pick('trail', 0.15), paint: pick('paint', 0.12) };
 }
 function lm(color, rough = 0.5, metal = 0, extra = {}) { return new THREE.MeshStandardMaterial({ color, roughness: rough, metalness: metal, ...extra }); }
 function makeHat(type, s) {
@@ -1326,9 +1329,97 @@ function makeCape(type, w, l) {
   m.castShadow = true;
   return m;
 }
+/* ---------------------------------------------------------------------
+   Pinturas de pele (loja): padrões inspirados nos personagens, pintados
+   vértice a vértice por cima do modelo, mantendo a sombra original
+   --------------------------------------------------------------------- */
+const _ph = (x, y, z) => { const s = Math.sin(x * 127.1 + y * 311.7 + z * 74.7) * 43758.5453; return s - Math.floor(s); };
+function pnoise(x, y, z) {
+  const xi = Math.floor(x), yi = Math.floor(y), zi = Math.floor(z), xf = x - xi, yf = y - yi, zf = z - zi;
+  const u = xf * xf * (3 - 2 * xf), v = yf * yf * (3 - 2 * yf), w = zf * zf * (3 - 2 * zf);
+  const l = (a, b, t) => a + (b - a) * t, c = (i, j, k) => _ph(xi + i, yi + j, zi + k);
+  return l(l(l(c(0, 0, 0), c(1, 0, 0), u), l(c(0, 1, 0), c(1, 1, 0), u), v), l(l(c(0, 0, 1), c(1, 0, 1), u), l(c(0, 1, 1), c(1, 1, 1), u), v), w);
+}
+const PC = h => new THREE.Color(h);
+const PAINTS = {
+  pingo: (p, o) => o.copy(pnoise(p.x * 9, p.y * 9, p.z * 9) > 0.66 ? PC(0x121212) : PC(0xf4f4f2)),
+  faiton: (p, o) => o.copy(PC(0x141418)).lerp(PC(0xb3121b), clamp((p.fy - 0.62) * 4, 0, 1) * (Math.abs(p.fx) < 0.12 ? 1 : 0.25)),
+  tiffany: (p, o) => o.copy(p.fy < 0.28 || Math.sin(p.fz * 26 + pnoise(p.x * 4, p.y * 4, p.z * 4) * 4) > 0.25 ? PC(0xf1f1ee) : PC(0x151515)),
+  nevasca: (p, o) => o.copy(p.fy > 0.55 && p.fz < 0.86 ? PC(0x5b6472) : PC(0xf2f4f7)),
+  major: (p, o) => { const n = pnoise(p.x * 5, p.y * 5, p.z * 5), m = pnoise(p.x * 5 + 9, p.y * 5, p.z * 5 + 3); o.copy(n > 0.62 ? PC(0x2b3320) : m > 0.6 ? PC(0x6b4f2a) : n < 0.35 ? PC(0x8f8a5a) : PC(0x4d5a2c)); },
+  pintado: (p, o) => { const n = pnoise(p.x * 6, p.y * 6, p.z * 6), m = pnoise(p.x * 6 + 11, p.y * 6 + 5, p.z * 6); o.copy(n > 0.6 ? PC(0x1c1a17) : m > 0.62 ? PC(0xe8e2d5) : PC(0xc9a15a)); },
+  taissa: (p, o) => o.copy(p.fy < 0.3 ? PC(0xf5ecd0) : pnoise(p.x * 10, p.y * 10, p.z * 10) > 0.62 ? PC(0x6b3b12) : PC(0xf2c230)),
+  princesa: (p, o) => o.copy(PC(0xf472b6)).lerp(PC(0xfbbf24), clamp((p.fy - 0.7) * 5, 0, 1)),
+  tigre: (p, o) => o.copy(p.fy < 0.28 ? PC(0xf5f0e6) : Math.sin(p.fz * 30 + pnoise(p.x * 3, p.y * 3, p.z * 3) * 6) > 0.5 ? PC(0x141210) : PC(0xf28c28)),
+  chamas: (p, o) => { const t = p.fz - 0.3 + (pnoise(p.x * 4, p.y * 4, p.z * 4) - 0.5) * 0.45 - Math.abs(p.fy - 0.5) * 0.25; o.copy(t < 0 ? PC(0x121212) : t < 0.12 ? PC(0xb91c1c) : t < 0.3 ? PC(0xf97316) : PC(0xfde047)); },
+  galaxia: (p, o) => { o.copy(PC(0x140b35)).lerp(PC(0x6d28d9), pnoise(p.x * 4, p.y * 4, p.z * 4) * 0.8).lerp(PC(0xec4899), clamp(pnoise(p.x * 3 + 7, p.y * 3, p.z * 3) - 0.55, 0, 1) * 1.6); if (_ph(p.x * 40, p.y * 40, p.z * 40) > 0.975) o.set(1, 1, 1); },
+  ouro: (p, o) => o.copy(PC(0xc99a1a)).lerp(PC(0xffe27a), pnoise(p.x * 6, p.y * 6, p.z * 6) * 0.6),
+  arcoiris: (p, o) => o.setHSL((p.fz * 0.85 + p.fy * 0.2) % 1, 0.85, 0.55),
+};
+const PAINT_SW = { pingo: 'radial-gradient(circle at 30% 30%,#111 18%,#f4f4f2 20%)', faiton: 'linear-gradient(#b3121b,#141418 55%)', tiffany: 'repeating-linear-gradient(90deg,#151515 0 5px,#f1f1ee 5px 10px)',
+  nevasca: 'linear-gradient(#5b6472 50%,#f2f4f7 50%)', major: 'radial-gradient(circle at 30% 40%,#2b3320 25%,transparent 26%),radial-gradient(circle at 70% 70%,#6b4f2a 22%,#4d5a2c 23%)',
+  pintado: 'radial-gradient(circle at 35% 35%,#1c1a17 22%,transparent 23%),radial-gradient(circle at 70% 65%,#e8e2d5 20%,#c9a15a 21%)', taissa: 'radial-gradient(circle at 40% 40%,#6b3b12 18%,#f2c230 20%)',
+  princesa: 'linear-gradient(#fbbf24,#f472b6 50%)', tigre: 'repeating-linear-gradient(60deg,#141210 0 3px,#f28c28 3px 9px)', chamas: 'linear-gradient(90deg,#121212 30%,#b91c1c,#f97316,#fde047)',
+  galaxia: 'radial-gradient(circle at 60% 40%,#ec4899,#6d28d9 45%,#140b35)', ouro: 'linear-gradient(135deg,#ffe27a,#c99a1a)', arcoiris: 'linear-gradient(90deg,#f33,#fc3,#3c6,#39f,#c3f)' };
+// prepara as malhas do bicho: cópia da geometria com cor por vértice e posição normalizada (0..1)
+function paintPrep(D) {
+  const gear = D.flames && D.flames[0] && D.flames[0].parent, skip = new Set();
+  if (gear) gear.traverse(o => skip.add(o));
+  if (D.launcher && D.launcher.noses) D.launcher.noses.forEach(n => n.traverse(o => skip.add(o)));
+  if (D.lookG) D.lookG.forEach(g => g.traverse(o => skip.add(o)));
+  for (const k of ['stars', 'excl']) if (D[k]) D[k].traverse(o => skip.add(o));
+  const list = [], v = new THREE.Vector3(), rel = new THREE.Matrix4(), inv = new THREE.Matrix4(), bb = new THREE.Box3();
+  D.model.updateMatrixWorld(true); inv.copy(D.model.matrixWorld).invert();
+  D.model.traverse(m => {
+    if (!m.isMesh || skip.has(m) || Array.isArray(m.material)) return;
+    const mat = m.material;
+    if (mat === D.vestMat || (mat.map && mat.transparent) || mat === starMat) return;
+    if (mat.emissive && mat.emissive.r + mat.emissive.g + mat.emissive.b > 0.3) return; // luzes e olhos brilhando
+    if (mat.metalness > 0.95 || /^Eye/.test(mat.name || '')) return;                    // cromado, dentes e olhos
+    if (SHARED.has(mat) && !m.isSkinnedMesh) return;
+    if (!m.userData.paint) {
+      let g = m.geometry;
+      const hasCol = g.attributes.color && mat.vertexColors;
+      g = g.clone(); g.userData = {}; m.geometry = g;
+      if (!hasCol) {
+        const n = g.attributes.position.count, c = new Float32Array(n * 3), mc = mat.color || new THREE.Color(1, 1, 1);
+        for (let i = 0; i < n; i++) { c[i * 3] = mc.r; c[i * 3 + 1] = mc.g; c[i * 3 + 2] = mc.b; }
+        g.setAttribute('color', new THREE.BufferAttribute(c, 3));
+        m.material = mat.clone(); m.material.vertexColors = true; if (m.material.color) m.material.color.set(1, 1, 1);
+      } else if (SHARED.has(mat)) m.material = mat.clone();
+      m.userData.paint = { orig: Float32Array.from(g.attributes.color.array) };
+    }
+    rel.multiplyMatrices(inv, m.matrixWorld);
+    const P = m.geometry.attributes.position, pos = new Float32Array(P.count * 3);
+    for (let i = 0; i < P.count; i++) { v.fromBufferAttribute(P, i); if (m.isSkinnedMesh) m.applyBoneTransform(i, v); v.applyMatrix4(rel); pos[i * 3] = v.x; pos[i * 3 + 1] = v.y; pos[i * 3 + 2] = v.z; bb.expandByPoint(v); }
+    m.userData.paint.pos = pos; list.push(m);
+  });
+  D.paintList = list; D.paintBox = bb;
+}
+function applyPaint(D, id) {
+  D.paintId = id;
+  if (!D.paintList) paintPrep(D);
+  const pat = PAINTS[id], bb = D.paintBox, H = Math.max(1e-3, bb.max.y - bb.min.y), Lz = Math.max(1e-3, bb.max.z - bb.min.z), Wx = Math.max(1e-3, bb.max.x - bb.min.x);
+  const p = {}, o = new THREE.Color(), t = new THREE.Color();
+  for (const m of D.paintList) {
+    const { orig, pos } = m.userData.paint, c = m.geometry.attributes.color;
+    if (!pat) { c.array.set(orig); c.needsUpdate = true; continue; }
+    for (let i = 0; i < c.count; i++) {
+      t.setRGB(orig[i * 3], orig[i * 3 + 1], orig[i * 3 + 2]);
+      if (isRedEye(t)) { c.setXYZ(i, t.r, t.g, t.b); continue; }
+      const x = pos[i * 3], y = pos[i * 3 + 1], z = pos[i * 3 + 2];
+      p.x = x / H; p.y = y / H; p.z = z / H; p.fx = (x - (bb.min.x + bb.max.x) / 2) / Wx; p.fy = (y - bb.min.y) / H; p.fz = (z - bb.min.z) / Lz;
+      pat(p, o);
+      const lum = 0.2126 * t.r + 0.7152 * t.g + 0.0722 * t.b, sh = Math.min(1.1, 0.78 + 0.45 * Math.sqrt(lum)); // mantém um pouco da sombra do desenho original
+      c.setXYZ(i, o.r * sh, o.g * sh, o.b * sh);
+    }
+    c.needsUpdate = true;
+  }
+}
 function applyLook(D, look) {
   if (D.lookG) D.lookG.forEach(g => { if (g.parent) g.parent.remove(g); disposeTree(g); });
   D.lookG = []; D.cape = null; D.look = look;
+  if (PAINTS[look.paint] || D.paintList) applyPaint(D, look.paint || 'none');
   if (D.crown) D.crown.visible = look.hat === 'none';
   D.vestMat.color.set(look.vest === 'padrao' ? D.b.color : VEST_COLORS[look.vest]);
   D.vestMat.metalness = look.vest === 'dourado' ? 0.7 : 0.15;
@@ -1581,6 +1672,7 @@ function rigAttach(D, R, holder) {
   const attach = () => {
     const o = cloneSkinned(R.g.scene); o.scale.setScalar(R.s); o.position.y = R.y0; holder.add(o);
     D.rigMeshes = []; o.traverse(m => { if (m.isMesh) D.rigMeshes.push(m); }); if (D.mechTint) D.rigMeshes.forEach(D.mechTint);
+    if (PAINTS[D.paintId]) { D.paintList = null; applyPaint(D, D.paintId); } // pintura escolhida antes do modelo terminar de carregar
     D.mixer = new THREE.AnimationMixer(o);
     for (const [key, n] of Object.entries(R.clips)) { const c = R.g.animations.find(a => a.name.endsWith('|' + n)); if (c) D.acts[key] = D.mixer.clipAction(c); }
     for (const key of D.once || []) if (D.acts[key]) { D.acts[key].setLoop(THREE.LoopOnce); D.acts[key].clampWhenFinished = true; } // pulo e mordida tocam uma vez só
@@ -1604,7 +1696,7 @@ function buildTrexGear(b, num, color, o) {
   const blob = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), new THREE.MeshBasicMaterial({ map: blobTex, transparent: true, depthWrite: false }));
   blob.rotation.x = -Math.PI / 2; blob.position.y = 0.04; blob.scale.set(1.6 * (b.scale || 1), 4.2 * (b.scale || 1), 1); root.add(blob);
   const hi = { hat: [0, 0.34, -0.1], s: 0.22, eye: [0.08, 0, 0.1], er: 0.03, cape: [0, y0 + 0.05, z0 + 0.3], capeW: 0.4, capeL: 1.2, noGlasses: true };
-  const D = { root, model, body, torso: body, neckPiv: head, headPiv: head, head, legs: [], tails: [], ears: [], tongue: new THREE.Group(), flames, stars, excl, blob, b, launcher, anim: animRig, vestMat: padMat, hi, crown: null, mixer: null, acts: {}, cur: '', shootT: 0, lastT: null, runK: 4 * (b.scale || 1), runMax: 4.5, lean: 0, roll: 0.1, once: ['Jump_Idle', 'Weapon'] };
+  const D = { root, model, body, torso: body, neckPiv: head, headPiv: head, head, legs: [], tails: [], ears: [], tongue: new THREE.Group(), flames, stars, excl, blob, b, launcher, anim: animRig, vestMat: padMat, hi, crown: null, mixer: null, acts: {}, cur: '', shootT: 0, lastT: null, runK: 6.5 * (b.scale || 1), runMax: 2.8, lean: 0, roll: 0.1, once: ['Jump_Idle', 'Weapon'] };
   D.shoot = () => { D.shootT = 0.45; };
   rigAttach(D, R, holder);
   return D;
@@ -1747,7 +1839,7 @@ function animRoboRex(D, st, t) {
   const dt = D.lastT === undefined ? 1 / 60 : clamp(t - D.lastT, 0, 0.1); D.lastT = t;
   D.shootT = Math.max(0, D.shootT - dt);
   // passo: esquerda e direita em oposição; o joelho dobra para levantar o pé que volta para frente
-  D.ph = (D.ph || 0) + dt * (st.v > 0.5 ? 2.2 + st.v * 0.16 : 0);
+  D.ph = (D.ph || 0) + dt * (st.v > 0.5 ? 1.8 + st.v * 0.12 : 0);
   const reach = [];
   R.legs.forEach((l, i) => {
     const p = D.ph + i * Math.PI, s = Math.sin(p), lift = Math.max(0, Math.cos(p));
@@ -3315,7 +3407,7 @@ const EXTRA = {
     A: ['DASH DAS SOMBRAS', 'Ao pular uma barreira se teleporta um pouco para frente, deixando sombras para trás', 'hurdle', 'dash', 9, '#1a1024'],
     C: ['EQUILÍBRIO DE LOBO', 'Recupera rápido a estabilidade em curvas escorregadias', 'slipGrip'],
     J: ['PERNAS DE MOLA', 'Pernas mais fortes: o pulo o lança para frente', 'launch'],
-    M: ['LOBO BRANCO', 'Pele branca, latas vermelhas, fica maior e se levanta mais rápido depois de um míssil', 'getUp', '#f4f4f5', 0.85, '#dc2626', 1.15],
+    M: ['LOBO BRANCO', 'Pele branca, latas vermelhas, fica maior e se levanta mais rápido depois de um míssil', 'getUp', '#f4f4f5', 0.85, '#dc2626', 1.15, { keepRed: true }],
     H: ['NOITE ETERNA', 'O céu escurece, os pássaros fogem dele e os rivais ficam assustados', 'night', '#7f1d1d'],
   },
   paz: {
@@ -3487,13 +3579,14 @@ function setupExtras(r, b, up, mech) {
 function extrasUnlocked(b) {
   const X = EXTRA[b.id] || {}, up = getUp(b), out = [];
   for (const [u, sl] of Object.entries(X_SLOT)) if (up[u] >= 5 && X[sl]) out.push(X[sl][0]);
-  if (save.mech[b.id] && X.M) out.push(X.M[0]);
+  if (mechOn(b.id) && X.M) out.push(X.M[0]);
   return out;
 }
+const isRedEye = c => c.r > 0.12 && c.r > c.g * 3 && c.r > c.b * 3; // olho vermelho (fica de fora da pintura)
 // visual do upgrade mecânico: pele nova, latas coloridas e corpo maior
 function applyMech(D, b) {
   const M = EXTRA[b.id] && EXTRA[b.id].M; if (!M) return;
-  const skin = new THREE.Color(M[3]), k = M[4], t = new THREE.Color();
+  const skin = new THREE.Color(M[3]), k = M[4], t = new THREE.Color(), keepRed = !!(M[7] && M[7].keepRed);
   const gear = D.flames && D.flames[0] && D.flames[0].parent, skip = new Set();
   if (gear) gear.traverse(o => skip.add(o));
   if (D.launcher && D.launcher.noses) D.launcher.noses.forEach(n => n.traverse(o => skip.add(o)));
@@ -3502,7 +3595,7 @@ function applyMech(D, b) {
     const col = o.geometry && o.geometry.attributes.color;
     if (col && m.vertexColors) {
       const g = o.geometry.clone(); g.userData = {}; const c = g.attributes.color;
-      for (let i = 0; i < c.count; i++) { t.fromBufferAttribute(c, i).lerp(skin, k); c.setXYZ(i, t.r, t.g, t.b); }
+      for (let i = 0; i < c.count; i++) { t.fromBufferAttribute(c, i); if (keepRed && isRedEye(t)) continue; t.lerp(skin, k); c.setXYZ(i, t.r, t.g, t.b); }
       o.geometry = g;
     } else if (m.color) { o.material = m.clone(); o.material.color.lerp(skin, k); }
   };
@@ -4414,7 +4507,7 @@ function placePreview() {
   if (preview) { scene.remove(preview.root); disposeTree(preview.root); }
   const b = viewBreed(BREEDS[save.dog]);
   preview = buildCreature(b, 1, b.color);
-  if (save.mech[b.id] && b.form !== 'dino') applyMech(preview, b);
+  if (mechOn(b.id) && b.form !== 'dino') applyMech(preview, b);
   applyLook(preview, getLook(b));
   scene.add(preview.root);
   const p = trackPoint(22, 0);
@@ -4453,8 +4546,9 @@ function mechCard(b, shop) {
   const X = EXTRA[b.id]; if (!X || !X.M) return '';
   const own = !!save.mech[b.id];
   const lock = b.id === 'davi' && !daviReady(getUp(b));
-  const btn = shop ? (own ? '<button class="eq" disabled>INSTALADO</button>' : lock ? '<button disabled>MAXIMIZE MÚSCULOS E GARRAS</button>' : `<button data-mech="1" ${save.coins < MECH_PRICE ? 'disabled' : ''}>COMPRAR ${MECH_PRICE}</button>`) : '';
-  return `<div class="panel mechCard"><h3>${own ? '★' : '🔒'} UPGRADE MECÂNICO${shop ? '' : own ? ' · INSTALADO' : ' · NA LOJA'}</h3>
+  const on = mechOn(b.id);
+  const btn = shop ? (own ? `<button data-mechtoggle="1">${on ? 'DESEQUIPAR' : 'EQUIPAR'}</button>` : lock ? '<button disabled>MAXIMIZE MÚSCULOS E GARRAS</button>' : `<button data-mech="1" ${save.coins < MECH_PRICE ? 'disabled' : ''}>COMPRAR ${MECH_PRICE}</button>`) : '';
+  return `<div class="panel mechCard"><h3>${own ? (on ? '★' : '○') : '🔒'} UPGRADE MECÂNICO${own ? (on ? ' · EQUIPADO' : ' · DESEQUIPADO') : shop ? '' : ' · NA LOJA'}</h3>
     <p><b>${X.M[0]}</b> — ${X.M[1]}</p><p><b>HABILIDADE: ${X.H[0]}</b> — ${X.H[1]}. Use com <b>R</b> ou o botão HABILIDADE: 1 carga na largada e mais nas cargas especiais roxas da pista.</p>${btn}</div>`;
 }
 function renderGarage() {
@@ -4500,7 +4594,7 @@ function renderShop() {
   $('shopList').innerHTML = SHOP[shopCat].items.map(([id, name, price]) => {
     const own = owns(shopCat, id), eq = look[shopCat] === id;
     const sw = shopCat === 'vest' ? (id === 'padrao' ? b.color : '#' + VEST_COLORS[id].toString(16).padStart(6, '0')) : shopCat === 'cape' ? (CAPE_COLORS[id] || 'transparent')
-      : shopCat === 'trail' ? (TRAIL_SW[id] || 'transparent') : shopCat === 'hat' ? (HAT_SW[id] || 'transparent') : (GL_SW[id] || 'transparent');
+      : shopCat === 'trail' ? (TRAIL_SW[id] || 'transparent') : shopCat === 'paint' ? (PAINT_SW[id] || 'transparent') : shopCat === 'hat' ? (HAT_SW[id] || 'transparent') : (GL_SW[id] || 'transparent');
     const btn = eq ? `<button class="eq" disabled>EM USO</button>` : own ? `<button data-eq="${id}">USAR</button>` : `<button data-buy="${id}" ${save.coins < price ? 'disabled' : ''}>COMPRAR ${price}</button>`;
     return `<div class="item panel"><span class="sw" style="background:${sw}"></span><div><h4>${name}</h4><small>${own ? (eq ? 'equipado no ' + b.name : 'seu') : price + ' ossos de ouro'}</small></div>${btn}</div>`;
   }).join('');
@@ -4510,9 +4604,13 @@ $('shopTabs').addEventListener('click', e => { const t = e.target.closest('butto
 $('shopList').addEventListener('click', e => {
   const t = e.target.closest('button'); if (!t || t.disabled) return;
   const b = BREEDS[save.dog], look = getLook(b);
+  if (t.dataset.mechtoggle) {
+    save.mechOff = save.mechOff || {}; save.mechOff[b.id] = mechOn(b.id); persist(); Sfx.init(); Sfx.beep(false);
+    placePreview(); renderShop(); return;
+  }
   if (t.dataset.mech) {
     if (save.coins < MECH_PRICE || save.mech[b.id] || (b.id === 'davi' && !daviReady(getUp(b)))) return;
-    save.coins -= MECH_PRICE; save.mech[b.id] = true; persist(); Sfx.init(); Sfx.pickup(); Sfx.voice(b, 0.7); vib([30, 30, 60]);
+    save.coins -= MECH_PRICE; save.mech[b.id] = true; if (save.mechOff) delete save.mechOff[b.id]; persist(); Sfx.init(); Sfx.pickup(); Sfx.voice(b, 0.7); vib([30, 30, 60]);
     placePreview(); renderShop(); return;
   }
   if (t.dataset.buy) {
@@ -4584,7 +4682,7 @@ function startRace(online) {
     const b0 = online ? { ...BREEDS[bi], name: online[k].name, color: online[k].color } : BREEDS[bi];
     let up = pUp;
     if (k !== meK) { const lv = () => clamp(Math.round(avg + DIFFS[save.diff].upOff + (Math.random() * 2 - 1)), 0, 5); up = { motor: lv(), acel: lv(), grip: lv(), nitro: lv(), pulo: lv() }; }
-    let mech = online ? !!online[k].mech : k === meK ? !!save.mech[b0.id] : Math.random() < 0.3;
+    let mech = online ? !!online[k].mech : k === meK ? mechOn(b0.id) : Math.random() < 0.3;
     if (b0.id === 'davi' && !online && !daviReady(up)) mech = false; // o robô só vem depois de músculos e garras no máximo
     const form = b0.id !== 'davi' ? null : online ? online[k].form || 'galinha' : daviForm(up, mech);
     const b = form ? formBreed(b0, form) : b0;
@@ -4811,7 +4909,7 @@ function netSend(m, except) {
   if (Net.host) { for (const [id, c] of Net.conns) if (id !== except && c.open) c.send(m); }
   else if (Net.hostConn && Net.hostConn.open) Net.hostConn.send(m);
 }
-const myNetInfo = () => ({ pid: Net.peer.id, name: me().name, color: me().color, dog: save.dog, host: Net.host, mech: !!save.mech[BREEDS[save.dog].id], form: viewBreed(BREEDS[save.dog]).form || null });
+const myNetInfo = () => ({ pid: Net.peer.id, name: me().name, color: me().color, dog: save.dog, host: Net.host, mech: mechOn(BREEDS[save.dog].id), form: viewBreed(BREEDS[save.dog]).form || null });
 function netLobby() { const m = { t: 'lobby', players: Net.players, track: save.track, laps: save.laps }; netSend(m); renderRoom(); }
 function netFail(t) { onMsg(Net.inRoom ? 'roomMsg' : 'onMsg', t); }
 async function netCreate() {
@@ -4871,7 +4969,7 @@ function netFromHost(d) {
 }
 function netStartRace() {
   if (Net.players.length < 2) return onMsg('roomMsg', 'Precisa de pelo menos 2 jogadores');
-  Object.assign(Net.players[0], { dog: save.dog, mech: !!save.mech[BREEDS[save.dog].id], form: viewBreed(BREEDS[save.dog]).form || null });
+  Object.assign(Net.players[0], { dog: save.dog, mech: mechOn(BREEDS[save.dog].id), form: viewBreed(BREEDS[save.dog]).form || null });
   const m = { t: 'start', track: save.track, laps: save.laps, players: Net.players };
   netSend(m); netApply(m);
 }
