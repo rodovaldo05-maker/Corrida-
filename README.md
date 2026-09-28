@@ -70,7 +70,7 @@ Se o `modelos.js` não carregar, o jogo usa os modelos feitos por código. O scr
 | Biscoito | Beagle | Beagle, Poly by Google |
 | Linda | Javali | enviado pelo jogador |
 | Kemilly | Coelho bocó (atira cenouras) | enviado pelo jogador |
-| Davi | Galinha, dinossauro e dinossauro robô | Chicken (jeremy), T-Rex (Quaternius) e robô, enviados pelo jogador |
+| Davi | Galinha, dinossauro e dinossauro robô | Chicken (jeremy) e T-Rex (Quaternius), enviados pelo jogador; o robô é feito por código |
 
 Os modelos de terceiros vêm do [Poly Pizza](https://poly.pizza) (Poly by Google e os outros autores: CC-BY 3.0; Quaternius: CC0). O Paz voa numa nuvem (sem mochila a jato) e passa por cima de barreiras, poças e bolas.
 
@@ -123,7 +123,7 @@ A Davi muda de forma:
 - **Dinossauro robô** (2 vezes a altura do dinossauro): o upgrade mecânico dela só pode ser comprado depois de Músculos e Garras no máximo. Vira um dinossauro robô blindado que lança **4 mísseis de uma vez**, cada um atrás de um rival.
 - Ainda galinha, cada **carga especial** (cristal roxo) tem 20% de chance de transformá-la em dinossauro por 12 segundos.
 
-Modelos: Chicken (jeremy, Poly Pizza), T-Rex (Quaternius, CC0) e um dinossauro robô, enviados pelo jogador.
+Modelos: Chicken (jeremy, Poly Pizza) e T-Rex (Quaternius, CC0), enviados pelo jogador. O dinossauro robô é feito por código, com juntas no quadril, joelho, tornozelo, mandíbula, cauda e braços.
 
 ## Campeonato, loja e missões
 

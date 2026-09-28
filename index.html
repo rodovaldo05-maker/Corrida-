@@ -969,7 +969,7 @@ const BREEDS = [
 const DAVI_FORMS = {
   galinha: {},
   dino: { kind: 'rig', rig: 'trex', scale: 2.5, camK: 1.9, rad: 2.2, raca: 'DINOSSAURO ANCESTRAL', voice: 'roar', pitch: 0.8, mass: 2, spd: 5, acc: 5, han: 4, jmp: 3 },
-  robo: { model: 'robodino', scale: 5.45, camK: 3.4, rad: 4, raca: 'DINOSSAURO ROBÔ', voice: 'roar', pitch: 0.6, mass: 2.2, spd: 5, acc: 5, han: 5, jmp: 3, missiles4: true, gearY: 0.6, gearDz: 0 },
+  robo: { kind: 'robo', biped: false, scale: 4.9, camK: 3.4, rad: 4, raca: 'DINOSSAURO ROBÔ', voice: 'roar', pitch: 0.6, mass: 2.2, spd: 5, acc: 5, han: 5, jmp: 3, missiles4: true },
 };
 const daviReady = up => up.acel >= 5 && up.grip >= 5;
 const daviForm = (up, mech) => mech && daviReady(up) ? 'robo' : daviReady(up) ? 'dino' : 'galinha';
@@ -1353,6 +1353,7 @@ function trailFx(r, dt) {
 }
 
 function buildCreature(b, num, color) {
+  if (b.kind === 'robo') return buildRoboRex(b, num, color);
   if (b.kind === 'rig') return buildRig(b, num, color);
   if (b.kind === 'glb' && GLB[b.model]) return buildGlb(b, num, color);
   return b.kind === 'lizard' ? buildLizard(b, num, color) : buildDog(b, num, color);
@@ -1364,7 +1365,7 @@ function buildCreature(b, num, color) {
    --------------------------------------------------------------------- */
 const GLB = {};
 // ajuste manual das pernas: altura do quadril (fração da altura), faixa do corpo onde ficam as pernas e amplitude do passo
-const GLB_LEGS = { robodino: { top: 0.48, soft: 0.9, zMin: -0.42, zMax: 0.44, amp: 0.75 }, galinha: {} };
+const GLB_LEGS = { galinha: {} };
 (function loadGlb() {
   const M = window.CAES; if (!M) return;
   try {
@@ -1626,6 +1627,149 @@ function animRig(D, st, t) {
   const lean = D.lean ?? 0.12, roll = D.roll ?? 0.18;
   D.body.rotation.x = air ? clamp(-st.vy * 0.02, -0.25, 0.25) * (lean ? 1 : 0.3) : amp * lean;
   D.model.rotation.z = clamp(-st.yawRate * roll, -roll * 2, roll * 2) + (st.stun > 0 ? Math.sin(t * 18) * 0.15 * (roll / 0.18) : 0);
+  animCommon(D, st, t);
+}
+
+/* ---------------------------------------------------------------------
+   Dinossauro robô da Davi, feito por código: juntas de verdade no quadril,
+   joelho, tornozelo e dedos, mandíbula, cauda articulada e bracinhos
+   --------------------------------------------------------------------- */
+function buildRoboRex(b, num, color) {
+  const root = new THREE.Group(), model = new THREE.Group(), body = new THREE.Group();
+  root.add(model); model.add(body); model.scale.setScalar(b.scale || 1);
+  const armor = new THREE.MeshStandardMaterial({ color: 0x2a2e36, roughness: 0.38, metalness: 0.85, flatShading: true });
+  const plate = new THREE.MeshStandardMaterial({ color, roughness: 0.35, metalness: 0.55, flatShading: true });
+  const chrome = new THREE.MeshStandardMaterial({ color: 0xaab2bd, roughness: 0.22, metalness: 1 });
+  const dark = new THREE.MeshStandardMaterial({ color: 0x111317, roughness: 0.6, metalness: 0.6 });
+  const glowM = new THREE.MeshStandardMaterial({ color: 0xff3b1f, emissive: 0xff2a00, emissiveIntensity: 2.2, roughness: 0.3 });
+  const toothM = new THREE.MeshStandardMaterial({ color: 0xe5e7eb, roughness: 0.25, metalness: 0.9 });
+  const P = (geo, mat, parent, x = 0, y = 0, z = 0, rx = 0, ry = 0, rz = 0) => { const m = new THREE.Mesh(geo, mat); m.position.set(x, y, z); m.rotation.set(rx, ry, rz); m.castShadow = true; parent.add(m); return m; };
+  const box = (w, h, l) => new THREE.BoxGeometry(w, h, l);
+  const cyl = (r1, r2, h, n = 10) => new THREE.CylinderGeometry(r1, r2, h, n);
+  const joint = (r, parent, x = 0, y = 0, z = 0) => P(new THREE.SphereGeometry(r, 12, 8), chrome, parent, x, y, z);
+  const hipY = 1.0;
+  // quadril e tronco (inclinado, peito para frente)
+  const pelvis = new THREE.Group(); pelvis.position.set(0, hipY, 0); body.add(pelvis);
+  P(box(0.46, 0.3, 0.5), armor, pelvis, 0, 0.05, -0.05);
+  const torso = new THREE.Group(); torso.position.set(0, 0.12, 0.15); torso.rotation.x = -0.18; pelvis.add(torso);
+  P(box(0.5, 0.42, 0.75), armor, torso, 0, 0.05, 0.2);
+  P(box(0.54, 0.1, 0.62), plate, torso, 0, 0.3, 0.18);                       // placa das costas
+  P(box(0.42, 0.26, 0.3), armor, torso, 0, -0.08, 0.52, 0.35);              // peito
+  const core = P(cyl(0.09, 0.09, 0.06, 16), glowM, torso, 0, -0.02, 0.69, Math.PI / 2); // reator do peito
+  for (const sx of [-1, 1]) { P(box(0.04, 0.3, 0.55), plate, torso, sx * 0.27, 0.02, 0.2); P(box(0.03, 0.03, 0.4), glowM, torso, sx * 0.29, 0.12, 0.2); }
+  for (let i = 0; i < 5; i++) P(new THREE.ConeGeometry(0.05, 0.16 - i * 0.015, 4), chrome, torso, 0, 0.4, 0.45 - i * 0.14, -0.5);
+  // pescoço e cabeça
+  const neck = new THREE.Group(); neck.position.set(0, 0.12, 0.62); torso.add(neck);
+  P(box(0.24, 0.22, 0.34), armor, neck, 0, 0.1, 0.12, -0.6);
+  P(cyl(0.035, 0.035, 0.34), chrome, neck, 0.13, 0.08, 0.1, -0.95); P(cyl(0.035, 0.035, 0.34), chrome, neck, -0.13, 0.08, 0.1, -0.95);
+  const headPiv = new THREE.Group(); headPiv.position.set(0, 0.26, 0.3); neck.add(headPiv);
+  const head = new THREE.Group(); headPiv.add(head);
+  P(box(0.3, 0.24, 0.42), armor, head, 0, 0.04, 0.12);                        // crânio
+  P(box(0.24, 0.16, 0.34), armor, head, 0, 0.0, 0.48);                        // focinho
+  P(box(0.26, 0.05, 0.62), plate, head, 0, 0.18, 0.22);                       // capacete
+  for (const sx of [-1, 1]) {
+    P(box(0.07, 0.035, 0.1), glowM, head, sx * 0.15, 0.08, 0.28);             // olhos
+    P(new THREE.ConeGeometry(0.04, 0.34, 4), chrome, head, sx * 0.11, 0.2, -0.12, -1.05, 0, sx * 0.2); // chifres para trás
+  }
+  for (let i = 0; i < 7; i++) for (const sx of [-1, 1]) P(new THREE.ConeGeometry(0.018, 0.07, 4), toothM, head, sx * 0.1, -0.1, 0.62 - i * 0.055, Math.PI);
+  const jaw = new THREE.Group(); jaw.position.set(0, -0.06, 0.02); head.add(jaw);
+  P(box(0.26, 0.08, 0.6), armor, jaw, 0, -0.06, 0.3);
+  P(box(0.2, 0.02, 0.5), glowM, jaw, 0, -0.015, 0.32);                        // brilho dentro da boca
+  for (let i = 0; i < 6; i++) for (const sx of [-1, 1]) P(new THREE.ConeGeometry(0.016, 0.06, 4), toothM, jaw, sx * 0.09, 0.0, 0.56 - i * 0.06);
+  // bracinhos com garras
+  const arms = [];
+  for (const sx of [-1, 1]) {
+    const sh = new THREE.Group(); sh.position.set(sx * 0.27, -0.12, 0.55); torso.add(sh);
+    joint(0.06, sh); P(box(0.07, 0.24, 0.08), armor, sh, 0, -0.12, 0.03, 0.4);
+    const el = new THREE.Group(); el.position.set(0, -0.22, 0.09); sh.add(el);
+    joint(0.045, el); P(box(0.06, 0.2, 0.06), plate, el, 0, -0.08, 0.06, -0.6);
+    for (const cx of [-0.025, 0.025]) P(new THREE.ConeGeometry(0.018, 0.1, 4), chrome, el, cx, -0.18, 0.14, 2.2);
+    arms.push({ sh, el, sx });
+  }
+  // cauda articulada
+  const tails = []; let par = pelvis, tz = -0.3;
+  for (let i = 0; i < 7; i++) {
+    const seg = new THREE.Group(); seg.position.set(0, i ? 0.0 : 0.08, i ? -0.22 : tz); seg.rotation.x = i ? -0.05 : 0.12; par.add(seg);
+    const s = 1 - i * 0.12;
+    P(box(0.3 * s, 0.24 * s, 0.24), armor, seg, 0, 0, -0.1);
+    P(box(0.32 * s, 0.05, 0.2), plate, seg, 0, 0.13 * s, -0.1);
+    P(new THREE.ConeGeometry(0.035 * s + 0.01, 0.12 * s, 4), chrome, seg, 0, 0.2 * s, -0.08, -0.6);
+    tails.push(seg); par = seg;
+  }
+  P(new THREE.ConeGeometry(0.08, 0.3, 4), plate, par, 0, 0, -0.32, -Math.PI / 2);
+  // pernas digitígradas: coxa, joelho, canela, tornozelo, pé e dedos
+  const legs = [];
+  for (const sx of [-1, 1]) {
+    const hip = new THREE.Group(); hip.position.set(sx * 0.3, hipY, 0.02); body.add(hip);
+    joint(0.11, hip);
+    P(box(0.2, 0.44, 0.24), armor, hip, 0, -0.2, 0);
+    P(box(0.05, 0.3, 0.18), plate, hip, sx * 0.11, -0.18, 0);
+    const knee = new THREE.Group(); knee.position.set(0, -0.42, 0); hip.add(knee);
+    joint(0.08, knee);
+    P(box(0.13, 0.46, 0.14), armor, knee, 0, -0.22, 0);
+    P(cyl(0.025, 0.025, 0.4), chrome, knee, 0, -0.2, -0.1);                   // pistão
+    P(box(0.03, 0.12, 0.06), glowM, knee, sx * 0.07, -0.15, 0.05);
+    const ankle = new THREE.Group(); ankle.position.set(0, -0.45, 0); knee.add(ankle);
+    joint(0.06, ankle);
+    P(box(0.1, 0.26, 0.1), armor, ankle, 0, -0.12, 0);
+    const foot = new THREE.Group(); foot.position.set(0, -0.25, 0); ankle.add(foot);
+    P(box(0.2, 0.05, 0.18), dark, foot, 0, -0.01, 0.03);
+    for (const [tx, ry] of [[-0.07, 0.3], [0, 0], [0.07, -0.3]]) P(new THREE.ConeGeometry(0.03, 0.2, 4), chrome, foot, tx, -0.015, 0.17, Math.PI / 2, ry, 0);
+    P(new THREE.ConeGeometry(0.025, 0.12, 4), chrome, foot, 0, -0.01, -0.1, -Math.PI / 2);
+    legs.push({ hip, knee, ankle, foot, sx });
+  }
+  // sela, números e lança-mísseis nas costas
+  const padMat = new THREE.MeshStandardMaterial({ color, roughness: 0.45, metalness: 0.2 });
+  const saddleY = hipY + 0.5, gz = 0.12;
+  const pad = P(new THREE.SphereGeometry(1, 20, 8, 0, Math.PI * 2, 0, Math.PI / 2), padMat, body); pad.scale.set(0.3, 0.05, 0.3); pad.position.set(0, saddleY, gz);
+  const nm = new THREE.MeshStandardMaterial({ map: numberTex(num, color), transparent: true, roughness: 0.5, side: THREE.DoubleSide });
+  for (const sx of [-1, 1]) { const pl = new THREE.Mesh(new THREE.PlaneGeometry(0.22, 0.22), nm); pl.position.set(sx * 0.3, hipY + 0.2, 0.2); pl.rotation.y = sx * Math.PI / 2; body.add(pl); }
+  const { flames, launcher } = addGear(body, saddleY + 0.02, gz, 1.9);
+  // lançador de 4 mísseis no ombro
+  const pod = new THREE.Group(); pod.position.set(0.3, hipY + 0.52, 0.45); body.add(pod);
+  P(box(0.2, 0.16, 0.34), armor, pod, 0, 0, 0);
+  for (let i = 0; i < 4; i++) P(cyl(0.035, 0.035, 0.05, 10), glowM, pod, (i % 2 - 0.5) * 0.08, (Math.floor(i / 2) - 0.5) * 0.07, 0.17, Math.PI / 2);
+  launcher.muzzle.parent.remove(launcher.muzzle); launcher.muzzle.position.set(0, 0, 0.25); pod.add(launcher.muzzle);
+  // efeitos padrão (estrelinhas, susto, sombra)
+  const stars = new THREE.Group(); stars.position.set(0, 0.4, 0.1); head.add(stars);
+  for (let i = 0; i < 4; i++) { const st = new THREE.Mesh(new THREE.OctahedronGeometry(0.05), starMat); st.position.set(Math.cos(i * 1.57) * 0.2, 0, Math.sin(i * 1.57) * 0.2); stars.add(st); }
+  stars.visible = false;
+  const excl = new THREE.Sprite(new THREE.SpriteMaterial({ map: exclTex, depthTest: false }));
+  excl.scale.set(0.2, 0.2, 1); excl.position.set(0, 0.5, 0); excl.visible = false; head.add(excl);
+  const blob = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), new THREE.MeshBasicMaterial({ map: blobTex, transparent: true, depthWrite: false }));
+  blob.rotation.x = -Math.PI / 2; blob.position.y = 0.04; blob.scale.set(1.2 * (b.scale || 1), 2.6 * (b.scale || 1), 1); root.add(blob);
+  const hi = { hat: [0, 0.24, 0.05], s: 0.14, eye: [0.08, 0, 0.1], er: 0.03, cape: [0, saddleY, -0.15], capeW: 0.3, capeL: 0.8, noGlasses: true };
+  return { root, model, body, torso, neckPiv: neck, headPiv, head, legs: [], robo: { pelvis, torso, neck, headPiv, jaw, legs, tails, arms, core, hipY }, tails: [], ears: [], tongue: new THREE.Group(),
+    flames, stars, excl, blob, b, launcher, anim: animRoboRex, vestMat: padMat, hi, crown: null, shootT: 0, shoot() { this.shootT = 0.5; } };
+}
+function animRoboRex(D, st, t) {
+  const R = D.robo, amp = clamp(st.v / 14, 0, 1), air = st.y > 0.05;
+  const dt = D.lastT === undefined ? 1 / 60 : clamp(t - D.lastT, 0, 0.1); D.lastT = t;
+  D.shootT = Math.max(0, D.shootT - dt);
+  // passo: esquerda e direita em oposição; o joelho dobra para levantar o pé que volta para frente
+  D.ph = (D.ph || 0) + dt * (st.v > 0.5 ? 2.2 + st.v * 0.16 : 0);
+  const reach = [];
+  R.legs.forEach((l, i) => {
+    const p = D.ph + i * Math.PI, s = Math.sin(p), lift = Math.max(0, Math.cos(p));
+    if (air) { l.hip.rotation.x = -1.0; l.knee.rotation.x = 1.7; l.ankle.rotation.x = -1.2; l.foot.rotation.x = 0.4; return; }
+    const hip = -0.5 - s * 0.62 * amp, knee = 1.1 + lift * 0.9 * amp, ank = -0.7 - lift * 0.5 * amp;
+    l.hip.rotation.x = hip; l.knee.rotation.x = knee; l.ankle.rotation.x = ank;
+    l.foot.rotation.x = -(hip + knee + ank) + lift * 0.5 * amp;              // pé paralelo ao chão; os dedos sobem no passo
+    // quanto a perna de apoio alcança para baixo: o corpo desce até o pé tocar o chão
+    if (lift < 0.25) reach.push(0.42 * Math.cos(hip) + 0.45 * Math.cos(hip + knee) + 0.25 * Math.cos(hip + knee + ank) + 0.03);
+  });
+  const stance = air || !reach.length ? R.hipY : Math.min(R.hipY, Math.max(...reach));
+  D.body.position.y = (stance - R.hipY) + (st.idle ? Math.sin(t * 2) * 0.01 : 0);
+  // tronco balança, cabeça compensa, cauda ondula e equilibra
+  R.pelvis.rotation.z = Math.sin(D.ph) * 0.05 * amp;
+  R.torso.rotation.x = -0.18 + Math.cos(D.ph * 2) * 0.04 * amp - (air ? 0.15 : 0);
+  R.headPiv.rotation.x = -Math.cos(D.ph * 2) * 0.05 * amp + (st.idle ? Math.sin(t * 0.9) * 0.08 : 0);
+  R.headPiv.rotation.y = st.idle ? Math.sin(t * 0.6) * 0.3 : clamp(-st.yawRate * 0.25, -0.4, 0.4);
+  R.jaw.rotation.x = D.shootT > 0 ? 0.55 : st.stun > 0 ? 0.35 + Math.sin(t * 20) * 0.1 : 0.06 + Math.max(0, Math.sin(t * 1.3)) * 0.1 + amp * 0.1;
+  R.tails.forEach((s, i) => { s.rotation.y = Math.sin(D.ph - i * 0.55) * (0.06 + 0.05 * amp) + (st.idle ? Math.sin(t * 1.1 - i * 0.5) * 0.05 : 0); s.rotation.x = (i ? -0.05 : 0.12) + Math.cos(D.ph * 2 - i * 0.4) * 0.03 * amp; });
+  R.arms.forEach(a => { a.sh.rotation.x = 0.2 + Math.sin(D.ph + (a.sx > 0 ? 0 : Math.PI)) * 0.25 * amp; a.el.rotation.x = -0.3; });
+  R.core.material.emissiveIntensity = 1.8 + Math.sin(t * 6) * 0.6 + (st.nitro ? 1.5 : 0);
+  D.model.rotation.z = clamp(-st.yawRate * 0.08, -0.15, 0.15) + (st.stun > 0 ? Math.sin(t * 18) * 0.08 : 0);
   animCommon(D, st, t);
 }
 
