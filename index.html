@@ -1501,6 +1501,8 @@ function animGlb(D, st, t) {
     else if (air) u.set(-0.75, -0.75, 0.8, 0.8);
     else u.set(Math.sin(ph) * A, Math.sin(ph + 0.55) * A, Math.sin(ph + Math.PI + 0.2) * A, Math.sin(ph + Math.PI + 0.75) * A);
     D.body.position.y = air ? 0 : Math.abs(Math.cos(ph)) * 0.06 * amp + (st.idle ? Math.sin(t * 3.5) * 0.008 : 0);
+    // bípede: as duas pernas giram ao mesmo tempo, então o corpo desce o quanto os pés subiram (senão ele flutua)
+    if (b.biped && !air) D.body.position.y -= D.G.legTop * (1 - Math.cos(Math.sin(ph) * 0.62 * amp * 1.25)) * 0.95;
     D.body.rotation.x = air ? clamp(-st.vy * 0.03, -0.3, 0.3) : Math.sin(ph * 2) * 0.035 * amp;
     D.body.rotation.y = st.idle ? Math.sin(t * 0.7) * 0.08 : 0;
   }
@@ -1575,6 +1577,7 @@ function rigAttach(D, R, holder) {
     D.rigMeshes = []; o.traverse(m => { if (m.isMesh) D.rigMeshes.push(m); }); if (D.mechTint) D.rigMeshes.forEach(D.mechTint);
     D.mixer = new THREE.AnimationMixer(o);
     for (const [key, n] of Object.entries(R.clips)) { const c = R.g.animations.find(a => a.name.endsWith('|' + n)); if (c) D.acts[key] = D.mixer.clipAction(c); }
+    for (const key of D.once || []) if (D.acts[key]) { D.acts[key].setLoop(THREE.LoopOnce); D.acts[key].clampWhenFinished = true; } // pulo e mordida tocam uma vez só
   };
   if (R.g) attach(); else R.wait.push(attach);
 }
@@ -1595,7 +1598,7 @@ function buildTrexGear(b, num, color, o) {
   const blob = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), new THREE.MeshBasicMaterial({ map: blobTex, transparent: true, depthWrite: false }));
   blob.rotation.x = -Math.PI / 2; blob.position.y = 0.04; blob.scale.set(1.6 * (b.scale || 1), 4.2 * (b.scale || 1), 1); root.add(blob);
   const hi = { hat: [0, 0.34, -0.1], s: 0.22, eye: [0.08, 0, 0.1], er: 0.03, cape: [0, y0 + 0.05, z0 + 0.3], capeW: 0.4, capeL: 1.2, noGlasses: true };
-  const D = { root, model, body, torso: body, neckPiv: head, headPiv: head, head, legs: [], tails: [], ears: [], tongue: new THREE.Group(), flames, stars, excl, blob, b, launcher, anim: animRig, vestMat: padMat, hi, crown: null, mixer: null, acts: {}, cur: '', shootT: 0, lastT: null, runK: 17 };
+  const D = { root, model, body, torso: body, neckPiv: head, headPiv: head, head, legs: [], tails: [], ears: [], tongue: new THREE.Group(), flames, stars, excl, blob, b, launcher, anim: animRig, vestMat: padMat, hi, crown: null, mixer: null, acts: {}, cur: '', shootT: 0, lastT: null, runK: 4 * (b.scale || 1), runMax: 4.5, lean: 0, roll: 0.1, once: ['Jump_Idle', 'Weapon'] };
   D.shoot = () => { D.shootT = 0.45; };
   rigAttach(D, R, holder);
   return D;
@@ -1612,11 +1615,12 @@ function animRig(D, st, t) {
       if (old) a.crossFadeFrom(old, 0.15, false);
       D.cur = want;
     }
-    if (D.acts.Run) D.acts.Run.timeScale = clamp(st.v / (D.runK || 11), 0.6, 2.2);
+    if (D.acts.Run) D.acts.Run.timeScale = clamp(st.v / (D.runK || 11), 0.6, D.runMax || 2.2);
     D.mixer.update(dt);
   }
-  D.body.rotation.x = air ? clamp(-st.vy * 0.02, -0.25, 0.25) : amp * 0.12;
-  D.model.rotation.z = clamp(-st.yawRate * 0.18, -0.35, 0.35) + (st.stun > 0 ? Math.sin(t * 18) * 0.15 : 0);
+  const lean = D.lean ?? 0.12, roll = D.roll ?? 0.18;
+  D.body.rotation.x = air ? clamp(-st.vy * 0.02, -0.25, 0.25) * (lean ? 1 : 0.3) : amp * lean;
+  D.model.rotation.z = clamp(-st.yawRate * roll, -roll * 2, roll * 2) + (st.stun > 0 ? Math.sin(t * 18) * 0.15 * (roll / 0.18) : 0);
   animCommon(D, st, t);
 }
 
