@@ -443,7 +443,6 @@
     <button class="btn sec" id="assistBtn">ASSISTÊNCIA: LIGADA</button>
     <button class="btn sec" id="qualBtn">GRÁFICOS: ALTA</button>
     <button class="btn sec" id="vibBtn">VIBRAÇÃO: LIGADA</button>
-    <button class="btn sec" id="voiceBtn">LOCUTOR: LIGADO</button>
     <button class="btn sec" id="musicBtn">MÚSICA: TODAS</button>
     <button class="btn sec" id="quitBtn">SAIR PARA O MENU</button>
   </div>
@@ -1239,10 +1238,11 @@ function buildDog(b, num, color) {
    Loja de visual: chapéus, óculos, capas, coletes e rastros
    --------------------------------------------------------------------- */
 const SHOP = {
+  cor: { n: 'CORES', items: [['original', 'COR ORIGINAL', 0], ['preto', 'PRETO', 0], ['branco', 'BRANCO', 0], ['vermelho', 'VERMELHO', 0], ['azul', 'AZUL', 0], ['dourado', 'DOURADO', 0], ['verde', 'VERDE', 0], ['roxo', 'ROXO', 0]] },
   hat: { n: 'CHAPÉUS', items: [['none', 'NENHUM', 0], ['bone', 'BONÉ', 150], ['festa', 'CHAPÉU DE FESTA', 200], ['cartola', 'CARTOLA', 300], ['cowboy', 'CHAPÉU DE CAUBÓI', 350], ['capacete', 'CAPACETE DE CORRIDA', 450], ['coroa', 'COROA DE REI', 800]] },
   glasses: { n: 'ÓCULOS', items: [['none', 'NENHUM', 0], ['escuro', 'ÓCULOS ESCUROS', 150], ['nerd', 'ÓCULOS DE NERD', 200], ['aviador', 'AVIADOR', 250], ['coracao', 'CORAÇÃO', 300]] },
   cape: { n: 'CAPAS', items: [['none', 'NENHUMA', 0], ['vermelha', 'CAPA VERMELHA', 300], ['azul', 'CAPA AZUL', 300], ['roxa', 'CAPA ROXA', 350], ['dourada', 'CAPA DOURADA', 600]] },
-  vest: { n: 'COLETES', items: [['padrao', 'COR ORIGINAL', 0], ['preto', 'PRETO', 100], ['branco', 'BRANCO', 100], ['vermelho', 'VERMELHO', 100], ['azul', 'AZUL', 100], ['verde', 'VERDE', 100], ['roxo', 'ROXO', 100], ['rosa', 'ROSA', 100], ['dourado', 'DOURADO', 300]] },
+  vest: { n: 'COLETES', items: [['padrao', 'COR ORIGINAL', 0], ['preto', 'PRETO', 100], ['branco', 'BRANCO', 100], ['vermelho', 'VERMELHO', 100], ['azul', 'AZUL', 100], ['verde', 'VERDE', 100], ['roxo', 'ROXO', 100], ['dourado', 'DOURADO', 300]] },
   trail: { n: 'RASTROS', items: [['none', 'NENHUM', 0], ['bolhas', 'BOLHAS', 350], ['coracoes', 'CORAÇÕES', 450], ['estrelas', 'ESTRELAS', 500], ['fogo', 'FOGO', 550], ['arcoiris', 'ARCO-ÍRIS', 700]] },
   paint: { n: 'PINTURAS', items: [['none', 'ORIGINAL', 0], ['pingo', 'MANCHAS DO PINGO', 400], ['tiffany', 'LISTRAS DA TIFFANY', 450], ['faiton', 'PELAGEM DO FAITON', 450], ['nevasca', 'MÁSCARA DA NEVASCA', 450], ['taissa', 'PINTINHAS DA TAISSA', 450], ['princesa', 'ROSA DA PRINCESA', 450], ['major', 'CAMUFLAGEM DO MAJOR', 500], ['pintado', 'RETALHOS DO PINTADO', 500], ['tigre', 'TIGRE', 550], ['chamas', 'CHAMAS', 600], ['galaxia', 'GALÁXIA', 700], ['arcoiris', 'ARCO-ÍRIS', 700], ['ouro', 'OURO PURO', 800]] },
 };
@@ -1251,12 +1251,12 @@ const CAPE_COLORS = { vermelha: '#d81f2a', azul: '#1f5fff', roxa: '#7c3aed', dou
 const TRAIL_SW = { bolhas: '#9fdcff', coracoes: '#ff5f9e', estrelas: '#ffe14d', fogo: '#ff7a1a', arcoiris: 'linear-gradient(90deg,#f33,#fc3,#3c6,#39f,#c3f)' };
 const HAT_SW = { bone: '#d81f2a', festa: '#ff4fa3', cartola: '#1a1a1a', cowboy: '#8a5a2b', capacete: '#f4f4f4', coroa: '#ffc53d' };
 const GL_SW = { escuro: '#111', nerd: '#333', aviador: '#c9a24a', coracao: '#ff5f9e' };
-const DEFAULT_LOOK = { hat: 'none', glasses: 'none', cape: 'none', vest: 'padrao', trail: 'none', paint: 'none' };
+const DEFAULT_LOOK = { cor: 'original', hat: 'none', glasses: 'none', cape: 'none', vest: 'padrao', trail: 'none', paint: 'none' };
 const owns = (cat, id) => SHOP[cat].items.find(i => i[0] === id)[2] === 0 || save.owned.includes(cat + ':' + id);
 function getLook(b) { return Object.assign({}, DEFAULT_LOOK, save.looks[b.id] || {}); }
 function randomLook() {
   const pick = (cat, p) => Math.random() < p ? SHOP[cat].items[1 + (Math.random() * (SHOP[cat].items.length - 1) | 0)][0] : SHOP[cat].items[0][0];
-  return { hat: pick('hat', 0.35), glasses: pick('glasses', 0.25), cape: pick('cape', 0.12), vest: 'padrao', trail: pick('trail', 0.15), paint: pick('paint', 0.12) };
+  return { hat: pick('hat', 0.35), glasses: pick('glasses', 0.25), cape: pick('cape', 0.12), vest: 'padrao', trail: pick('trail', 0.15), paint: pick('paint', 0.1), cor: pick('cor', 0.12) };
 }
 function lm(color, rough = 0.5, metal = 0, extra = {}) { return new THREE.MeshStandardMaterial({ color, roughness: rough, metalness: metal, ...extra }); }
 function makeHat(type, s) {
@@ -1356,6 +1356,10 @@ const PAINTS = {
   ouro: (p, o) => o.copy(PC(0xc99a1a)).lerp(PC(0xffe27a), pnoise(p.x * 6, p.y * 6, p.z * 6) * 0.6),
   arcoiris: (p, o) => o.setHSL((p.fz * 0.85 + p.fy * 0.2) % 1, 0.85, 0.55),
 };
+// cores do corpo (aba CORES): cor única, mantendo a sombra do desenho original
+const BODY_COLORS = { preto: 0x1c1c1f, branco: 0xf4f4f5, vermelho: 0xd81f2a, azul: 0x1f5fff, dourado: 0xd4a017, verde: 0x16a34a, roxo: 0x7c3aed };
+for (const [k, h] of Object.entries(BODY_COLORS)) { const c = new THREE.Color(h); PAINTS['cor_' + k] = k === 'dourado' ? (p, o) => o.copy(c).lerp(PC(0xffe27a), pnoise(p.x * 6, p.y * 6, p.z * 6) * 0.45) : (p, o) => o.copy(c); }
+const COR_SW = { preto: '#1c1c1f', branco: '#f4f4f5', vermelho: '#d81f2a', azul: '#1f5fff', dourado: 'linear-gradient(135deg,#ffe27a,#d4a017)', verde: '#16a34a', roxo: '#7c3aed' };
 const PAINT_SW = { pingo: 'radial-gradient(circle at 30% 30%,#111 18%,#f4f4f2 20%)', faiton: 'linear-gradient(#b3121b,#141418 55%)', tiffany: 'repeating-linear-gradient(90deg,#151515 0 5px,#f1f1ee 5px 10px)',
   nevasca: 'linear-gradient(#5b6472 50%,#f2f4f7 50%)', major: 'radial-gradient(circle at 30% 40%,#2b3320 25%,transparent 26%),radial-gradient(circle at 70% 70%,#6b4f2a 22%,#4d5a2c 23%)',
   pintado: 'radial-gradient(circle at 35% 35%,#1c1a17 22%,transparent 23%),radial-gradient(circle at 70% 65%,#e8e2d5 20%,#c9a15a 21%)', taissa: 'radial-gradient(circle at 40% 40%,#6b3b12 18%,#f2c230 20%)',
@@ -1419,7 +1423,8 @@ function applyPaint(D, id) {
 function applyLook(D, look) {
   if (D.lookG) D.lookG.forEach(g => { if (g.parent) g.parent.remove(g); disposeTree(g); });
   D.lookG = []; D.cape = null; D.look = look;
-  if (PAINTS[look.paint] || D.paintList) applyPaint(D, look.paint || 'none');
+  const pid = PAINTS[look.paint] ? look.paint : PAINTS['cor_' + look.cor] ? 'cor_' + look.cor : 'none'; // a pintura tem prioridade sobre a cor
+  if (PAINTS[pid] || D.paintList) applyPaint(D, pid);
   if (D.crown) D.crown.visible = look.hat === 'none';
   D.vestMat.color.set(look.vest === 'padrao' ? D.b.color : VEST_COLORS[look.vest]);
   D.vestMat.metalness = look.vest === 'dourado' ? 0.7 : 0.15;
@@ -3938,6 +3943,10 @@ function stepRunner(r, inp, dt) {
   r.nitroOn = inp.nitro && r.nitro > 0.5 && r.stun <= 0 && !isRobo(r);
   if (isRobo(r)) { r.nitro = 0; if (state === 'race' && !r.finished) { r.dura -= 0.45 * dt; if (r.dura <= 0) roboHit(r, 0, 'DESGASTE'); } }
   if (r.nitroOn) r.nitro = Math.max(0, r.nitro - r.nitroDrain * dt);
+  if (r.nitroOn && isDino(r)) { // fúria: derruba quem estiver perto e deixa um rastro vermelho
+    for (const o of runners) { if (o === r || (o.furyCD || 0) > raceTime || Math.hypot(o.x - r.x, o.z - r.z) > (r.b.rad || 1) + (o.b.rad || 1) + 1.8) continue; o.furyCD = raceTime + 1.5; if (knock(o, 0.9, 5, 0.4)) { if (o.isPlayer) pop(`${r.b.name} TE DERRUBOU NA FÚRIA!`, 'r'); if (r.isPlayer) pop(`FÚRIA: ${o.b.name} NO CHÃO!`, 'v'); } }
+    for (let i = 0; i < 3; i++) glow.spawn(r.x - Math.sin(r.h) * (2 + Math.random() * 3) + (Math.random() - 0.5) * 2, r.y + 0.3 + Math.random() * 1.5, r.z - Math.cos(r.h) * (2 + Math.random() * 3) + (Math.random() - 0.5) * 2, -r.vx * 0.1, 0.8, -r.vz * 0.1, 0.8, 1.1, 0.3, Math.random() < 0.6 ? [1, 0.08, 0.05] : [0.6, 0, 0], 0.9, 0, 1);
+  }
   if (has(r, 'canela')) r.nitro = Math.min(100, r.nitro + 3 * dt);
   r.howl = Math.max(0, r.howl - dt);
   // Paz: com nitro, sobe e voa (e quem usa a habilidade de voar)
@@ -3947,7 +3956,8 @@ function stepRunner(r, inp, dt) {
   r.mini = Math.max(0, r.mini - dt); r.pad = Math.max(0, r.pad - dt);
   let band = 1;
   if (!r.isPlayer && player && !player.finished) band = 1 + clamp((player.dist - r.dist) / 220, -0.07, 0.07);
-  const maxV = r.maxV * r.skill * band * slow * (r.nitroOn ? r.nitroPow : 1) * (r.mini > 0 ? 1.15 : 1) * (r.pad > 0 ? 1.22 : 1)
+  const fury = r.nitroOn && isDino(r); // tiranossauro: a barra vira FÚRIA
+  const maxV = (fury ? 3.6 * r.skill : 0) + r.maxV * r.skill * band * slow * (r.nitroOn && !fury ? r.nitroPow : 1) * (r.mini > 0 ? 1.15 : 1) * (r.pad > 0 ? 1.22 : 1)
     * (r.slip > 0.5 ? (has(r, 'flecha') ? 1.14 : 1.06) : 1) * (r.howl > 0 ? 1.15 : 1) * (r.slowT > 0 ? 0.55 : 1) * (r.sOn ? r.xS[3] : 1) * (r.rocket > 0 ? 1.35 : 1) * (r.xC === 'driftSpeed' && r.drifting ? 1.04 : 1) * r.pack * (r.spook > 0 ? 0.72 : 1) * (r.birdT > 0 ? 0.7 : 1) * (r.finished ? 0.5 : 1);
 
   // volante
@@ -3978,7 +3988,7 @@ function stepRunner(r, inp, dt) {
   vF = r.vx * fx + r.vz * fz;
   let vR = r.vx * rx + r.vz * rz;
   if (!air) {
-    if (inp.throttle > 0 && vF < maxV) vF += (r.accel * (r.nitroOn ? 1.7 : 1) * inp.throttle * (1 - 0.55 * clamp(vF / maxV, 0, 1)) + (r.mini > 0 ? 14 : 0) + (r.pad > 0.6 ? 30 : 0) + (r.rocket > 0 ? 22 : 0)) * dt;
+    if (inp.throttle > 0 && vF < maxV) vF += (r.accel * (r.nitroOn ? (fury ? 1.25 : 1.7) : 1) * inp.throttle * (1 - 0.55 * clamp(vF / maxV, 0, 1)) + (r.mini > 0 ? 14 : 0) + (r.pad > 0.6 ? 30 : 0) + (r.rocket > 0 ? 22 : 0)) * dt;
     if (!inp.throttle) vF -= Math.sign(vF) * Math.min(Math.abs(vF), 7 * dt);
     if (inp.brake) vF = vF > 0 ? Math.max(0, vF - 38 * dt) : Math.max(-9, vF - 12 * dt);
     if (inp.drift && !r.drifting && vF > 4 && r.xC !== 'driftSpeed') vF -= 10 * dt;
@@ -4498,7 +4508,7 @@ const Voice = {
   stop() { try { if (window.AndroidTTS) AndroidTTS.stop(); else speechSynthesis.cancel(); } catch (e) { } this.duck(false); },
 };
 try { speechSynthesis.onvoiceschanged = () => Voice.pick(); } catch (e) { }
-function speak(text, prio) { Voice.say(text, prio); }
+function speak() { } // sem locutor de voz: as falas aparecem só escritas no topo da tela
 function vib(p) { if (save.vib && navigator.vibrate) try { navigator.vibrate(p); } catch (e) { } }
 function show(id, on) { $(id).hidden = !on; }
 function setCoins() { document.querySelectorAll('.cval').forEach(e => e.textContent = save.coins.toLocaleString('pt-BR')); }
@@ -4581,7 +4591,7 @@ function toMenu() {
   if (Sfx.ctx) ['wind', 'skid', 'nitro'].forEach(n => Sfx.setLoop(n, 0));
   ensureDaily(); placePreview(); refreshMenu();
 }
-let shopCat = 'hat', missTab = 'daily';
+let shopCat = 'cor', missTab = 'daily';
 function toShop() {
   state = 'shop'; ['menu'].forEach(id => show(id, false)); show('shop', true);
   renderShop();
@@ -4594,7 +4604,7 @@ function renderShop() {
   $('shopList').innerHTML = SHOP[shopCat].items.map(([id, name, price]) => {
     const own = owns(shopCat, id), eq = look[shopCat] === id;
     const sw = shopCat === 'vest' ? (id === 'padrao' ? b.color : '#' + VEST_COLORS[id].toString(16).padStart(6, '0')) : shopCat === 'cape' ? (CAPE_COLORS[id] || 'transparent')
-      : shopCat === 'trail' ? (TRAIL_SW[id] || 'transparent') : shopCat === 'paint' ? (PAINT_SW[id] || 'transparent') : shopCat === 'hat' ? (HAT_SW[id] || 'transparent') : (GL_SW[id] || 'transparent');
+      : shopCat === 'trail' ? (TRAIL_SW[id] || 'transparent') : shopCat === 'paint' ? (PAINT_SW[id] || 'transparent') : shopCat === 'cor' ? (COR_SW[id] || 'transparent') : shopCat === 'hat' ? (HAT_SW[id] || 'transparent') : (GL_SW[id] || 'transparent');
     const btn = eq ? `<button class="eq" disabled>EM USO</button>` : own ? `<button data-eq="${id}">USAR</button>` : `<button data-buy="${id}" ${save.coins < price ? 'disabled' : ''}>COMPRAR ${price}</button>`;
     return `<div class="item panel"><span class="sw" style="background:${sw}"></span><div><h4>${name}</h4><small>${own ? (eq ? 'equipado no ' + b.name : 'seu') : price + ' ossos de ouro'}</small></div>${btn}</div>`;
   }).join('');
@@ -4619,6 +4629,7 @@ $('shopList').addEventListener('click', e => {
     save.coins -= it[2]; save.owned.push(shopCat + ':' + it[0]); addStat('bought'); Sfx.init(); Sfx.pickup(); vib(30);
     look[shopCat] = it[0];
   } else if (t.dataset.eq) { look[shopCat] = t.dataset.eq; Sfx.init(); Sfx.beep(false); }
+  if (shopCat === 'cor') look.paint = 'none'; if (shopCat === 'paint') look.cor = 'original'; // cor e pintura não se misturam
   save.looks[b.id] = look; persist();
   if (preview) applyLook(preview, look);
   claimAchievements();
@@ -5128,7 +5139,6 @@ function refreshPauseBtns() {
   $('assistBtn').textContent = 'ASSISTÊNCIA: ' + (save.assist ? 'LIGADA' : 'DESLIGADA');
   $('qualBtn').textContent = 'GRÁFICOS: ' + QUALS[save.qual].n;
   $('vibBtn').textContent = 'VIBRAÇÃO: ' + (save.vib ? 'LIGADA' : 'DESLIGADA');
-  $('voiceBtn').textContent = 'LOCUTOR: ' + (save.voice ? 'LIGADO' : 'DESLIGADO');
   $('musicBtn').textContent = 'MÚSICA: ' + MUSIC_MODES[save.musicMode];
 }
 
@@ -5166,12 +5176,13 @@ function drawGauge() {
   const gr = c.createLinearGradient(20, 0, 200, 0); gr.addColorStop(0, '#ffffff'); gr.addColorStop(0.7, '#ffb36b'); gr.addColorStop(1, '#ff4d1a');
   c.strokeStyle = gr; c.beginPath(); c.arc(cx, cy, 76, a0, a0 + (a1 - a0) * Math.max(0.001, fr)); c.stroke();
   c.lineWidth = 7; c.strokeStyle = 'rgba(255,255,255,.1)'; c.beginPath(); c.arc(cx, cy, 61, a0, a1); c.stroke();
-  const robo = isRobo(player), bar = robo ? player.dura / 100 : player.nitro / 100;
-  c.strokeStyle = robo ? (bar > 0.5 ? '#4ade80' : bar > 0.25 ? '#facc15' : '#ef4444') : player.nitroOn ? '#35d0ff' : '#ff7a1a';
+  const robo = isRobo(player), dino = isDino(player), bar = robo ? player.dura / 100 : player.nitro / 100;
+  c.strokeStyle = robo ? (bar > 0.5 ? '#4ade80' : bar > 0.25 ? '#facc15' : '#ef4444') : dino ? (player.nitroOn ? '#ff1a1a' : '#b91c1c') : player.nitroOn ? '#35d0ff' : '#ff7a1a';
   c.beginPath(); c.arc(cx, cy, 61, a0, a0 + (a1 - a0) * Math.max(0.001, bar)); c.stroke();
   c.fillStyle = '#fff'; c.textAlign = 'center'; c.font = '46px "Russo One", sans-serif'; c.fillText(Math.round(kmh), cx, cy + 12);
   c.font = '700 14px Rajdhani, sans-serif'; c.fillStyle = '#9aa7bf'; c.fillText('KM/H', cx, cy + 32);
   if (robo) { c.fillStyle = c.strokeStyle; c.font = '700 12px Rajdhani, sans-serif'; c.fillText(`DURABILIDADE ${Math.ceil(player.dura)}%`, cx, cy + 52); c.font = '700 14px Rajdhani, sans-serif'; }
+  else if (dino) { c.fillStyle = '#ff4d4d'; c.fillText(`FÚRIA ${Math.round(player.nitro)}%`, cx, cy + 52); }
   else { c.fillStyle = player.nitro > 99 ? '#35d0ff' : '#ff9a4d'; c.fillText(`NITRO ${Math.round(player.nitro)}%`, cx, cy + 52); }
   for (let i = 0; i < 3; i++) { // mísseis disponíveis
     const x = cx - 24 + i * 24, y = cy + 66;
@@ -5220,6 +5231,7 @@ function updateHud(dt) {
   if (player.lockT > 0 && Math.random() < dt * 6) Sfx.lockon();
   $('tMn').textContent = player.ammo;
   show('tN', !isRobo(player)); // o robô não tem nitro
+  $('tN').textContent = isDino(player) ? 'FÚRIA' : 'NITRO';
   if (player.xH) { $('tHn').textContent = player.ab; $('tH').classList.toggle('dim', player.ab <= 0); $('chipAb').textContent = `R · ${player.xH[0]} ×${player.ab}`; }
   show('tH', !!player.xH); show('chipAb', !!player.xH && !isTouch);
   drawMap(); drawGauge();
@@ -5309,7 +5321,6 @@ click('pauseBtn', () => setPaused(true));
 click('resumeBtn', () => setPaused(false));
 click('restartBtn', () => { if (Net.racing) return; show('pause', false); startRace(); });
 click('quitBtn', () => { cup = null; toMenu(); });
-click('voiceBtn', () => { save.voice = !save.voice; persist(); refreshPauseBtns(); if (save.voice) speak('Locutor ligado!', true); else Voice.stop(); });
 click('vibBtn', () => { save.vib = !save.vib; persist(); refreshPauseBtns(); vib(40); });
 click('camBtn', () => { save.cam = (save.cam + 1) % CAMS.length; persist(); refreshPauseBtns(); });
 click('assistBtn', () => { save.assist = !save.assist; persist(); refreshPauseBtns(); });

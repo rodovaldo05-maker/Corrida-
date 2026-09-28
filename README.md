@@ -122,6 +122,7 @@ A Davi muda de forma:
 - **Dinossauro** (T-Rex, 4 vezes a altura da galinha): ao deixar **Músculos** e **Garras** no máximo na oficina, vira dinossauro de vez e fica com um dos atributos base mais altos do jogo.
 - **Dinossauro robô** (2 vezes a altura do dinossauro): o upgrade mecânico dela só pode ser comprado depois de Músculos e Garras no máximo. Vira um dinossauro robô blindado que lança **4 mísseis de uma vez**, cada um atrás de um rival.
 - **Robô sem nitro, com durabilidade**: o robô não usa nitro e não cai com barreiras, bolas, mísseis nem pancadas. Cada batida gasta a **durabilidade** (que também se desgasta aos poucos durante a corrida). Quando ela quebra, vira o dinossauro normal até o fim da corrida.
+- **Fúria do tiranossauro**: no dinossauro a barra de nitro vira **FÚRIA**. Ligada (botão de nitro), ele fica 2 pontos de velocidade mais rápido, deixa um rastro vermelho e derruba quem estiver perto.
 - **Dinossauro**: míssil não o derruba, só o deixa lento por alguns segundos, e ele atropela as barreiras sem precisar pular.
 - Ainda galinha, cada **carga especial** (cristal roxo) tem 20% de chance de transformá-la em dinossauro por 12 segundos.
 
@@ -131,10 +132,11 @@ Modelos: Chicken (jeremy, Poly Pizza) e T-Rex (Quaternius, CC0), enviados pelo j
 
 - **Campeonato (Copa)**: no menu, troque o *Modo* para COPA. São 4 corridas seguidas (Parque, Praia, Pico e Serra) contra os mesmos 5 rivais, com pontos por posição (10, 7, 5, 3, 2, 1). No fim tem troféu de ouro, prata ou bronze e prêmio em ossos de ouro.
 - **Loja de visual**: chapéus (boné, festa, cartola, caubói, capacete, coroa), óculos, capas, cores de colete e rastros (bolhas, corações, estrelas, fogo, arco-íris). Cada bicho guarda o próprio visual.
+- **Cores**: aba CORES da loja, de graça: preto, branco, vermelho, azul, dourado, verde ou roxo no corpo inteiro do bicho (os coletes usam as mesmas cores).
 - **Pinturas de pele**: aba PINTURAS da loja, com padrões inspirados nos personagens (Manchas do Pingo, Listras da Tiffany, Pelagem do Faiton, Máscara da Nevasca, Pintinhas da Taissa, Rosa da Princesa, Camuflagem do Major, Retalhos do Pintado) e extras (Tigre, Chamas, Galáxia, Arco-íris, Ouro Puro). Funcionam em todos os bichos, inclusive nas formas da Davi.
 - **Equipar e desequipar**: o upgrade mecânico comprado pode ser desequipado e equipado de novo na aba MECÂNICO da loja.
 - **Missões**: 3 missões diárias que mudam à meia-noite (+250 cada e +300 de bônus) e 15 conquistas com prêmios.
-- **Narrador**: avisa quem assumiu a liderança, quem ultrapassou quem e quem acertou míssil em quem.
+- **Narrador**: avisa quem assumiu a liderança, quem ultrapassou quem e quem acertou míssil em quem. (só escrito no topo da tela, sem voz).
 - **Vibração**: o celular vibra com batidas, mísseis, mini-turbos e vitórias (desligue na pausa).
 
 ## Oficina
