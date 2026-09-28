@@ -3570,6 +3570,8 @@ function dash(r, m, col) {
 function knock(o, t, vy, keep) {
   if (o.remote || o.finished) return false;
   if (o.shield > 0) { if (o.isPlayer) pop('ESCUDO!', 'c'); return false; }
+  if (isRobo(o)) { roboHit(o, 15, 'PANCADA'); return true; }
+  if (isDino(o)) { dinoSlow(o, 1.5); return true; }
   o.stun = Math.max(o.stun, t * (o.xM === 'armor' ? 0.6 : 1)); o.vy = Math.max(o.vy, vy); o.vx *= keep; o.vz *= keep; o.nitroOn = false; endDrift(o, true); o.hits++;
   if (o.isPlayer) { shake(0.4); vib(60); }
   return true;
@@ -3591,6 +3593,22 @@ function setForm(r, form, secs = 0) {
   else if (r.isPlayer) pop('VOLTOU A SER GALINHA', 'r');
   if (r.isPlayer) netEvent('form', { f: form });
 }
+// Davi robô: sem nitro e sem cair; cada pancada gasta a durabilidade. Quebrou, vira dinossauro.
+// Davi dinossauro: míssil não derruba, só deixa lento; barreiras ele atropela.
+const isRobo = r => r.form === 'robo', isDino = r => r.form === 'dino', isBig = r => r.form === 'robo' || r.form === 'dino';
+function roboHit(r, dmg, what) {
+  if (r.remote || !isRobo(r)) return;
+  r.dura = Math.max(0, r.dura - dmg); r.hurtFx = 0.4;
+  for (let i = 0; i < 18; i++) glow.spawn(r.x + (Math.random() - 0.5) * 3, r.y + 3 + Math.random() * 4, r.z + (Math.random() - 0.5) * 3, (Math.random() - 0.5) * 10, Math.random() * 8, (Math.random() - 0.5) * 10, 0.4, 0.5, 0.1, [1, 0.75, 0.3], 1, 12, 2);
+  if (r.isPlayer) { pop(`${what} · DURABILIDADE ${Math.round(r.dura)}%`, 'r'); shake(0.25); vib(40); }
+  if (r.dura <= 0) {
+    r.dura = 0; r.mech = false; setForm(r, 'dino');
+    for (let i = 0; i < 40; i++) dust.spawn(r.x, r.y + 3, r.z, (Math.random() - 0.5) * 14, Math.random() * 9, (Math.random() - 0.5) * 14, 1.4, 1.2, 3, [0.25, 0.25, 0.28], 0.8, 6, 1.5);
+    if (r.isPlayer) { pop('O ROBÔ QUEBROU! VIROU DINOSSAURO', 'o'); narrate('O ROBÔ DA DAVI QUEBROU!', true); shake(0.6); vib([60, 40, 120]); }
+    else narrate(`O ROBÔ DE ${r.b.name} QUEBROU!`);
+  }
+}
+function dinoSlow(r, t) { if (r.remote) return; r.slowT = Math.max(r.slowT || 0, t); if (r.isPlayer) pop('DINOSSAURO FICOU LENTO', 'r'); }
 function trig(r, ev) {
   const a = r.xA; if (!a || a[2] !== ev || r.aCD > 0 || r.remote) return;
   r.aCD = ev === 'coin' ? 0.3 : 1.2;
@@ -3772,7 +3790,7 @@ function doBark(r) {
     const dx = o.x - r.x, dz = o.z - r.z, d = Math.hypot(dx, dz);
     if (d < (has(r, 'rex') ? 18 : 12) && (dx * fx + dz * fz > -2) && o.flyY < 1.5) {
       o.spook = 1.1; hit++; if (o.isPlayer) pop('ASSUSTADO!', 'r');
-      if (has(r, 'tiffany') && d < 9) { o.stun = Math.max(o.stun, 0.7); o.vx *= 0.5; o.vz *= 0.5; if (o.isPlayer) pop('CHICOTADA DA TIFFANY!', 'r'); }
+      if (has(r, 'tiffany') && d < 9 && !isBig(o)) { o.stun = Math.max(o.stun, 0.7); o.vx *= 0.5; o.vz *= 0.5; if (o.isPlayer) pop('CHICOTADA DA TIFFANY!', 'r'); }
     }
   }
   let shooed = 0;
@@ -3792,7 +3810,7 @@ function doBark(r) {
 function stepRunner(r, inp, dt) {
   const prevDist = r.dist, air = r.y > 0.02;
   if (r.shield > 0 && (r.stun > 0 || r.spook > 0 || r.birdT > 0)) { r.stun = 0; r.spook = 0; r.birdT = 0; }
-  for (const k of ['shield', 'rocket', 'flyT', 'icy', 'smokeT', 'magT', 'nightT', 'hurtT', 'fedT', 'aCD', 'abCD']) if (r[k] > 0) r[k] -= dt;
+  for (const k of ['shield', 'rocket', 'flyT', 'icy', 'smokeT', 'magT', 'nightT', 'hurtT', 'fedT', 'aCD', 'abCD', 'slowT']) if (r[k] > 0) r[k] -= dt;
   if (r.formT > 0) { r.formT -= dt; if (r.formT <= 0) setForm(r, 'galinha'); }
   if (r.xC === 'steady') { if (r.spook > 0) r.spook -= dt; if (r.birdT > 0) r.birdT -= dt; }
   if (r.stun > 0) r.wasStun = true; else if (r.wasStun) { r.wasStun = false; r.hurtT = 5; trig(r, 'stunEnd'); }
@@ -3824,7 +3842,8 @@ function stepRunner(r, inp, dt) {
 
   r.hitCD = Math.max(0, r.hitCD - dt);
   if (r.birdT > 0) { r.birdT -= dt; inp = { ...inp, steer: clamp(inp.steer + Math.sin(time * 11 + r.num * 2) * 0.45, -1, 1) }; }
-  r.nitroOn = inp.nitro && r.nitro > 0.5 && r.stun <= 0;
+  r.nitroOn = inp.nitro && r.nitro > 0.5 && r.stun <= 0 && !isRobo(r);
+  if (isRobo(r)) { r.nitro = 0; if (state === 'race' && !r.finished) { r.dura -= 0.45 * dt; if (r.dura <= 0) roboHit(r, 0, 'DESGASTE'); } }
   if (r.nitroOn) r.nitro = Math.max(0, r.nitro - r.nitroDrain * dt);
   if (has(r, 'canela')) r.nitro = Math.min(100, r.nitro + 3 * dt);
   r.howl = Math.max(0, r.howl - dt);
@@ -3836,7 +3855,7 @@ function stepRunner(r, inp, dt) {
   let band = 1;
   if (!r.isPlayer && player && !player.finished) band = 1 + clamp((player.dist - r.dist) / 220, -0.07, 0.07);
   const maxV = r.maxV * r.skill * band * slow * (r.nitroOn ? r.nitroPow : 1) * (r.mini > 0 ? 1.15 : 1) * (r.pad > 0 ? 1.22 : 1)
-    * (r.slip > 0.5 ? (has(r, 'flecha') ? 1.14 : 1.06) : 1) * (r.howl > 0 ? 1.15 : 1) * (r.sOn ? r.xS[3] : 1) * (r.rocket > 0 ? 1.35 : 1) * (r.xC === 'driftSpeed' && r.drifting ? 1.04 : 1) * r.pack * (r.spook > 0 ? 0.72 : 1) * (r.birdT > 0 ? 0.7 : 1) * (r.finished ? 0.5 : 1);
+    * (r.slip > 0.5 ? (has(r, 'flecha') ? 1.14 : 1.06) : 1) * (r.howl > 0 ? 1.15 : 1) * (r.slowT > 0 ? 0.55 : 1) * (r.sOn ? r.xS[3] : 1) * (r.rocket > 0 ? 1.35 : 1) * (r.xC === 'driftSpeed' && r.drifting ? 1.04 : 1) * r.pack * (r.spook > 0 ? 0.72 : 1) * (r.birdT > 0 ? 0.7 : 1) * (r.finished ? 0.5 : 1);
 
   // volante
   let vF = r.vx * Math.sin(r.h) + r.vz * Math.cos(r.h);
@@ -3935,7 +3954,9 @@ function stepRunner(r, inp, dt) {
   // barreiras
   for (const hd of hurdles) {
     if (Math.floor((prevDist - hd.s) / L) < Math.floor((r.dist - hd.s) / L) && Math.abs(r.d) < W / 2 + 0.6) {
-      if (r.y < 0.55 && r.stun <= 0 && !r.b.fly && r.xJ !== 'spring' && r.flyY < 1) {
+      if (isBig(r) && r.y < 0.55) { // grande demais para pular: passa por cima e derruba a barreira
+        hd.fall = 1; if (isRobo(r)) roboHit(r, 6, 'BARREIRA'); else if (r.isPlayer) pop('ATROPELOU A BARREIRA!', 'v');
+      } else if (r.y < 0.55 && r.stun <= 0 && !r.b.fly && r.xJ !== 'spring' && r.flyY < 1) {
         const roll = has(r, 'tofu');
         r.stun = roll ? 0.4 : 1.0; r.vx *= roll ? 0.65 : 0.25; r.vz *= roll ? 0.65 : 0.25; r.vy = 3; hd.fall = 1; endDrift(r, true); r.nitroOn = false; r.hits++;
         if (r.isPlayer) { Sfx.trip(); pop('TROPEÇOU!', 'r'); shake(0.4); vib(70); }
@@ -3971,6 +3992,7 @@ function stepRunner(r, inp, dt) {
   // bolas rolando pela pista
   for (const bl of balls) {
     if (!bl.active || r.hitCD > 0 || r.stun > 0 || r.y > bl.r * 1.25 || r.b.fly || has(r, 'bidu')) continue;
+    if (isBig(r) && Math.abs(wrapDelta(s - bl.s)) < bl.r + 2 && Math.abs(r.d - bl.d) < bl.r + (r.b.rad || 1)) { r.hitCD = 2; if (isRobo(r)) roboHit(r, 10, 'BOLADA'); else if (r.isPlayer) pop('CHUTOU A BOLA!', 'v'); continue; }
     if (Math.abs(wrapDelta(s - bl.s)) < bl.r + 0.7 && Math.abs(r.d - bl.d) < bl.r + 0.8) {
       const roll = has(r, 'tofu');
       r.stun = roll ? 0.4 : 0.9; r.hitCD = 2; r.vx *= roll ? 0.65 : 0.3; r.vz *= roll ? 0.65 : 0.3; r.vy = 5; r.hits++; endDrift(r, true);
@@ -4145,7 +4167,7 @@ function interactions(dt) {
       if (rv < 0) {
         const ma = massOf(a), mb = massOf(b), jv = -1.3 * rv / (1 / ma + 1 / mb) * (has(a, 'princesa') || has(b, 'princesa') ? 1.4 : 1);
         a.vx -= jv / ma * nx; a.vz -= jv / ma * nz; b.vx += jv / mb * nx; b.vz += jv / mb * nz;
-        for (const [x, y] of [[a, b], [b, a]]) if (has(x, 'linda') && x.nitroOn && y.stun <= 0) {
+        for (const [x, y] of [[a, b], [b, a]]) if (has(x, 'linda') && x.nitroOn && y.stun <= 0 && !isBig(y)) {
           y.stun = 0.8; y.vx *= 0.4; y.vz *= 0.4; y.vy = 5; y.hits++;
           if (y.isPlayer) pop('ATROPELADO PELA LINDA!', 'r'); if (x.isPlayer) pop(`INVESTIDA EM ${y.b.name}!`, 'v');
         } if ((a.isPlayer || b.isPlayer) && -rv > 5) { Sfx.thud(); shake(0.2); } }
@@ -4270,6 +4292,8 @@ function explodeMissile(m, hit) {
   if (hit.remote) { if (m.owner.isPlayer) { m.owner.missHits++; pop(`ACERTOU ${hit.b.name}!`, 'v'); } return; }
   if (hit.shield > 0) { if (hit.isPlayer) pop('O ESCUDO SEGUROU O MÍSSIL!', 'c'); return; }
   if (m.owner !== hit) trig(m.owner, 'hitDealt');
+  if (isRobo(hit)) { roboHit(hit, 25, 'MÍSSIL'); return; }
+  if (isDino(hit)) { dinoSlow(hit, 2.5); return; }
   hit.stun = 1.4 * (hit.xM === 'armor' ? 0.6 : 1); hit.flip = 1.0; hit.vx *= 0.2; hit.vz *= 0.2; hit.vy = 8; hit.nitroOn = false; hit.hits++;
   endDrift(hit, true);
   if (m.owner !== hit) m.owner.missHits++;
@@ -4286,6 +4310,8 @@ function splatCarrot(m, hit) {
   if (hit.remote) { if (m.owner.isPlayer) { m.owner.missHits++; pop(`CENOURADA NO ${hit.b.name}!`, 'v'); } return; }
   if (hit.shield > 0) { if (hit.isPlayer) pop('O ESCUDO SEGUROU A CENOURA!', 'c'); return; }
   if (m.owner !== hit) trig(m.owner, 'hitDealt');
+  if (isRobo(hit)) { roboHit(hit, 15, 'CENOURA'); return; }
+  if (isDino(hit)) { dinoSlow(hit, 1.8); return; }
   const arm = hit.xM === 'armor';
   hit.stun = 1.1 * (arm ? 0.6 : 1); hit.flip = 0.8; hit.vx *= 0.3; hit.vz *= 0.3; hit.vy = 6; hit.nitroOn = false; if (!arm) hit.nitro = Math.max(0, hit.nitro - 25); hit.hits++;
   endDrift(hit, true);
@@ -4562,7 +4588,7 @@ function startRace(online) {
     if (b0.id === 'davi' && !online && !daviReady(up)) mech = false; // o robô só vem depois de músculos e garras no máximo
     const form = b0.id !== 'davi' ? null : online ? online[k].form || 'galinha' : daviForm(up, mech);
     const b = form ? formBreed(b0, form) : b0;
-    const r = new Runner(b, k + 1, k === meK, up, mech && form !== 'dino'); r.form = form;
+    const r = new Runner(b, k + 1, k === meK, up, mech && form !== 'dino'); r.form = form; r.dura = form === 'robo' ? 100 : 0;
     const sl = slots[k], row = Math.floor(sl / 2), col = sl % 2;
     r.place(-5 - row * 6.5 - col * 2.5, col ? 3.6 : -3.6);
     if (cup && k && cup.looks[b.id]) { r.look = cup.looks[b.id]; applyLook(r.D, r.look); }
@@ -5042,10 +5068,13 @@ function drawGauge() {
   const gr = c.createLinearGradient(20, 0, 200, 0); gr.addColorStop(0, '#ffffff'); gr.addColorStop(0.7, '#ffb36b'); gr.addColorStop(1, '#ff4d1a');
   c.strokeStyle = gr; c.beginPath(); c.arc(cx, cy, 76, a0, a0 + (a1 - a0) * Math.max(0.001, fr)); c.stroke();
   c.lineWidth = 7; c.strokeStyle = 'rgba(255,255,255,.1)'; c.beginPath(); c.arc(cx, cy, 61, a0, a1); c.stroke();
-  c.strokeStyle = player.nitroOn ? '#35d0ff' : '#ff7a1a'; c.beginPath(); c.arc(cx, cy, 61, a0, a0 + (a1 - a0) * Math.max(0.001, player.nitro / 100)); c.stroke();
+  const robo = isRobo(player), bar = robo ? player.dura / 100 : player.nitro / 100;
+  c.strokeStyle = robo ? (bar > 0.5 ? '#4ade80' : bar > 0.25 ? '#facc15' : '#ef4444') : player.nitroOn ? '#35d0ff' : '#ff7a1a';
+  c.beginPath(); c.arc(cx, cy, 61, a0, a0 + (a1 - a0) * Math.max(0.001, bar)); c.stroke();
   c.fillStyle = '#fff'; c.textAlign = 'center'; c.font = '46px "Russo One", sans-serif'; c.fillText(Math.round(kmh), cx, cy + 12);
   c.font = '700 14px Rajdhani, sans-serif'; c.fillStyle = '#9aa7bf'; c.fillText('KM/H', cx, cy + 32);
-  c.fillStyle = player.nitro > 99 ? '#35d0ff' : '#ff9a4d'; c.fillText(`NITRO ${Math.round(player.nitro)}%`, cx, cy + 52);
+  if (robo) { c.fillStyle = c.strokeStyle; c.font = '700 12px Rajdhani, sans-serif'; c.fillText(`DURABILIDADE ${Math.ceil(player.dura)}%`, cx, cy + 52); c.font = '700 14px Rajdhani, sans-serif'; }
+  else { c.fillStyle = player.nitro > 99 ? '#35d0ff' : '#ff9a4d'; c.fillText(`NITRO ${Math.round(player.nitro)}%`, cx, cy + 52); }
   for (let i = 0; i < 3; i++) { // mísseis disponíveis
     const x = cx - 24 + i * 24, y = cy + 66;
     c.fillStyle = i < player.ammo ? '#ff4d5e' : 'rgba(255,255,255,.15)';
@@ -5092,6 +5121,7 @@ function updateHud(dt) {
   player.lockT -= dt; $('chipMissile').hidden = !(player.lockT > 0);
   if (player.lockT > 0 && Math.random() < dt * 6) Sfx.lockon();
   $('tMn').textContent = player.ammo;
+  show('tN', !isRobo(player)); // o robô não tem nitro
   if (player.xH) { $('tHn').textContent = player.ab; $('tH').classList.toggle('dim', player.ab <= 0); $('chipAb').textContent = `R · ${player.xH[0]} ×${player.ab}`; }
   show('tH', !!player.xH); show('chipAb', !!player.xH && !isTouch);
   drawMap(); drawGauge();

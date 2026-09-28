@@ -121,6 +121,8 @@ A Davi muda de forma:
 - **Galinha**: começa fraca, com 1 quadrado em cada atributo. Os pássaros não a atacam.
 - **Dinossauro** (T-Rex, 4 vezes a altura da galinha): ao deixar **Músculos** e **Garras** no máximo na oficina, vira dinossauro de vez e fica com um dos atributos base mais altos do jogo.
 - **Dinossauro robô** (2 vezes a altura do dinossauro): o upgrade mecânico dela só pode ser comprado depois de Músculos e Garras no máximo. Vira um dinossauro robô blindado que lança **4 mísseis de uma vez**, cada um atrás de um rival.
+- **Robô sem nitro, com durabilidade**: o robô não usa nitro e não cai com barreiras, bolas, mísseis nem pancadas. Cada batida gasta a **durabilidade** (que também se desgasta aos poucos durante a corrida). Quando ela quebra, vira o dinossauro normal até o fim da corrida.
+- **Dinossauro**: míssil não o derruba, só o deixa lento por alguns segundos, e ele atropela as barreiras sem precisar pular.
 - Ainda galinha, cada **carga especial** (cristal roxo) tem 20% de chance de transformá-la em dinossauro por 12 segundos.
 
 Modelos: Chicken (jeremy, Poly Pizza) e T-Rex (Quaternius, CC0), enviados pelo jogador. O dinossauro robô é feito por código, com juntas no quadril, joelho, tornozelo, mandíbula, cauda e braços.
